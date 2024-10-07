@@ -25,7 +25,7 @@
                     <div class="container-round logo">
                         <img src="../images/makati-logo.png" class="image">
                     </div>
-                    Makati City Hall Library
+                    Makati City Hall Libraryy
                 </div>
 
 
