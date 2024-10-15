@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us</title>
+    <title>Contact Us</title>
 
     <link rel="stylesheet" href="style.css">
 
@@ -13,6 +13,18 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
+
+<?php
+
+session_start();
+
+include '../connection.php';
+
+
+include 'functions/fetch_contact.php';
+$contactData = getContact($pdo);
+
+?>
 
 <body>
     <div class="wrapper">
@@ -47,50 +59,21 @@
                 </div>
 
                 <div class="contact-contents">
+
                     <div class="row-contents-center">
-                        <div class="contact-white-container">
-                            <div class="contact-icons">
-                                <img src="../images/cellphone-black.png" class="image">
-                            </div>
-                            <div class="contact-title">Contact Number</div>
-                            <div class="contact-description">
-                                This is the mobile number you can call for urgent or general inquiries regarding services and support at Makati City Hall.
-                            </div>
-                            <div class="contact-info">09957733887</div>
-                        </div>
 
-                        <div class="contact-white-container">
-                            <div class="contact-icons">
-                                <img src="../images/telephone-black.png" class="image">
+                        <?php foreach ($contactData as $item) : ?>
+                            <div class="contact-white-container">
+                                <div class="contact-icons">
+                                    <img src="../contact_images/<?php echo htmlspecialchars($item['image']); ?>" class="image">
+                                </div>
+                                <div class="contact-title"><?php echo htmlspecialchars($item['title']); ?></div>
+                                <div class="contact-description">
+                                    <?php echo htmlspecialchars($item['description']); ?>
+                                </div>
+                                <div class="contact-info"><?php echo htmlspecialchars($item['contact']); ?></div>
                             </div>
-                            <div class="contact-title">Telephone Number</div>
-                            <div class="contact-description">
-                                For landline communication or if you prefer not to use a mobile phone, please use this telephone number.
-                            </div>
-                            <div class="contact-info">8123-4567</div>
-                        </div>
-
-                        <div class="contact-white-container">
-                            <div class="contact-icons">
-                                <img src="../images/email-black.png" class="image">
-                            </div>
-                            <div class="contact-title">Email Address</div>
-                            <div class="contact-description">
-                                You can reach us via email for formal requests, inquiries, or feedback. Our team is available to assist you through this channel.
-                            </div>
-                            <div class="contact-info">makaticityhall@gmail.com</div>
-                        </div>
-
-                        <div class="contact-white-container">
-                            <div class="contact-icons">
-                                <img src="../images/facebook-black.png" class="image">
-                            </div>
-                            <div class="contact-title">Facebook</div>
-                            <div class="contact-description">
-                                Follow us on Facebook for updates, announcements, and community engagement. You can also message us through our official page.
-                            </div>
-                            <div class="contact-info">https://www.facebook.com/MyMakatiVerified/</div>
-                        </div>
+                        <?php endforeach; ?>
 
 
                     </div>

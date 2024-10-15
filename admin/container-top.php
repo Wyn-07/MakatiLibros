@@ -16,7 +16,7 @@
 
     <div class="row-auto container-profile" onclick="openEditProfileModal()">
         <div class="container-round profile">
-            <img src="../images/users/CUERDO.jpg" class="image">
+            <img src="../librarian_images/<?php echo htmlspecialchars($image); ?>" class="image">
         </div>
         <div class="font-white">
             <?php echo htmlspecialchars($lastname); ?>

@@ -1,52 +1,45 @@
-// For add borrow modal
-const addborrowbookInput = document.getElementById('addBookTitle');
+const addBookTitleInput = document.getElementById('addBookTitle'); 
+const addBookTitleIDInput = document.getElementById('addBookTitleId'); 
 
-// Add an event listener for the input event
-addborrowbookInput.addEventListener('input', function() {
-    let input = this.value;
+if (addBookTitleInput) {
+    addBookTitleInput.addEventListener('input', function () {
+        let input = this.value;
 
-    // Filter book titles based on user input
-    let suggestions = bookList.filter(book => book.title.toLowerCase().startsWith(input.toLowerCase()));
+        let suggestions = bookList.filter(book => book.title.toLowerCase().startsWith(input.toLowerCase()));
 
-    // Limit the suggestions to the top 10
-    suggestions = suggestions.slice(0, 10);
+        suggestions = suggestions.slice(0, 10);
 
-    // Clear previous suggestions
-    let datalist = document.getElementById('datalist-books');
-    if (datalist) {
-        datalist.remove();
-    }
+        let datalist = document.getElementById('datalist-books');
+        if (datalist) {
+            datalist.remove();
+        }
 
-    // Create a new datalist for book title suggestions
-    datalist = document.createElement('datalist');
-    datalist.id = 'datalist-books';
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-books'; 
 
-    // Populate the datalist with suggestions
-    suggestions.forEach(suggestion => {
-        let option = document.createElement('option');
-        option.value = suggestion.title;
-        datalist.appendChild(option);
+        suggestions.forEach(suggestion => {
+            let option = document.createElement('option');
+            option.value = suggestion.title; 
+            datalist.appendChild(option);
+        });
+
+        document.body.appendChild(datalist);
+        addBookTitleInput.setAttribute('list', 'datalist-books'); 
     });
 
-    // Append the datalist to the document body
-    document.body.appendChild(datalist);
+    addBookTitleInput.addEventListener('blur', function () {
+        const input = this.value;
 
-    // Set the datalist for the book input
-    addborrowbookInput.setAttribute('list', 'datalist-books');
-});
+        const selectedBook = bookList.find(book => book.title.toLowerCase() === input.toLowerCase());
 
-// Add an event listener for the blur event
-addborrowbookInput.addEventListener('blur', function() {
-    const input = this.value;
-
-    // Check if input matches any of the suggestions
-    const selectedBook = bookList.find(book => book.title.toLowerCase() === input.toLowerCase());
-
-    if (!selectedBook) {
-        // Clear the input if no valid selection is made
-        addborrowbookInput.value = '';
-    }
-});
+        if (selectedBook) {
+            addBookTitleIDInput.value = selectedBook.book_id; 
+        } else {
+            addBookTitleInput.value = '';
+            addBookTitleIDInput.value = ''; 
+        }
+    });
+} 
 
 
 
@@ -55,43 +48,46 @@ addborrowbookInput.addEventListener('blur', function() {
 
 
 
+const editBookTitleInput = document.getElementById('editBookTitle'); 
+const editBookTitleIDInput = document.getElementById('editBookTitleId'); 
 
+if (editBookTitleInput) {
+    editBookTitleInput.addEventListener('input', function () {
+        let input = this.value;
 
-// For edit borrow modal
-const editborrowbookInput = document.getElementById('editBookTitle');
+        let suggestions = bookList.filter(book => book.title.toLowerCase().startsWith(input.toLowerCase()));
 
-editborrowbookInput.addEventListener('input', function() {
-    let input = this.value;
+        suggestions = suggestions.slice(0, 10);
 
-    let suggestions = bookList.filter(book => book.title.toLowerCase().startsWith(input.toLowerCase()));
+        let datalist = document.getElementById('datalist-books');
+        if (datalist) {
+            datalist.remove();
+        }
 
-    suggestions = suggestions.slice(0, 10);
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-books'; 
 
-    let datalist = document.getElementById('datalist-books');
-    if (datalist) {
-        datalist.remove();
-    }
+        suggestions.forEach(suggestion => {
+            let option = document.createElement('option');
+            option.value = suggestion.title; 
+            datalist.appendChild(option);
+        });
 
-    datalist = document.createElement('datalist');
-    datalist.id = 'datalist-books';
-
-    suggestions.forEach(suggestion => {
-        let option = document.createElement('option');
-        option.value = suggestion.title;
-        datalist.appendChild(option);
+        document.body.appendChild(datalist);
+        editBookTitleInput.setAttribute('list', 'datalist-books'); 
     });
 
-    document.body.appendChild(datalist);
+    editBookTitleInput.addEventListener('blur', function () {
+        const input = this.value;
 
-    editborrowbookInput.setAttribute('list', 'datalist-books');
-});
+        const selectedBook = bookList.find(book => book.title.toLowerCase() === input.toLowerCase());
 
-editborrowbookInput.addEventListener('blur', function() {
-    const input = this.value;
+        if (selectedBook) {
+            editBookTitleIDInput.value = selectedBook.book_id; 
+        } else {
+            editBookTitleInput.value = '';
+            editBookTitleIDInput.value = ''; 
+        }
+    });
+}
 
-    const selectedBook = bookList.find(book => book.title.toLowerCase() === input.toLowerCase());
-
-    if (!selectedBook) {
-        editborrowbookInput.value = '';
-    }
-});

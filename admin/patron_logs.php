@@ -21,6 +21,9 @@ include '../connection.php';
 include 'functions/fetch_patron_logs.php';
 
 $patronLogs = getPatronLogs($pdo);
+
+include 'functions/fetch_patrons.php';
+$patronsBasicInfo = getPatronsBasicInfo($pdo);
 ?>
 
 <body>
@@ -227,3 +230,11 @@ $patronLogs = getPatronLogs($pdo);
 </script>
 <script src="js/table.js"></script>
 <script src="js/close-status.js"></script>
+
+
+<script>
+    const patronsBasicInfo = <?php echo json_encode($patronsBasicInfo); ?>;
+</script>
+
+<script src="js/autocomplete-patrons-basic-info.js"></script>
+

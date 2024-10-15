@@ -14,7 +14,7 @@
                 <div class="container-input">
 
                 <input type="hidden" name="book_id" class="input-text" id="book_id" autocomplete="off" required>
-                <input type="hidden" name="status" class="input-text" id="status" autocomplete="off" value="Borrowed" required>
+                <input type="hidden" name="status" class="input-text" id="status" autocomplete="off" value="Borrowing" required>
 
 
                     <div class="container-input-100">

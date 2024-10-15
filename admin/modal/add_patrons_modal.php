@@ -8,19 +8,29 @@
             <span class="modal-close" onclick="closeAddModal()">&times;</span>
         </div>
 
-        <form action="functions/add_patrons.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateForm()">
-            <input type="hidden" id="addPatronId" name="patrons_id">
+
+        <div class="container-error" id="container-error-addpatron" style="display: none">
+            <div class="container-error-description" id="message-addpatron"></div>
+            <button type="button" class="button-error-close" onclick="closeErrorAddPatronsStatus()">&times;</button>
+        </div>
+
+        <form action="functions/add_patrons.php" method="POST" enctype="multipart/form-data" id="addForm" onsubmit="return validateAddForm(['add_image'], 'addContact')">
 
             <div class="container-form">
 
                 <div class="container-input">
 
-                    <div class="container-form-profile">
-                        <div class="form-profile">
-                            <img src="../images/no-image.png" alt="" class="image">
+                    <div class="container-form-patron">
+                        <div class="form-patron">
+                            <img src="../patron_images/default_image.png" alt="" class="image" id="imageAddPatronsPreview">
                         </div>
                     </div>
-
+                    <div class="row-center">
+                        <div class="container-input-file-patron">
+                            <input type="file" class="file" name="add_image" id="add_image" accept="image/*" onchange="previewAddPatronsImage(event)">
+                        </div>
+                    </div>
+                    
                     <div class="container-input-49">
                         <div class="row row-between">
                             <label for="addFirstname">First Name:</label>
@@ -28,12 +38,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addFirstname" name="firstname" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addFirstname" name="firstname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
                         <label for="addMiddlename">Middle Name</label>
-                        <input type="text" id="addMiddlename" name="middlename" class="input-text" autocomplete="off">
+                        <input type="text" id="addMiddlename" name="middlename" class="input-text" oninput="capitalize(this)" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -43,12 +53,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addLastname" name="lastname" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addLastname" name="lastname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
                         <label for="addSuffix">Suffix</label>
-                        <input type="text" id="addSuffix" name="suffix" class="input-text" autocomplete="off">
+                        <input type="text" id="addSuffix" name="suffix" class="input-text" oninput="capitalize(this)" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -58,7 +68,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="date" id="addBirthdate" name="birthdate" class="input-text" required>
+                        <input type="date" id="addBirthdate" name="birthdate" max="2020-01-01" class="input-text" onchange="calculateAddAge()" required>
                     </div>
 
                     <div class="container-input-49">
@@ -78,7 +88,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addGender" name="gender" class="input-text" autocomplete="off" required>
+                        <select class="input-text" id="addGender" name="gender" required>
+                            <option value="" disabled selected> </option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="LGBTQ+">LGBTQ+</option>
+                        </select>
                     </div>
 
                     <div class="container-input-49">
@@ -88,7 +103,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addContact" name="contact" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addContact" name="contact" class="input-text" oninput="handleInput(this)" placeholder="+63xxxxxxxxxx" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-100">
@@ -98,12 +113,37 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addAddress" name="address" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addAddress" name="address" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addCompanyName">Company Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addCompanyName" name="company_name" class="input-text" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addCompanyContact">Company Contact:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addCompanyContact" name="company_contact" class="input-text" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-100">
-                        <label for="addInterest">Interest</label>
-                        <textarea id="addInterest" name="interest" class="input-text"></textarea>
+                        <div class="row row-between">
+                            <label for="addCompanyAddress">Company Address:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addCompanyAddress" name="company_address" class="input-text" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -116,7 +156,6 @@
                         <input type="email" id="addEmail" name="email" class="input-text" autocomplete="off" required>
                     </div>
 
-
                     <div class="container-input-49">
                         <div class="row row-between">
                             <label for="addPassword">Password:</label>
@@ -126,6 +165,7 @@
                         </div>
                         <input type="text" id="addPassword" name="password" class="input-text" autocomplete="off" required>
                     </div>
+
 
 
 
@@ -140,6 +180,7 @@
 
     </div>
 </div>
+
 
 
 <script>
@@ -174,3 +215,22 @@
         setGeneratedPassword();
     });
 </script>
+
+
+
+<script>
+    function previewAddPatronsImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var imageBookPreview = document.getElementById('imageAddPatronsPreview');
+            imageBookPreview.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+
+</script>
+
+
+<script src="js/input-validation-addpatrons.js"></script>
+<script src="js/close-status.js"></script>

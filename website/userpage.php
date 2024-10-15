@@ -16,10 +16,13 @@
 
 
 <?php
+
 session_start();
+
 $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
 $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
+
 
 include 'functions/fetch_books.php';
 ?>
@@ -41,7 +44,6 @@ include 'functions/fetch_books.php';
             <div class="container-sidebar" id="sidebar">
                 <?php include 'sidebar.php'; ?>
             </div>
-
 
 
             <div class="container-content">
@@ -117,9 +119,79 @@ include 'functions/fetch_books.php';
 
                 <div class="container-content">
 
+
+
+                    <!-- rating behaviour -->
+
+
+                    <?php
+                    $pythonScript = 'ratings_cf_svd.py';
+
+                    // Get the book IDs for collaborative filtering (CF)
+                    $book_ids_json = shell_exec("py $pythonScript " . $patrons_id);
+
+                    // Decode the JSON output
+                    $book_ids = json_decode($book_ids_json, true);
+
+                    // Initialize an empty array for books
+                    $books_rating_cf = [];
+
+                    if ($book_ids && count($book_ids) > 0) {
+                        // Create a comma-separated string from the book IDs
+                        $book_ids_str = implode(',', array_map('intval', $book_ids)); // Ensure book_ids are integers
+
+                        // Adjust the SQL query to use the FIELD() function to follow the order of book IDs
+                        $sql = "
+                                SELECT 
+                                    b.book_id, 
+                                    b.title, 
+                                    a.author, 
+                                    c.category, 
+                                    b.image,
+                                    IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
+                                    br.status AS borrow_status, 
+                                    f.status AS favorite_status, 
+                                    pr.ratings AS patron_rating
+                                FROM 
+                                    books b
+                                LEFT JOIN 
+                                    author a ON b.author_id = a.author_id
+                                LEFT JOIN 
+                                    category c ON b.category_id = c.category_id
+                                LEFT JOIN 
+                                    ratings r ON b.book_id = r.book_id
+                                LEFT JOIN 
+                                    borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
+                                LEFT JOIN 
+                                    favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
+                                LEFT JOIN 
+                                    ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
+                                WHERE 
+                                    b.book_id IN ($book_ids_str)
+                                GROUP BY 
+                                    b.book_id
+                                ORDER BY 
+                                    FIELD(b.book_id, $book_ids_str)  -- This ensures the order matches the JSON output
+                            ";
+
+                        // Preparing the statement
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+
+                        // Execute the statement
+                        $stmt->execute();
+
+                        // Fetch all the results
+                        $books_rating_cf = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    }
+                    ?>
+
+
+
+
                     <div class="contents-big-padding">
                         <div class="row row-between">
-                            <div>Based on users' borrowing habits</div>
+                            <div>Based on your rating behaviour</div>
                             <div class="button button-view-more" data-category="Category 1">View More</div>
                         </div>
                         <div class="row-books-container">
@@ -129,185 +201,30 @@ include 'functions/fetch_books.php';
                                 </div>
                             </div>
                             <div class="row-books">
-                                <!-- Static data for 10 books -->
-                                <?php for ($j = 0; $j < 10; $j++): ?>
-                                    <div class="container-books">
-                                        <div class="books-id" style="display: none;"><?php echo $j + 1; ?></div>
+                                <?php if ($books_rating_cf && count($books_rating_cf) > 0): ?>
+                                    <?php foreach ($books_rating_cf as $book): ?>
+                                        <div class="container-books">
+                                            <div class="books-id" style="display: none;">
+                                                <?php echo htmlspecialchars($book['book_id']); ?>
+                                            </div>
 
-                                        <div class="books-image">
-                                            <img src="../book_images/book_sample.png" class="image" alt="Book Image">
+                                            <div class="books-image">
+                                                <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image" alt="Book Image">
+                                            </div>
+
+                                            <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category']); ?></div>
+                                            <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
+                                            <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
+                                            <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
+                                            <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['patron_rating']); ?></div>
+
+                                            <div class="books-name"><?php echo htmlspecialchars($book['title']); ?></div>
+                                            <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['author']); ?></div>
                                         </div>
-
-                                        <div class="books-category" style="display: none;">Category 1</div>
-                                        <div class="books-borrow-status" style="display: none;">Available</div>
-                                        <div class="books-favorite" style="display: none;">Not Favorite</div>
-                                        <div class="books-ratings" style="display: none;">4.5</div>
-                                        <div class="books-user-ratings" style="display: none;">5</div>
-
-                                        <div class="books-name">Book Title <?php echo $j + 1; ?></div>
-                                        <div class="books-author" style="display: none;">Author Name</div>
-                                    </div>
-
-                                    <!-- Hidden form for borrowing books -->
-                                    <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="book_id" id="bookIdInput">
-                                        <input type="hidden" name="patrons_id" id="patronIdInput">
-                                        <input type="hidden" name="borrow_status" value="Pending">
-                                        <input type="hidden" name="borrow_date" value="">
-                                        <input type="hidden" name="return_date" value="">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-
-                                    <!-- Hidden form for add favorite books -->
-                                    <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="add_book_id" id="addBookIdInput">
-                                        <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
-                                        <input type="hidden" name="status" id="statusInput" value="Added">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-
-                                    <!-- Hidden form for remove favorite books -->
-                                    <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="remove_book_id" id="removeBookIdInput">
-                                        <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
-                                        <input type="hidden" name="status" id="statusInput" value="Remove">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-                                <?php endfor; ?>
-                            </div>
-                            <div class="arrow-right">
-                                <div class="arrow-image">
-                                    <img src="../images/next-black.png" alt="" class="image">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="contents-big-padding">
-                        <div class="row row-between">
-                            <div>Based on users' rated books</div>
-                            <div class="button button-view-more" data-category="Category 1">View More</div>
-                        </div>
-                        <div class="row-books-container">
-                            <div class="arrow-left">
-                                <div class="arrow-image">
-                                    <img src="../images/prev-black.png" alt="" class="image">
-                                </div>
-                            </div>
-                            <div class="row-books">
-                                <!-- Static data for 10 books -->
-                                <?php for ($j = 0; $j < 10; $j++): ?>
-                                    <div class="container-books">
-                                        <div class="books-id" style="display: none;"><?php echo $j + 1; ?></div>
-
-                                        <div class="books-image">
-                                            <img src="../book_images/book_sample.png" class="image" alt="Book Image">
-                                        </div>
-
-                                        <div class="books-category" style="display: none;">Category 1</div>
-                                        <div class="books-borrow-status" style="display: none;">Available</div>
-                                        <div class="books-favorite" style="display: none;">Not Favorite</div>
-                                        <div class="books-ratings" style="display: none;">4.5</div>
-                                        <div class="books-user-ratings" style="display: none;">5</div>
-
-                                        <div class="books-name">Book Title <?php echo $j + 1; ?></div>
-                                        <div class="books-author" style="display: none;">Author Name</div>
-                                    </div>
-
-                                    <!-- Hidden form for borrowing books -->
-                                    <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="book_id" id="bookIdInput">
-                                        <input type="hidden" name="patrons_id" id="patronIdInput">
-                                        <input type="hidden" name="borrow_status" value="Pending">
-                                        <input type="hidden" name="borrow_date" value="">
-                                        <input type="hidden" name="return_date" value="">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-
-                                    <!-- Hidden form for add favorite books -->
-                                    <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="add_book_id" id="addBookIdInput">
-                                        <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
-                                        <input type="hidden" name="status" id="statusInput" value="Added">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-
-                                    <!-- Hidden form for remove favorite books -->
-                                    <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="remove_book_id" id="removeBookIdInput">
-                                        <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
-                                        <input type="hidden" name="status" id="statusInput" value="Remove">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-                                <?php endfor; ?>
-                            </div>
-                            <div class="arrow-right">
-                                <div class="arrow-image">
-                                    <img src="../images/next-black.png" alt="" class="image">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-
-                    <div class="contents-big-padding">
-                        <div class="row row-between">
-                            <div>Based on users' favorite books</div>
-                            <div class="button button-view-more" data-category="Category 1">View More</div>
-                        </div>
-                        <div class="row-books-container">
-                            <div class="arrow-left">
-                                <div class="arrow-image">
-                                    <img src="../images/prev-black.png" alt="" class="image">
-                                </div>
-                            </div>
-                            <div class="row-books">
-                                <!-- Static data for 10 books -->
-                                <?php for ($j = 0; $j < 10; $j++): ?>
-                                    <div class="container-books">
-                                        <div class="books-id" style="display: none;"><?php echo $j + 1; ?></div>
-
-                                        <div class="books-image">
-                                            <img src="../book_images/book_sample.png" class="image" alt="Book Image">
-                                        </div>
-
-                                        <div class="books-category" style="display: none;">Category 1</div>
-                                        <div class="books-borrow-status" style="display: none;">Available</div>
-                                        <div class="books-favorite" style="display: none;">Not Favorite</div>
-                                        <div class="books-ratings" style="display: none;">4.5</div>
-                                        <div class="books-user-ratings" style="display: none;">5</div>
-
-                                        <div class="books-name">Book Title <?php echo $j + 1; ?></div>
-                                        <div class="books-author" style="display: none;">Author Name</div>
-                                    </div>
-
-                                    <!-- Hidden form for borrowing books -->
-                                    <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="book_id" id="bookIdInput">
-                                        <input type="hidden" name="patrons_id" id="patronIdInput">
-                                        <input type="hidden" name="borrow_status" value="Pending">
-                                        <input type="hidden" name="borrow_date" value="">
-                                        <input type="hidden" name="return_date" value="">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-
-                                    <!-- Hidden form for add favorite books -->
-                                    <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="add_book_id" id="addBookIdInput">
-                                        <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
-                                        <input type="hidden" name="status" id="statusInput" value="Added">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-
-                                    <!-- Hidden form for remove favorite books -->
-                                    <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
-                                        <input type="hidden" name="remove_book_id" id="removeBookIdInput">
-                                        <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
-                                        <input type="hidden" name="status" id="statusInput" value="Remove">
-                                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                    </form>
-                                <?php endfor; ?>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>No recommendations found.</p>
+                                <?php endif; ?>
                             </div>
                             <div class="arrow-right">
                                 <div class="arrow-image">
@@ -319,6 +236,247 @@ include 'functions/fetch_books.php';
 
 
 
+
+
+
+                    <!-- latest rated book -->
+
+                    <?php
+
+                    $pythonScript = 'ratings_cbf_tfidf.py';
+
+                    // Get the book IDs for content-based filtering (CBF)
+                    $book_cbf_id_json = shell_exec("py $pythonScript " . $patrons_id);
+
+                    // Decode the JSON output
+                    $book_cbf_id = json_decode($book_cbf_id_json, true);
+
+                    // Initialize an empty array for books
+                    $books_rating_cbf = [];
+
+                    if ($book_cbf_id && count($book_cbf_id) > 0) {
+                        // Create a comma-separated string from the book IDs
+                        $book_ids_str = implode(',', array_map('intval', $book_cbf_id)); // Ensure book_ids are integers
+
+                        // Adjust the SQL query to use the FIELD() function to follow the order of book IDs
+                        $sql = "
+                            SELECT 
+                                b.book_id, 
+                                b.title, 
+                                a.author, 
+                                c.category, 
+                                b.image,
+                                IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
+                                br.status AS borrow_status, 
+                                f.status AS favorite_status, 
+                                pr.ratings AS patron_rating
+                            FROM 
+                                books b
+                            LEFT JOIN 
+                                author a ON b.author_id = a.author_id
+                            LEFT JOIN 
+                                category c ON b.category_id = c.category_id
+                            LEFT JOIN 
+                                ratings r ON b.book_id = r.book_id
+                            LEFT JOIN 
+                                borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
+                            LEFT JOIN 
+                                favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
+                            LEFT JOIN 
+                                ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
+                            WHERE 
+                                b.book_id IN ($book_ids_str)
+                            GROUP BY 
+                                b.book_id
+                            ORDER BY 
+                                FIELD(b.book_id, $book_ids_str)  -- This ensures the order matches the JSON output
+                        ";
+
+                        // Preparing the statement
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+
+                        // Execute the statement
+                        $stmt->execute();
+
+                        // Fetch all the results
+                        $books_rating_cbf = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    }
+                    ?>
+
+
+
+
+
+                    <div class="contents-big-padding">
+                        <div class="row row-between">
+                            <div>Based on your latest rated book</div>
+                            <div class="button button-view-more" data-category="Category 1">View More</div>
+                        </div>
+                        <div class="row-books-container">
+                            <div class="arrow-left">
+                                <div class="arrow-image">
+                                    <img src="../images/prev-black.png" alt="" class="image">
+                                </div>
+                            </div>
+                            <div class="row-books">
+                                <?php if ($books_rating_cbf && count($books_rating_cbf) > 0): ?>
+                                    <?php foreach ($books_rating_cbf as $book_rating): ?>
+                                        <div class="container-books">
+                                            <div class="books-id" style="display: none;">
+                                                <?php echo htmlspecialchars($book_rating['book_id']); ?>
+                                            </div>
+
+                                            <div class="books-image">
+                                                <img src="../book_images/<?php echo htmlspecialchars($book_rating['image']); ?>" class="image" alt="Book Image">
+                                            </div>
+
+                                            <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book_rating['category']); ?></div>
+                                            <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book_rating['borrow_status']); ?></div>
+                                            <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book_rating['favorite_status']); ?></div>
+                                            <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book_rating['avg_rating']); ?></div>
+                                            <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book_rating['patron_rating']); ?></div>
+
+                                            <div class="books-name"><?php echo htmlspecialchars($book_rating['title']); ?></div>
+                                            <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book_rating['author']); ?></div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>No recommendations found.</p>
+                                <?php endif; ?>
+                            </div>
+                            <div class="arrow-right">
+                                <div class="arrow-image">
+                                    <img src="../images/next-black.png" alt="" class="image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+                    <?php
+                    $pythonScript = 'borrow_cf_svd.py';
+
+                    $book_ids_json = shell_exec("py $pythonScript " . $patrons_id);
+
+                    // Decode the JSON output
+                    $book_ids = json_decode($book_ids_json, true);
+
+                    // Initialize an empty array for books
+                    $books_borrow_cf = [];
+
+                    if ($book_ids && count($book_ids) > 0) {
+                        // Create a comma-separated string from the book IDs
+                        $book_ids_str = implode(',', array_map('intval', $book_ids)); // Ensure book_ids are integers
+
+                        // Adjust the SQL query to use the FIELD() function to follow the order of book IDs
+                        $sql = "
+                                SELECT 
+                                    b.book_id, 
+                                    b.title, 
+                                    a.author, 
+                                    c.category, 
+                                    b.image,
+                                    IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
+                                    br.status AS borrow_status, 
+                                    f.status AS favorite_status, 
+                                    pr.ratings AS patron_rating
+                                FROM 
+                                    books b
+                                LEFT JOIN 
+                                    author a ON b.author_id = a.author_id
+                                LEFT JOIN 
+                                    category c ON b.category_id = c.category_id
+                                LEFT JOIN 
+                                    ratings r ON b.book_id = r.book_id
+                                LEFT JOIN 
+                                    borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
+                                LEFT JOIN 
+                                    favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
+                                LEFT JOIN 
+                                    ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
+                                WHERE 
+                                    b.book_id IN ($book_ids_str)
+                                GROUP BY 
+                                    b.book_id
+                                ORDER BY 
+                                    FIELD(b.book_id, $book_ids_str)  -- This ensures the order matches the JSON output
+                            ";
+
+                        // Preparing the statement
+                        $stmt = $pdo->prepare($sql);
+                        $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+
+                        // Execute the statement
+                        $stmt->execute();
+
+                        // Fetch all the results
+                        $books_borrow_cf = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                    }
+                    ?>
+
+
+
+                    <div class="contents-big-padding">
+                        <div class="row row-between">
+                            <div>Based on user's borrowing habbits</div>
+                            <div class="button button-view-more" data-category="Category 1">View More</div>
+                        </div>
+                        <div class="row-books-container">
+                            <div class="arrow-left">
+                                <div class="arrow-image">
+                                    <img src="../images/prev-black.png" alt="" class="image">
+                                </div>
+                            </div>
+                            <div class="row-books">
+                                <?php if ($books_borrow_cf && count($books_borrow_cf) > 0): ?>
+                                    <?php foreach ($books_borrow_cf as $borrow_book): ?>
+                                        <div class="container-books">
+                                            <div class="books-id" style="display: none;">
+                                                <?php echo htmlspecialchars($borrow_book['book_id']); ?>
+                                            </div>
+
+                                            <div class="books-image">
+                                                <img src="../book_images/<?php echo htmlspecialchars($borrow_book['image']); ?>" class="image" alt="Book Image">
+                                            </div>
+
+                                            <div class="books-category" style="display: none;"><?php echo htmlspecialchars($borrow_book['category']); ?></div>
+                                            <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($borrow_book['borrow_status']); ?></div>
+                                            <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($borrow_book['favorite_status']); ?></div>
+                                            <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($borrow_book['avg_rating']); ?></div>
+                                            <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($borrow_book['patron_rating']); ?></div>
+
+                                            <div class="books-name"><?php echo htmlspecialchars($borrow_book['title']); ?></div>
+                                            <div class="books-author" style="display: none;"><?php echo htmlspecialchars($borrow_book['author']); ?></div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>No recommendations found.</p>
+                                <?php endif; ?>
+                            </div>
+                            <div class="arrow-right">
+                                <div class="arrow-image">
+                                    <img src="../images/next-black.png" alt="" class="image">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+
+
+
+                    <!-- categories -->
                     <?php foreach ($books as $category => $bookDetails): ?>
                         <div class="contents-big-padding">
                             <div class="row row-between">
@@ -389,6 +547,7 @@ include 'functions/fetch_books.php';
                             </div>
                         </div>
                     <?php endforeach; ?>
+
 
                 </div>
 

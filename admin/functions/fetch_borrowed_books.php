@@ -1,27 +1,28 @@
 <?php
 function getBorrowedBooks($pdo) {
     // Prepare the SQL query
-    $query = "SELECT 
-                  b.borrow_id,         -- Include borrow_id
-                  b.borrow_date, 
-                  u.patrons_id,        -- Include patrons_id
-                  u.firstname, 
-                  u.middlename,        -- Include middlename
-                  u.lastname, 
-                  u.suffix,            -- Include suffix
-                  bk.book_id,          -- Include book_id
-                  bk.title, 
-                  bk.acc_number,         
-                  bk.class_number,       
-                  b.return_date 
-              FROM 
-                  borrow b 
-              JOIN 
-                  patrons u ON b.patrons_id = u.patrons_id 
-              JOIN 
-                  books bk ON b.book_id = bk.book_id
-              ORDER BY 
-                  STR_TO_DATE(b.borrow_date, '%M %d, %Y') DESC";
+   $query = "SELECT 
+              b.borrow_id,         
+              b.borrow_date,
+              b.status, 
+              u.patrons_id,        
+              u.firstname, 
+              u.middlename,        
+              u.lastname, 
+              u.suffix,           
+              bk.book_id,         
+              bk.title, 
+              bk.acc_number,         
+              bk.class_number
+          FROM 
+              borrow b 
+          JOIN 
+              patrons u ON b.patrons_id = u.patrons_id 
+          JOIN 
+              books bk ON b.book_id = bk.book_id
+          ORDER BY 
+              b.borrow_date DESC"; 
+
     
     // Prepare and execute the statement
     $stmt = $pdo->prepare($query);
@@ -42,7 +43,7 @@ function getBorrowedBooks($pdo) {
             'title' => $row['title'],
             'acc_number' => $row['acc_number'],     
             'class_number' => $row['class_number'], 
-            'status' => empty($row['return_date']) ? 'Borrowed' : 'Returned'
+            'status' => $row['status']
         ];
     }
     return $borrowedBooks;

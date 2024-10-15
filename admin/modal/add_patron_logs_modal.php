@@ -16,7 +16,7 @@
 
                     <div class="container-input-49">
                         <label for="addDate">Date:</label>
-                        <input type="text" id="addDate" name="log_date" class="input-text" autocomplete="off" readonly>
+                        <input type="date" id="addDate" name="log_date" class="input-text" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">

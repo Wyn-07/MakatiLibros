@@ -8,7 +8,12 @@
             <span class="modal-close" onclick="closeEditModal()">&times;</span>
         </div>
 
-        <form action="functions/update_guarantors.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateForm()">
+        <div class="container-error" id="container-error-editguarantor" style="display: none">
+            <div class="container-error-description" id="message-editguarantor"></div>
+            <button type="button" class="button-error-close" onclick="closeErrorEditGuarantorStatus()">&times;</button>
+        </div>
+
+        <form action="functions/update_guarantors.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateEditForm('editContact')">
             <input type="hidden" id="editGuarantorId" name="guarantor_id">
 
             <div class="container-form">
@@ -22,12 +27,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="editFirstname" name="firstname" class="input-text" autocomplete="off" required>
+                        <input type="text" id="editFirstname" name="firstname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
                         <label for="editMiddlename">Middle Name</label>
-                        <input type="text" id="editMiddlename" name="middlename" class="input-text" autocomplete="off">
+                        <input type="text" id="editMiddlename" name="middlename" class="input-text" oninput="capitalize(this)" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -37,12 +42,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="editLastname" name="lastname" class="input-text" autocomplete="off" required>
+                        <input type="text" id="editLastname" name="lastname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
                         <label for="editSuffix">Suffix</label>
-                        <input type="text" id="editSuffix" name="suffix" class="input-text" autocomplete="off">
+                        <input type="text" id="editSuffix" name="suffix" class="input-text" oninput="capitalize(this)" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -52,7 +57,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="editContact" name="contact" class="input-text" autocomplete="off" required>
+                        <input type="text" id="editContact" name="contact" class="input-text" oninput="handleInput(this)" placeholder="+63xxxxxxxxxx" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -62,7 +67,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="editAddress" name="address" class="input-text" autocomplete="off" required>
+                        <input type="text" id="editAddress" name="address" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -127,3 +132,8 @@
         document.getElementById('editModal').classList.remove('show');
     }
 </script>
+
+
+
+<script src="js/input-validation-editguarantors.js"></script>
+<script src="js/close-status.js"></script>

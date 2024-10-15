@@ -67,7 +67,7 @@ window.onload = function() {
 
 function calculateMaxBirthDate() {
     var today = new Date();
-    var maxDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+    var maxDate = new Date(today.getFullYear() - 4, today.getMonth(), today.getDate());
 
     // Format maxDate as yyyy-mm-dd
     var maxDateString = maxDate.toISOString().split('T')[0];
@@ -112,3 +112,45 @@ function handleInput(input) {
         input.value = "+" + input.value.replace(/\D/g, '');
     }
 }
+
+
+
+function validateForm() {
+    var resultErrorContainer = document.getElementById("container-error");
+    var message = document.getElementById("message");
+    message.innerHTML = "";
+
+    var isValid = true;
+
+    // Array of required field IDs
+    var requiredFields = ["fname", "lname", "contact", "address", "birthdate", "age", "gender", "contact", "company_name", "company_contact", "company_address"];
+    var contactInput = document.getElementById("contact");
+
+    // Validate required fields (no message, just border)
+    requiredFields.forEach(function(fieldId) {
+        var input = document.getElementById(fieldId);
+        if (!input.value.trim()) { // Check if the field is empty
+            isValid = false;
+            input.style.border = "2px solid red"; // Set the border to red
+        } else {
+            input.style.border = ""; // Reset the border if valid
+        }
+    });
+
+    // Validate contact input (with error message)
+    if (contactInput.value.length < 13) {
+        isValid = false; // Set valid to false if input is invalid
+        contactInput.style.border = "2px solid red"; // Set the border to red
+        message.innerHTML = "Contact number must be 13 characters long."; // Set the error message
+        resultErrorContainer.style.display = "flex"; // Show the error container
+        message.style.display = "block"; // Display the message
+    } else {
+        contactInput.style.border = ""; 
+        resultErrorContainer.style.display = "none"; // Hide error container if all inputs are valid
+        message.style.display = "none"; // Hide message
+    }
+
+
+    return isValid; // Return true if all inputs are valid
+}
+

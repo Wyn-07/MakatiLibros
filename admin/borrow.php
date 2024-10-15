@@ -71,7 +71,7 @@ $patronsName = getPatronsNames($pdo);
                     </div>
 
 
-                    <div class="container-error" id="container-error" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
+                    <div class="container-error" id="container-error-borrow" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
                                                                                         unset($_SESSION['error_display']); ?>;">
                         <div class="container-error-description">
                             <?php if (isset($_SESSION['error_message'])) {
@@ -79,7 +79,7 @@ $patronsName = getPatronsNames($pdo);
                                 unset($_SESSION['error_message']);
                             } ?>
                         </div>
-                        <button type="button" class="button-error-close" onclick="closeErrorStatus()">&times;</button>
+                        <button type="button" class="button-error-close" onclick="closeErrorBorrowStatus()">&times;</button>
                     </div>
 
 
@@ -123,7 +123,7 @@ $patronsName = getPatronsNames($pdo);
                                     </th>
                                     <th onclick="sortTable(1)">
                                         <div class="row row-between">
-                                            <div class="column-title">Date</div>
+                                            <div class="column-title">Borrow Date</div>
                                             <img id="sort-icon-1" src="../images/sort.png" class="sort">
                                         </div>
                                     </th>

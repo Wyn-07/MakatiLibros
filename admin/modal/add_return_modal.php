@@ -33,7 +33,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" name="acc_num" class="input-text" id="acc_num" autocomplete="off" required>
+                        <input type="text" name="acc_num" class="input-text" id="acc_num" autocomplete="off" readonly required>
                     </div>
 
                     <div class="container-input-100">
@@ -43,7 +43,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" name="class_num" class="input-text" id="class_num" autocomplete="off" required disabled>
+                        <input type="text" name="class_num" class="input-text" id="class_num" autocomplete="off" readonly required>
                     </div>
 
                     <div class="container-input-100">
@@ -53,7 +53,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" name="title" class="input-text" id="titleInput" autocomplete="off" required>
+                        <input type="text" name="title" class="input-text" id="titleInput" autocomplete="off" readonly required>
                     </div>
 
 
@@ -64,7 +64,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" name="patron" class="input-text" id="patronInput" autocomplete="off" required>
+                        <input type="text" name="patron" class="input-text" id="patronInput" autocomplete="off" readonly required>
                         <input type="hidden" name="patron_id" class="input-text" id="patronIdInput" autocomplete="off" required>
                     </div>
 

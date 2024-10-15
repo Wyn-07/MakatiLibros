@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');
 
 include '../../connection.php';
 
@@ -15,15 +16,61 @@ if (isset($_POST['submit'])) {
     $gender = filter_var($_POST['gender'], FILTER_SANITIZE_STRING);
     $contact = filter_var($_POST['contact'], FILTER_SANITIZE_STRING);
     $address = filter_var($_POST['address'], FILTER_SANITIZE_STRING);
-    $interest = filter_var($_POST['interest'], FILTER_SANITIZE_STRING);
+    $company_name = filter_var($_POST['company_name'], FILTER_SANITIZE_STRING);
+    $company_contact = filter_var($_POST['company_contact'], FILTER_SANITIZE_STRING);
+    $company_address = filter_var($_POST['company_address'], FILTER_SANITIZE_STRING);
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING); // Assuming the password is not hashed here
+    $password = filter_var($_POST['password'], FILTER_SANITIZE_STRING);
+
+    // Initialize image variable
+    $imageName = null;
+
+    // Process the image
+    if (isset($_FILES['edit_image']) && $_FILES['edit_image']['error'] === UPLOAD_ERR_OK) {
+        $image = $_FILES['edit_image'];
+        $imageTmpName = $image['tmp_name'];
+
+        // Extract current date and time
+        $currentDateTime = date('Ymd_His');
+
+        // Define the image name format: "patronid_lastname_date_time"
+        $imageName = $patronId . '_' . $lastname . '_' . $currentDateTime . '.jpg';
+
+        // Set the target directory and file path
+        $targetDir = '../../patron_images/';
+        $targetFilePath = $targetDir . $imageName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($imageTmpName, $targetFilePath)) {
+            $_SESSION['error_message'] = 'Failed to upload image.';
+            header('Location: ../patrons.php');
+            exit();
+        }
+    }
 
     // Check if required fields are empty
     if (!empty($patronId) && !empty($firstname) && !empty($lastname) && !empty($email)) {
         try {
             // Prepare the SQL statement for updating the patron's information
-            $stmt = $pdo->prepare("UPDATE patrons SET firstname = :firstname, middlename = :middlename, lastname = :lastname, suffix = :suffix, birthdate = :birthdate, age = :age, gender = :gender, contact = :contact, address = :address, interest = :interest, email = :email, password = :password WHERE patrons_id = :patrons_id");
+            $sql = "UPDATE patrons SET 
+                        firstname = :firstname, 
+                        middlename = :middlename, 
+                        lastname = :lastname, 
+                        suffix = :suffix, 
+                        birthdate = :birthdate, 
+                        age = :age, 
+                        gender = :gender, 
+                        contact = :contact, 
+                        address = :address, 
+                        company_name = :company_name, 
+                        company_contact = :company_contact, 
+                        company_address = :company_address, 
+                        email = :email, 
+                        password = :password" .
+                (!empty($imageName) ? ", image = :image" : "") .
+                " WHERE patrons_id = :patrons_id";
+
+            $stmt = $pdo->prepare($sql);
 
             // Bind parameters
             $stmt->bindParam(':firstname', $firstname);
@@ -35,10 +82,17 @@ if (isset($_POST['submit'])) {
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':contact', $contact);
             $stmt->bindParam(':address', $address);
-            $stmt->bindParam(':interest', $interest);
+            $stmt->bindParam(':company_name', $company_name);
+            $stmt->bindParam(':company_contact', $company_contact);
+            $stmt->bindParam(':company_address', $company_address);
             $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $password); // It's advisable to hash passwords
+            $stmt->bindParam(':password', $password);
             $stmt->bindParam(':patrons_id', $patronId, PDO::PARAM_INT);
+
+            // Bind the image parameter only if a new image was uploaded
+            if (!empty($imageName)) {
+                $stmt->bindParam(':image', $imageName);
+            }
 
             // Execute the statement
             if ($stmt->execute()) {
@@ -46,7 +100,7 @@ if (isset($_POST['submit'])) {
                 $_SESSION['success_display'] = 'flex';
             } else {
                 $_SESSION['error_message'] = 'Failed to update patron information.';
-                $_SESSION['success_display'] = 'flex';
+                $_SESSION['error_display'] = 'flex';
             }
         } catch (PDOException $e) {
             $_SESSION['error_message'] = 'Failed to update patron information. Error: ' . $e->getMessage();
@@ -61,4 +115,3 @@ if (isset($_POST['submit'])) {
         exit();
     }
 }
-?>

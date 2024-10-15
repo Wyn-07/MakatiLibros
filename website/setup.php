@@ -13,6 +13,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
+<?php session_start() ?>
+
 <?php include '../connection.php'; ?>
 
 <?php include 'functions/fetch_category.php'; ?>
@@ -43,13 +45,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $gender = $_POST['gender'];
         $contact = $_POST['contact'];
         $address = $_POST['address'];
+        $company_name = $_POST['company_name'];
+        $company_contact = $_POST['company_contact'];
+        $company_address = $_POST['company_address'];
 
         // Handle categories (interests)
         $interests = isset($_POST['categories']) ? implode(",", $_POST['categories']) : '';
 
         // Prepare and execute the SQL statement
-        $sql = "INSERT INTO patrons (firstname, middlename, lastname, suffix, birthdate, age, gender, contact, address, interest, email, password)
-                VALUES (:firstname, :middlename, :lastname, :suffix, :birthdate, :age, :gender, :contact, :address, :interest, :email, :password)";
+        $sql = "INSERT INTO patrons (firstname, middlename, lastname, suffix, birthdate, age, gender, contact, address, company_name, company_contact, company_address, interest, email, password)
+                VALUES (:firstname, :middlename, :lastname, :suffix, :birthdate, :age, :gender, :contact, :address, :company_name, :company_contact, :company_address, :interest, :email, :password)";
 
         $stmt = $pdo->prepare($sql);
 
@@ -63,14 +68,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':gender', $gender);
         $stmt->bindParam(':contact', $contact);
         $stmt->bindParam(':address', $address);
+        $stmt->bindParam(':company_name', $company_name);
+        $stmt->bindParam(':company_contact', $company_contact);
+        $stmt->bindParam(':company_address', $company_address);
         $stmt->bindParam(':interest', $interests);
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password', $password);
 
         try {
             $stmt->execute();
-            header("Location: login.php?message=" . urlencode("Registered successfully."));
-            exit(); 
+            $_SESSION['signupStatus'] = "Registered successfully.";
+            header("Location: login.php");
+            exit();
         } catch (PDOException $e) {
             echo "Error: " . $e->getMessage();
         }
@@ -133,9 +142,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="container-login-right">
 
 
-                        <form action="" method="POST" id="form">
+
+                        <form action="" method="POST" enctype="multipart/form-data" id="form">
 
                             <div class="container-form" id="setup">
+
+                                <div class="container-error" id="container-error" style="display: none">
+                                    <div class="container-error-description" id="message"></div>
+                                    <button type="button" class="button-error-close" onclick="closeErrorStatus()">&times;</button>
+                                </div>
 
                                 <div class="login-title">
                                     Set up your profile
@@ -159,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                                     <div class="container-input-49">
                                         <label for="mname">Middle Name:</label>
-                                        <input type="text" id="mname" name="mname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                                        <input type="text" id="mname" name="mname" class="input-text" oninput="capitalize(this)" autocomplete="off">
                                     </div>
 
                                     <div class="container-input-49">
@@ -174,7 +189,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                                     <div class="container-input-49">
                                         <label for="suffix">Suffix:</label>
-                                        <input type="text" id="suffix" name="suffix" class="input-text" autocomplete="off" oninput="capitalize(this)" required>
+                                        <input type="text" id="suffix" name="suffix" class="input-text" autocomplete="off" oninput="capitalize(this)">
                                     </div>
 
                                     <div class="container-input-49">
@@ -232,11 +247,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                         <input type="text" id="address" name="address" class="input-text" autocomplete="off" oninput="capitalize(this)" onkeydown="disableSpace(event)" required>
                                     </div>
 
+
+                                    <div class="container-input-49">
+                                        <div class="row row-between">
+                                            <label for="company_name">Company Name:</label>
+                                            <div class="container-asterisk">
+                                                <img src="../images/asterisk-red.png" class="image">
+                                            </div>
+                                        </div>
+                                        <input type="text" id="company_name" name="company_name" class="input-text" autocomplete="off" required>
+                                    </div>
+
+                                    <div class="container-input-49">
+                                        <div class="row row-between">
+                                            <label for="company_contact">Company Contact:</label>
+                                            <div class="container-asterisk">
+                                                <img src="../images/asterisk-red.png" class="image">
+                                            </div>
+                                        </div>
+                                        <input type="text" id="company_contact" name="company_contact" class="input-text" autocomplete="off" required>
+                                    </div>
+
+                                    <div class="container-input-100">
+                                        <div class="row row-between">
+                                            <label for="company_address">Company Address:</label>
+                                            <div class="container-asterisk">
+                                                <img src="../images/asterisk-red.png" class="image">
+                                            </div>
+                                        </div>
+                                        <input type="text" id="company_address" name="company_address" class="input-text" autocomplete="off" oninput="capitalize(this)" onkeydown="disableSpace(event)" required>
+                                    </div>
+
                                 </div>
 
 
                                 <div class="row row-right">
-                                    <div class="button button-black" onclick="toggleInterest()">Next</div>
+                                    <div class="button button-black" onclick="if (validateForm()) toggleInterest();">Next</div>
                                 </div>
 
                                 <div class="row-center">
@@ -327,6 +373,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 <script src="js/input-validation.js"></script>
+<script src="js/close-status.js"></script>
+
 
 <script>
     var setup = document.getElementById("setup");

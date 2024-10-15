@@ -153,16 +153,19 @@ $guarantorsName = getGuarantorsNames($pdo);
                                             <td><?php echo htmlspecialchars($patron['valid_until']); ?></td>
                                             <td>
                                                 <div class="td-center">
-                                                <div class="td-center">
-    <div class="button-view" onclick="openViewModal(
-        <?php echo addslashes($patron['patrons_id']); ?>, 
-        '<?php echo addslashes($patron['patron_firstname'] . ' ' . $patron['patron_middlename'] . ' ' . $patron['patron_lastname']); ?>', 
-        '<?php echo addslashes($patron['patron_address']); ?>', 
-        '<?php echo addslashes($patron['patron_company_name']); ?>'
-    )">
-        <img src="../images/view-white.png" class="image">
-    </div>
-</div>
+
+                                                    <div class="td-center">
+                                                        <div class="button-view" onclick="openViewModal(
+                                                                <?php echo addslashes($patron['patrons_id']); ?>, 
+                                                                '<?php echo addslashes($patron['patron_firstname'] . ' ' . $patron['patron_middlename'] . ' ' . $patron['patron_lastname']); ?>', 
+                                                                '<?php echo addslashes($patron['patron_address']); ?>', 
+                                                                '<?php echo addslashes($patron['patron_company_name']); ?>',
+                                                                '<?php echo addslashes($patron['valid_until']); ?>',
+                                                                '<?php echo addslashes($patron['patron_image']); ?>'
+                                                            )">
+                                                            <img src="../images/view-white.png" class="image">
+                                                        </div>
+                                                    </div>
 
                                                 </div>
                                             </td>
@@ -206,7 +209,6 @@ $guarantorsName = getGuarantorsNames($pdo);
 <script src="js/table.js"></script>
 
 <script src="js/close-status.js"></script>
-
 
 <script>
     const patronsName = <?php echo json_encode($patronsName); ?>;

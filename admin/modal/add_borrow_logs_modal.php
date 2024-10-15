@@ -14,19 +14,42 @@
 
                 <div class="container-input">
 
-                    <div class="container-input-49">
-                        <label for="addDate">Date:</label>
-                        <input type="text" id="addDate" name="date" class="input-text" autocomplete="off" readonly>
+                    <div class="row">
+                        <div class="container-input-49">
+                            <label for="addDate">Date:</label>
+                            <input type="date" id="addDate" name="date" class="input-text" autocomplete="off">
+                        </div>
                     </div>
+
 
                     <div class="container-input-49">
                         <div class="row row-between">
-                            <label for="addName">Name:</label>
+                            <label for="addFirstname">First Name:</label>
                             <div class="container-asterisk">
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addName" name="name" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addFirstname" name="addFirstname" class="input-text" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <label for="addMiddlename">Middle Name</label>
+                        <input type="text" id="addMiddlename" name="addMiddlename" class="input-text" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addLastname">Last Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addLastname" name="addLastname" class="input-text" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <label for="addSuffix">Suffix</label>
+                        <input type="text" id="addSuffix" name="addSuffix" class="input-text" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -36,7 +59,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="number" id="addAge" name="age" class="input-text" autocomplete="off" required>
+                        <input type="number" id="addAge" name="addAge" class="input-text" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -46,7 +69,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <select class="input-text" id="addGender" name="gender" required>
+                        <select class="input-text" id="addGender" name="addGender" required>
                             <option value="" disabled selected> </option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
@@ -62,7 +85,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addBarangay" name="barangay" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addBarangay" name="addBarangay" class="input-text" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -72,7 +95,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addCity" name="city" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addCity" name="addCity" class="input-text" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -82,7 +105,8 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input id="addCategory" name="category" class="input-text" autocomplete="off">
+                        <input type="text" id="addBorrowLogCategory" name="addCategory" class="input-text" autocomplete="off">
+                        <input type="hidden" id="addBorrowLogCategoryId" name="addCategoryId" class="input-text" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -92,7 +116,8 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addBookTitle" name="title" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addBookTitle" name="addTitle" class="input-text" autocomplete="off" required>
+                        <input type="hidden" id="addBookTitleId" name="addTitleId" class="input-text" autocomplete="off" required>
                     </div>
 
                 </div>

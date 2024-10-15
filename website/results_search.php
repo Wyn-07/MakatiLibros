@@ -15,9 +15,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
+<?php session_start();?>
+
 <?php include '../connection.php'; ?>
 <?php include 'functions/fetch_category.php'; ?>
-
 
 <body>
     <div class="wrapper">
@@ -47,8 +48,14 @@
                 $query = '%' . $_GET['query'] . '%'; // Add wildcard for LIKE
 
                 // Prepare the SQL statement with placeholders
-                $sql = "SELECT book_id, title, author_id, image, category_id, copyright FROM books WHERE title LIKE :query OR author_id LIKE :query";
-
+                $sql = "SELECT b.book_id, b.title, b.author_id, b.image, b.category_id, b.copyright
+                FROM books b
+                LEFT JOIN condemned cd ON b.book_id = cd.book_id 
+                LEFT JOIN missing ms ON b.book_id = ms.book_id   
+                WHERE (b.title LIKE :query OR b.author_id LIKE :query)
+                AND cd.book_id IS NULL 
+                AND ms.book_id IS NULL"; 
+        
                 // Prepare the statement
                 $stmt = $pdo->prepare($sql);
 
@@ -138,6 +145,8 @@
                                         <div class="books-author" style="display:none"><?php echo htmlspecialchars($row['authors']); ?></div>
                                         <div class="books-categories" style="display:none"><?php echo htmlspecialchars($row['categories']); ?></div>
                                         <div class="books-copyright" style="display:none"><?php echo htmlspecialchars($row['copyright']); ?></div>
+                                    
+                                    
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -168,7 +177,6 @@
                                     <div class="books-contents-author">Book Author</div>
                                     <div class="books-contents-ratings" style="display:none"></div>
 
-
                                     <div class="row">
                                         <div class="star-rating">
                                             <span class="star" data-value="1">&#9733;</span>
@@ -196,9 +204,8 @@
                             </div>
 
                             <script src="js/book-details-toggle-2.js"></script>
+
                         </div>
-
-
 
 
                         <div class="row row-center">
@@ -222,28 +229,11 @@
 
                     </div>
 
-
-
-
-
                 </div>
-
-
-
 
             </div>
 
-
-
-
-
-
-
-
         </div>
-
-
-
 
 
         <div class="container-footer">

@@ -25,7 +25,7 @@
                     <div class="container-round logo">
                         <img src="../images/makati-logo.png" class="image">
                     </div>
-                    Makati City Hall Libraryy
+                    Makati City Hall Library
                 </div>
 
 
@@ -61,15 +61,15 @@
         <div class="row-body">
 
 
-            <div class="container-content" >
+            <div class="container-content">
 
                 <?php include 'functions/fetch_books.php'; ?>
 
                 <?php foreach ($books as $category => $bookDetails): ?>
                     <div class="contents-big-padding">
                         <div class="row row-between">
-                        <div><?php echo htmlspecialchars($bookDetails[0]['category_name']); ?></div>
-                            <div class="button button-view-more" onclick="goToLogin()">View More</div>
+                            <div><?php echo htmlspecialchars($bookDetails[0]['category_name']); ?></div>
+                            <div class="button button-view-more" onclick="goToLogin()" data-category="<?php echo htmlspecialchars($bookDetails[0]['category_name']); ?>">View More</div>
                         </div>
                         <div class="row-books-container">
                             <div class="arrow-left">
@@ -79,13 +79,22 @@
                             </div>
                             <div class="row-books">
                                 <?php foreach ($bookDetails as $book): ?>
-                                    <div class="container-books" id="book-<?php echo htmlspecialchars($book['book_id']); ?>">
+                                    <div class="container-books">
+                                        <div class="books-id" style="display: none;"><?php echo htmlspecialchars($book['book_id']); ?></div>
+
                                         <div class="books-image">
                                             <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
                                         </div>
+
+                                        <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
+
                                         <div class="books-name"><?php echo htmlspecialchars($book['title']); ?></div>
-                                        <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['authors']); ?></div>
+                                        <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['author']); ?></div>
+
                                     </div>
+
+
+
                                 <?php endforeach; ?>
                             </div>
                             <div class="arrow-right">
@@ -103,43 +112,61 @@
 
             <div class="row-books-contents" id="book-details" style="display: none;">
                 <div class="container-books-contents">
+
+                    <div class="books-contents-id" style="display: none;">ID</div>
+
                     <div class="books-contents-image">Image</div>
                     <div class="books-contents">
 
                         <div class="row row-between">
+
                             <div class="books-contents-name">Book Sample</div>
                             <div class="button button-close">&times;</div>
+
                         </div>
 
                         <div class="books-contents-author">Book Author</div>
 
-
-                        <div class="rate" onclick="goToLogin()">
-                            <input type="radio" id="star1" name="rate" value="1" />
-                            <label for="star1" title="text">1 star</label>
-                            <input type="radio" id="star2" name="rate" value="2" />
-                            <label for="star2" title="text">2 stars</label>
-                            <input type="radio" id="star3" name="rate" value="3" />
-                            <label for="star3" title="text">3 stars</label>
-                            <input type="radio" id="star4" name="rate" value="4" />
-                            <label for="star4" title="text">4 stars</label>
-                            <input type="radio" id="star5" name="rate" value="5" />
-                            <label for="star5" title="text">5 stars</label>
-                        </div>
-
+                        <div class="books-contents-ratings" style="display: none;"></div>
 
                         <div class="row">
-                            <div class="button button-borrow"  onclick="goToLogin()">BORROW</div>
-                            <div class="button button-bookmark"  onclick="goToLogin()"><img src="../images/bookmark-white.png" alt=""></div>
+                            <div class="star-rating">
+                                <span class="star" data-value="1">&#9733;</span>
+                                <span class="star" data-value="2">&#9733;</span>
+                                <span class="star" data-value="3">&#9733;</span>
+                                <span class="star" data-value="4">&#9733;</span>
+                                <span class="star" data-value="5">&#9733;</span>
+                            </div>
+
+                            <div class="ratings-description">
+                                <div class="ratings-number"> </div>&nbspout of 5
+                            </div>
                         </div>
 
-                        
+                        <div class="row">
+                            <div class="tooltipss">
+                                <button class="button button-borrow" onclick="goToLogin()">BORROW</button>
+                            </div>
+
+                            <div class="tooltipss" id="tooltip-add">
+                                <button class="button button-bookmark" onclick="goToLogin()"><img src="../images/bookmark-white.png" alt=""></button>
+                                <span class='tooltiptexts'>Add to favorites</span>
+                            </div>
+
+
+                            <div class="tooltipss" id="tooltip-add-ratings">
+                                <div class="button button-ratings" onclick="goToLogin()"><img src="../images/star-white.png" alt=""></div>
+                                <span class='tooltiptexts'>Add ratings</span>
+                            </div>
+
+                        </div>
+
+
                     </div>
                 </div>
 
-                <script src="js/book-details-toggle.js"></script>
+                <script src="js/book-details-toggle-homepage.js"></script>
             </div>
-
 
         </div>
 
@@ -159,7 +186,6 @@
 
 
 <script src="js/banner.js"></script>
-<script src="js/book-details-toggle.js"></script>
 <script src="js/book-scroll.js"></script>
 
 <script>
@@ -170,8 +196,8 @@
 
 <script>
     document.querySelectorAll('.rate label').forEach(label => {
-    label.addEventListener('click', (e) => {
-        e.preventDefault();
+        label.addEventListener('click', (e) => {
+            e.preventDefault();
+        });
     });
-});
 </script>

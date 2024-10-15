@@ -1,5 +1,7 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');
+
 include '../../connection.php';
 
 if (isset($_POST['submit'])) {
@@ -13,16 +15,44 @@ if (isset($_POST['submit'])) {
     $gender = filter_var($_POST['gender'], FILTER_SANITIZE_STRING);
     $contact = filter_var($_POST['contact'], FILTER_SANITIZE_STRING);
     $address = filter_var($_POST['address'], FILTER_SANITIZE_STRING);
+    $company_name = filter_var($_POST['company_name'], FILTER_SANITIZE_STRING);
+    $company_contact = filter_var($_POST['company_contact'], FILTER_SANITIZE_STRING);
+    $company_address = filter_var($_POST['company_address'], FILTER_SANITIZE_STRING);
     $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $interest = filter_var($_POST['interest'], FILTER_SANITIZE_STRING);
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+    
+    // Initialize $imageName with default image
+    $imageName = 'default_image.png';
+
+    // Process the image upload
+    if (isset($_FILES['add_image']) && $_FILES['add_image']['error'] === UPLOAD_ERR_OK) {
+        $image = $_FILES['add_image'];
+        $imageTmpName = $image['tmp_name'];
+
+        // Extract current date and time
+        $currentDateTime = date('Ymd_His');
+
+        // Define the image name format: "librarianid_lastname_date_time"
+        $imageName = $lastname . '_' . $currentDateTime . '.jpg';
+
+        // Set the target directory and file path
+        $targetDir = '../../patron_images/';
+        $targetFilePath = $targetDir . $imageName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($imageTmpName, $targetFilePath)) {
+            $_SESSION['error_message'] = 'Failed to upload image.';
+            header('Location: ../patrons.php');
+            exit();
+        }
+    }
 
     // Check if required fields are empty
     if (!empty($firstname) && !empty($lastname) && !empty($email)) {
         try {
             // Prepare the SQL statement for inserting a new patron's information
-            $stmt = $pdo->prepare("INSERT INTO patrons (firstname, middlename, lastname, suffix, birthdate, age, gender, contact, address, email, interest, password)
-                                   VALUES (:firstname, :middlename, :lastname, :suffix, :birthdate, :age, :gender, :contact, :address, :email, :interest, :password)");
+            $stmt = $pdo->prepare("INSERT INTO patrons (firstname, middlename, lastname, suffix, birthdate, age, gender, contact, address, company_name, company_contact, company_address, email, interest, password, image)
+                                   VALUES (:firstname, :middlename, :lastname, :suffix, :birthdate, :age, :gender, :contact, :address, :company_name, :company_contact, :company_address, :email, :interest, :password, :image)");
 
             // Bind parameters
             $stmt->bindParam(':firstname', $firstname);
@@ -34,9 +64,13 @@ if (isset($_POST['submit'])) {
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':contact', $contact);
             $stmt->bindParam(':address', $address);
+            $stmt->bindParam(':company_name', $company_name);
+            $stmt->bindParam(':company_contact', $company_contact);
+            $stmt->bindParam(':company_address', $company_address);
             $stmt->bindParam(':email', $email);
             $stmt->bindParam(':interest', $interest);
             $stmt->bindParam(':password', $password);
+            $stmt->bindParam(':image', $imageName);
 
             // Execute the statement
             if ($stmt->execute()) {

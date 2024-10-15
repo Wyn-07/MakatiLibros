@@ -8,9 +8,14 @@
             <span class="modal-close" onclick="closeViewModal()">&times;</span>
         </div>
 
+        <div class="row row-right">
+            <button class="button-print" onclick="window.print()">PRINT
+                
+            </button>
+        </div>
 
 
-        <div class="container-library-id">
+        <div id="container-library-id" class="container-library-id">
 
             <div class="row row-between">
                 <div class="id-logo-image">
@@ -30,7 +35,6 @@
 
                 <div class="container-left-id">
                     <div class="row row-right font-size-16 id" style="font-weight: bold">I.D. No.: MCL-2024-XXXX</div>
-
 
                     <table class="table-id">
                         <tr class="tr-id">
@@ -55,16 +59,14 @@
 
                 <div class="container-right-id">
                     <div class="id-picture-image">
-                        <img src="../images/users/CUERDO.jpg" alt="" class="image">
+                        <img src="../images/users/CUERDO.jpg" alt="" class="image" id="patronImage">
                     </div>
-                    <div class="font-size-12" style="font-weight: bold"> Valid Until: August 20, 2025</div>
+                    <div class="row-center font-size-10" style="font-weight: bold" id="validUntil"> Valid Until: </div>
                 </div>
 
             </div>
 
             <div class="row row-between">
-
-
 
                 <div class="id-bottom-row">
                     <div class="font-size-16">
@@ -81,8 +83,6 @@
                     </div>
                 </div>
 
-
-
                 <div>
                     <div class="id-borrower-sign">
                         s
@@ -92,26 +92,46 @@
                     </div>
                 </div>
 
-
-
             </div>
 
         </div>
-
-        <div class="row row-right">
-            <button class="button-submit">PRINT</button>
-        </div>
-
 
 
     </div>
 </div>
 
+
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+
+        #container-library-id,
+        #container-library-id * {
+            visibility: visible;
+        }
+
+        .modal-content-id {
+            width: 650px;
+        }
+
+        #container-library-id {
+            width: 100%;
+        }
+
+        .modal-close,
+        .button-submit {
+            display: none;
+        }
+    }
+</style>
+
+
 <script>
-    function openViewModal(patronId, fullName, address, companyName) {
+    function openViewModal(patronId, fullName, address, companyName, validUntil, image) {
         // Show the modal
         document.getElementById('viewModal').classList.add('show');
-
 
         // Select the elements in the modal to populate
         const idTd = document.querySelector('.row.row-right.font-size-16.id'); // Corrected selector
@@ -144,9 +164,15 @@
         } else {
             companyTd.innerHTML = 'No company name provided';
         }
+
+
+        var validUntilElement = document.getElementById("validUntil");
+        validUntilElement.innerHTML = "Valid Until: " + validUntil;
+
+
+        var imageElement = document.getElementById("patronImage");
+        imageElement.src = '../patron_images/' + image;
     }
-
-
 
 
     function closeViewModal() {

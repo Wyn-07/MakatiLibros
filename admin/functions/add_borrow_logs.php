@@ -5,30 +5,36 @@ include '../../connection.php';
 if (isset($_POST['submit'])) {
     // Sanitize and validate the input data
     $log_date = filter_var($_POST['date'], FILTER_SANITIZE_STRING);
-    $name = filter_var($_POST['name'], FILTER_SANITIZE_STRING);
-    $age = filter_var($_POST['age'], FILTER_SANITIZE_NUMBER_INT);
-    $gender = filter_var($_POST['gender'], FILTER_SANITIZE_STRING);
-    $barangay = filter_var($_POST['barangay'], FILTER_SANITIZE_STRING);
-    $city = filter_var($_POST['city'], FILTER_SANITIZE_STRING);
-    $category = filter_var($_POST['category'], FILTER_SANITIZE_STRING);
-    $book_title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
+    $firstname = filter_var($_POST['addFirstname'], FILTER_SANITIZE_STRING);
+    $middlename = filter_var($_POST['addMiddlename'], FILTER_SANITIZE_STRING);
+    $lastname = filter_var($_POST['addLastname'], FILTER_SANITIZE_STRING);
+    $suffix = filter_var($_POST['addSuffix'], FILTER_SANITIZE_STRING);
+    $age = filter_var($_POST['addAge'], FILTER_SANITIZE_NUMBER_INT);
+    $gender = filter_var($_POST['addGender'], FILTER_SANITIZE_STRING);
+    $barangay = filter_var($_POST['addBarangay'], FILTER_SANITIZE_STRING);
+    $city = filter_var($_POST['addCity'], FILTER_SANITIZE_STRING);
+    $category_id = filter_var($_POST['addCategoryId'], FILTER_SANITIZE_STRING);
+    $book_id = filter_var($_POST['addTitleId'], FILTER_SANITIZE_STRING);
 
     // Check if required fields are empty
-    if (!empty($log_date) && !empty($name) && !empty($book_title)) {
+    if (!empty($log_date) && !empty($firstname) && !empty($book_id) && !empty($category_id)) {
         try {
             // Prepare the SQL statement for inserting a new borrow log
-            $stmt = $pdo->prepare("INSERT INTO borrow_logs (log_date, name, age, gender, barangay, city, category, book_title)
-                                   VALUES (:log_date, :name, :age, :gender, :barangay, :city, :category, :book_title)");
+            $stmt = $pdo->prepare("INSERT INTO borrow_logs (log_date, firstname, middlename, lastname, suffix, age, gender, barangay, city, category_id, book_id)
+                                   VALUES (:log_date, :firstname, :middlename, :lastname, :suffix, :age, :gender, :barangay, :city, :category_id, :book_id)");
 
             // Bind parameters
             $stmt->bindParam(':log_date', $log_date);
-            $stmt->bindParam(':name', $name);
+            $stmt->bindParam(':firstname', $firstname);
+            $stmt->bindParam(':middlename', $middlename);
+            $stmt->bindParam(':lastname', $lastname);
+            $stmt->bindParam(':suffix', $suffix);
             $stmt->bindParam(':age', $age, PDO::PARAM_INT);
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':barangay', $barangay);
             $stmt->bindParam(':city', $city);
-            $stmt->bindParam(':category', $category);
-            $stmt->bindParam(':book_title', $book_title);
+            $stmt->bindParam(':category_id', $category_id);
+            $stmt->bindParam(':book_id', $book_id);
 
             // Execute the statement
             if ($stmt->execute()) {
@@ -46,7 +52,7 @@ if (isset($_POST['submit'])) {
         header('Location: ../borrow_logs.php');
         exit();
     } else {
-        $_SESSION['error_message'] = 'Log date, first name, and book title cannot be empty.';
+        $_SESSION['error_message'] = 'Log date, first name, category ID, and book title ID cannot be empty.';
         header('Location: ../borrow_logs.php');
         exit();
     }

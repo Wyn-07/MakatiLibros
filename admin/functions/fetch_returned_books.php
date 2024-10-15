@@ -17,7 +17,7 @@ function getReturnedBooks($pdo) {
               WHERE 
                   b.return_date IS NOT NULL AND b.return_date != ''
               ORDER BY 
-                  STR_TO_DATE(b.return_date, '%M %d, %Y') DESC";
+                  STR_TO_DATE(b.return_date, '%M %d, %Y') ASC";
     
     // Prepare and execute the statement
     $stmt = $pdo->prepare($query);

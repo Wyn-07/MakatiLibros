@@ -14,6 +14,9 @@ $sql = "SELECT b.category_id, c.category AS category_name, b.title, b.image, b.b
         LEFT JOIN borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id -- Join to get the borrow status specific to the patron
         LEFT JOIN favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id -- Join to get the favorite status specific to the patron
         LEFT JOIN ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id -- Join to get the patron's rating
+        LEFT JOIN condemned cd ON b.book_id = cd.book_id -- Left join with condemned table
+        LEFT JOIN missing ms ON b.book_id = ms.book_id -- Left join with missing table
+        WHERE cd.book_id IS NULL AND ms.book_id IS NULL -- Exclude books in condemned or missing
         GROUP BY b.book_id, b.category_id, c.category, b.title, b.image, b.author_id, a.author, br.status, f.status, pr.ratings";
 
 $stmt = $pdo->prepare($sql);

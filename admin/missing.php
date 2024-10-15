@@ -168,18 +168,19 @@ $categoryList = getCategoryList($pdo);
                                             <td><?php echo $book['copyright']; ?></td>
                                             <td>
                                                 <center>
-                                                    <div class="button-edit" onclick="openEditModal(
-                                                            '<?php echo $book['missing_id']; ?>', 
-                                                            '<?php echo $book['acc_number']; ?>', 
-                                                            '<?php echo $book['class_number']; ?>', 
-                                                            '<?php echo $book['title']; ?>', 
-                                                            '<?php echo $book['author_name']; ?>', 
-                                                            '<?php echo $book['author_id']; ?>', 
-                                                            '<?php echo $book['category_name']; ?>', 
-                                                            '<?php echo $book['category_id']; ?>', 
-                                                            '<?php echo $book['copyright']; ?>'
-                                                        )">
-                                                        <img src="../images/edit-white.png" class="image">
+                                                    <div class="button-view" onclick="openViewModal(
+                                                                '<?php echo addslashes($book['missing_id']); ?>', 
+                                                                '<?php echo addslashes($book['acc_number']); ?>', 
+                                                                '<?php echo addslashes($book['class_number']); ?>', 
+                                                                '<?php echo addslashes($book['title']); ?>', 
+                                                                '<?php echo addslashes($book['author_name']); ?>', 
+                                                                '<?php echo addslashes($book['author_id']); ?>', 
+                                                                '<?php echo addslashes($book['category_name']); ?>', 
+                                                                '<?php echo addslashes($book['category_id']); ?>', 
+                                                                '<?php echo addslashes($book['copyright']); ?>',
+                                                                '<?php echo addslashes($book['image']); ?>'
+                                                            )">
+                                                        <img src="../images/view-white.png" class="image">
                                                     </div>
                                                 </center>
                                             </td>
@@ -207,37 +208,8 @@ $categoryList = getCategoryList($pdo);
 
         <?php include 'modal/add_missing_modal.php'; ?>
 
-        <?php include 'modal/edit_missing_modal.php'; ?>
+        <?php include 'modal/view_missing_modal.php'; ?>
 
-
-
-
-        <div id="deleteModal" class="modal">
-            <div class="modal-content">
-
-                <div class="row row-between">
-                    <div class="title-26px">
-                        Delete | Book
-                    </div>
-                    <span class="modal-close" onclick="closeDeleteModal()">&times;</span>
-                </div>
-
-                <form action="" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateForm()">
-                    <div class="container-form">
-
-                        <div style="text-align: center; margin-bottom: 10px;">
-                            Are you sure you want to delete?
-                        </div>
-
-
-                        <div class="row row-center">
-                            <button name="cancel" class="button-cancel">No</button>
-                            <button type="submit" name="submit" class="button-submit">Yes</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
 
     </div>
 </body>
@@ -258,13 +230,3 @@ $categoryList = getCategoryList($pdo);
     const bookList = <?php echo json_encode($bookList); ?>;
 </script>
 <script src="js/autocomplete-book-list-full.js"></script>
-
-<script>
-    const authorsList = <?php echo json_encode($authorList); ?>;
-</script>
-<script src="js/autocomplete-author-name.js"></script>
-
-<script>
-    const categoryList = <?php echo json_encode($categoryList); ?>;
-</script>
-<script src="js/autocomplete-category-name.js"></script>

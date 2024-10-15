@@ -1,31 +1,33 @@
 <?php
 function getMissingList($pdo) {
+    // Prepare the SQL query
     $query = "
         SELECT 
-            m.missing_id,                         
-            m.copyright, 
-            m.category_id, 
-            c.category AS category_name,        
-            m.title, 
-            m.author_id, 
-            a.author AS author_name,            
-            m.acc_number,                      
-            m.class_number                     
+            m.missing_id,                         -- Fetch the missing entry ID
+            b.copyright,                          -- Fetch the copyright from the books table
+            b.category_id,                        
+            c.category AS category_name,          -- Fetch the category name
+            b.title,                              -- Fetch the title from the books table
+            b.author_id,                          
+            a.author AS author_name,              -- Fetch the author name
+            b.acc_number,                         -- Fetch acc_number
+            b.class_number,                       -- Fetch class_number
+            b.image                               -- Fetch the book image
         FROM 
             missing m
         JOIN 
-            category c ON m.category_id = c.category_id  
+            books b ON m.book_id = b.book_id      -- Join with books table
         JOIN 
-            author a ON m.author_id = a.author_id       
-        ORDER BY 
-            m.copyright DESC
+            category c ON b.category_id = c.category_id  -- Join with the category table
+        JOIN 
+            author a ON b.author_id = a.author_id        -- Join with the author table
     ";
     
-
+    // Prepare and execute the statement
     $stmt = $pdo->prepare($query);
     $stmt->execute();
     
-
+    // Fetch all results
     $missingList = [];
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $missingList[] = [
@@ -37,7 +39,8 @@ function getMissingList($pdo) {
             'author_id' => $row['author_id'],
             'author_name' => $row['author_name'],      
             'acc_number' => $row['acc_number'],         
-            'class_number' => $row['class_number']      
+            'class_number' => $row['class_number'],
+            'image' => $row['image']         
         ];
     }
     

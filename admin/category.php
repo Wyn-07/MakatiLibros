@@ -130,9 +130,6 @@ $categoryList = getCategoryList($pdo);
                                                     <div class="button-edit" onclick="openEditModal(<?php echo $category['category_id']; ?>, '<?php echo addslashes($category['category']); ?>')">
                                                         <img src="../images/edit-white.png" class="image">
                                                     </div>
-                                                    <div class="button-delete" onclick="openDeleteModal()">
-                                                        <img src="../images/delete-white.png" class="image">
-                                                    </div>
                                                 </div>
                                             </td>
                                         </tr>

@@ -30,17 +30,18 @@ try {
         $gender = $librarian['gender'];
         $contact = $librarian['contact'];
         $address = $librarian['address'];
+        $image = $librarian['image'];
 
         $date = DateTime::createFromFormat('m/d/Y', $birthdate);
         $formattedBirthdate = $date->format('Y-m-d');
     } else {
         // Handle the case where no data is found
-        echo "No librarian data found for this email.";
+        $_SESSION['error_message'] = "Session Expired";
+        $_SESSION['error_display'] = "flex";
+        header("Location: login.php");
         exit();
     }
 } catch (PDOException $e) {
-    echo "Error: " . $e->getMessage();
+    header("Location: logout.php");
     exit();
 }
-
-?>

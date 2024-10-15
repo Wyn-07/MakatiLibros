@@ -30,8 +30,6 @@ $authorList = getAuthorList($pdo);
 include 'functions/fetch_category.php';
 $categoryList = getCategoryList($pdo);
 
-
-
 ?>
 
 <body>
@@ -176,7 +174,8 @@ $categoryList = getCategoryList($pdo);
                                                                 '<?php echo $book['author_id']; ?>', 
                                                                 '<?php echo $book['category_name']; ?>', 
                                                                 '<?php echo $book['category_id']; ?>', 
-                                                                '<?php echo $book['copyright']; ?>'
+                                                                '<?php echo $book['copyright']; ?>',
+                                                                '<?php echo $book['image']; ?>'
                                                             )">
                                                         <img src="../images/edit-white.png" class="image">
                                                     </div>
@@ -258,6 +257,7 @@ $categoryList = getCategoryList($pdo);
     const authorsList = <?php echo json_encode($authorList); ?>;
 </script>
 <script src="js/autocomplete-author-name.js"></script>
+
 
 <script>
     const categoryList = <?php echo json_encode($categoryList); ?>;

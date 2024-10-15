@@ -43,6 +43,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $lname = $_POST['lname'];
         $suffix = $_POST['suffix'];
         $birthdate = $_POST['birthdate'];
+
+        $birthdateFormatted = date('m/d/Y', strtotime($birthdate));
+
         $age = (int)$_POST['age'];
         $gender = $_POST['gender'];
         $contact = $_POST['contact'];
@@ -59,7 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(':middlename', $mname);
         $stmt->bindParam(':lastname', $lname);
         $stmt->bindParam(':suffix', $suffix);
-        $stmt->bindParam(':birthdate', $birthdate);
+        $stmt->bindParam(':birthdate', $birthdateFormatted);
         $stmt->bindParam(':age', $age, PDO::PARAM_INT);
         $stmt->bindParam(':gender', $gender);
         $stmt->bindParam(':contact', $contact);

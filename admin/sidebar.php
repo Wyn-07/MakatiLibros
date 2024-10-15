@@ -114,6 +114,33 @@
 </div>
 
 
+<div>
+    <div class="sidebar-items" id="content">
+        <div class="row row-between">
+            <div class="row">
+                <div class="sidebar-image">
+                    <img src="../images/content-white.png" class="image" id="sidebar-content-image">
+                </div>
+                Content
+            </div>
+            <div class="sidebar-dropdown-image">
+                <img src="../images/expand-arrow-white.png" class="image"
+                    id="sidebar-expand-arrow-content">
+                <img src="../images/collapse-arrow-white.png" class="image"
+                    id="sidebar-collapse-arrow-content" style="display: none;">
+            </div>
+        </div>
+    </div>
+
+    <div class="sidebar-dropdown-content content">
+        <a href="about.php">About</a>
+        <a href="news.php">News</a>
+        <a href="contact.php">Contact</a>
+    </div>
+</div>
+
+
+
 <a href="logout.php" class="sidebar-items-bottom">
     <div class="row">
         <div class="sidebar-image">

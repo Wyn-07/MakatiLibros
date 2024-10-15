@@ -1,72 +1,53 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const filterForm = document.getElementById('filter-form');
-    const clearButton = document.getElementById('clear-filters');
     const searchInput = document.getElementById('search');
-    const bookContainers = document.querySelectorAll('.container-books');
     const containerUnavailable = document.getElementById('not-found-message');
+    const dateSections = document.querySelectorAll('#transactionDate'); // Select each date section
 
-    function applyFiltersAndSearch() {
-        const formData = new FormData(filterForm);
-        const selectedCategories = formData.getAll('category[]');
-        const selectedDate = formData.get('filter_date');
-        const searchQuery = searchInput.value.toLowerCase();
-
+    function applySearch() {
+        const searchQuery = searchInput.value.trim().toLowerCase();
         let booksFound = false;
 
-        bookContainers.forEach(container => {
-            const bookCategory = container.querySelector('.books-category').textContent.trim().toLowerCase();
-            const bookDate = container.closest('.contents').querySelector('.row-between div').textContent.trim();
-            const title = container.querySelector('.books-name').textContent.toLowerCase();
-            const author = container.querySelector('.books-author').textContent.toLowerCase();
+        // Loop through each date section
+        dateSections.forEach(section => {
+            const booksInDateContainer = section.nextElementSibling; // Get the books container next to the date section
+            const booksInDate = booksInDateContainer.querySelectorAll('.container-books');
+            let booksFoundInDate = false;
 
-            // Normalize categories for comparison
-            const normalizedBookCategory = bookCategory.toLowerCase().replace(' ', '-');
+            // Loop through each book in this date section
+            booksInDate.forEach(container => {
+                const title = container.querySelector('.books-name').textContent.toLowerCase();
+                const author = container.querySelector('.books-author').textContent.toLowerCase();
 
-            // Parse the book date and selected date as Date objects
-            const parsedBookDate = new Date(bookDate);
-            const parsedSelectedDate = selectedDate ? new Date(selectedDate) : null;
+                // Check if the book matches the search query
+                let matchesSearch = title.includes(searchQuery) || author.includes(searchQuery);
 
-            // Check if the book matches the selected categories
-            let matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(normalizedBookCategory);
+                // Show or hide the book based on the search query
+                if (matchesSearch) {
+                    container.style.display = 'block';
+                    booksFoundInDate = true; // At least one book found in this section
+                    booksFound = true; // At least one book found overall
+                } else {
+                    container.style.display = 'none';
+                }
+            });
 
-            // Check if the book matches the selected date (considering only year, month, and day)
-            let matchesDate = !selectedDate || (
-                parsedBookDate.getFullYear() === parsedSelectedDate.getFullYear() &&
-                parsedBookDate.getMonth() === parsedSelectedDate.getMonth() &&
-                parsedBookDate.getDate() >= parsedSelectedDate.getDate()
-            );
-
-            // Check if the book matches the search query
-            let matchesSearch = title.includes(searchQuery) || author.includes(searchQuery);
-
-            if (matchesCategory && matchesDate && matchesSearch) {
-                container.style.display = 'block';
-                booksFound = true;
+            // If no books match the search in this date section, hide the whole date section and its books
+            if (booksFoundInDate) {
+                section.style.display = 'flex'; // Show the date header
+                booksInDateContainer.style.display = 'flex'; // Show the books container
             } else {
-                container.style.display = 'none';
+                section.style.display = 'none'; // Hide the date header
+                booksInDateContainer.style.display = 'none'; // Hide the books container
             }
         });
 
-        // Show or hide the entire content section based on whether any books match the filters and search
-        document.querySelectorAll('.contents').forEach(content => {
-            if (content.querySelectorAll('.container-books[style="display: block;"]').length > 0) {
-                content.style.display = 'flex';
-            } else {
-                content.style.display = 'none';
-            }
-        });
-
-        // Show the "Not Found" message if no books were found
+        // Show the "Not Found" message if no books were found across all sections
         containerUnavailable.style.display = booksFound ? 'none' : 'flex';
     }
 
-    filterForm.addEventListener('change', applyFiltersAndSearch);
-    searchInput.addEventListener('input', applyFiltersAndSearch);
-    clearButton.addEventListener('click', function () {
-        filterForm.reset();
-        searchInput.value = '';
-        applyFiltersAndSearch();
-    });
+    // Event listener for search input
+    searchInput.addEventListener('input', applySearch);
 
-    applyFiltersAndSearch();
+    // Initial search application
+    applySearch();
 });

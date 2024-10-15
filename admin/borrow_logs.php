@@ -26,10 +26,11 @@ include 'functions/fetch_book.php';
 $bookList = getBookList($pdo);
 
 include 'functions/fetch_patrons.php';
-$patronsName = getPatronsNames($pdo);
+$patronsBasicInfo = getPatronsBasicInfo($pdo);
 
 include 'functions/fetch_category.php';
 $categoryList = getCategoryList($pdo);
+
 ?>
 
 <body>
@@ -155,7 +156,7 @@ $categoryList = getCategoryList($pdo);
                                     <?php foreach ($borrowLogs as $log) { ?>
                                         <tr>
                                             <td><?php echo htmlspecialchars($log['log_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($log['name']); ?></td>
+                                            <td><?php echo htmlspecialchars($log['firstname']); ?> <?php echo htmlspecialchars($log['lastname']); ?></td>
                                             <td><?php echo htmlspecialchars($log['age']); ?></td>
                                             <td><?php echo htmlspecialchars($log['category']); ?></td>
                                             <td><?php echo htmlspecialchars($log['book_title']); ?></td>
@@ -165,8 +166,13 @@ $categoryList = getCategoryList($pdo);
                                 <?php echo $log['log_id']; ?>,
                                 '<?php echo addslashes($log['log_date']); ?>',
                                 '<?php echo addslashes($log['category']); ?>',
+                                 <?php echo $log['category_id']; ?>,  
                                 '<?php echo addslashes($log['book_title']); ?>',
-                                '<?php echo addslashes($log['name']); ?>',
+                                 <?php echo $log['book_id']; ?>, 
+                                '<?php echo addslashes($log['firstname']); ?> ',
+                                '<?php echo addslashes($log['middlename']); ?> ',
+                                '<?php echo addslashes($log['lastname']); ?> ',
+                                '<?php echo addslashes($log['suffix']); ?> ',
                                 <?php echo $log['age']; ?>,
                                 '<?php echo addslashes($log['gender']); ?>',
                                 '<?php echo addslashes($log['barangay']); ?>',
@@ -223,11 +229,12 @@ $categoryList = getCategoryList($pdo);
 <script src="js/close-status.js"></script>
 
 
+
 <script>
-    const patronsName = <?php echo json_encode($patronsName); ?>;
+    const patronsBasicInfo = <?php echo json_encode($patronsBasicInfo); ?>;
 </script>
 
-<script src="js/autocomplete-patrons-name.js"></script>
+<script src="js/autocomplete-patrons-basic-info.js"></script>
 
 <script>
     const bookList = <?php echo json_encode($bookList); ?>;

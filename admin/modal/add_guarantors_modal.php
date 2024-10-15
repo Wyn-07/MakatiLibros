@@ -8,8 +8,12 @@
             <span class="modal-close" onclick="closeAddModal()">&times;</span>
         </div>
 
-        <form action="functions/add_guarantors.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateForm()">
-            <input type="hidden" id="addGuarantorId" name="guarantor_id">
+        <div class="container-error" id="container-error-addguarantor" style="display: none">
+            <div class="container-error-description" id="message-addguarantor"></div>
+            <button type="button" class="button-error-close" onclick="closeErrorAddGuarantorStatus()">&times;</button>
+        </div>
+
+        <form action="functions/add_guarantors.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateAddForm('addContact')">
 
             <div class="container-form">
 
@@ -22,12 +26,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addFirstname" name="firstname" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addFirstname" name="firstname" class="input-text"  oninput="capitalize(this)"  autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
                         <label for="addMiddlename">Middle Name</label>
-                        <input type="text" id="addMiddlename" name="middlename" class="input-text" autocomplete="off">
+                        <input type="text" id="addMiddlename" name="middlename" class="input-text"  oninput="capitalize(this)" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -37,12 +41,12 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addLastname" name="lastname" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addLastname" name="lastname" class="input-text"  oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
                         <label for="addSuffix">Suffix</label>
-                        <input type="text" id="addSuffix" name="suffix" class="input-text" autocomplete="off">
+                        <input type="text" id="addSuffix" name="suffix" class="input-text"  oninput="capitalize(this)" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -52,7 +56,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addContact" name="contact" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addContact" name="contact" class="input-text" oninput="handleInput(this)" placeholder="+63xxxxxxxxxx" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -62,7 +66,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" id="addAddress" name="address" class="input-text" autocomplete="off" required>
+                        <input type="text" id="addAddress" name="address" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
                     </div>
 
                     <div class="container-input-49">
@@ -106,26 +110,8 @@
     function closeAddModal() {
         document.getElementById('addModal').classList.remove('show');
     }
-
-    function generatePassword(length) {
-        const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        let password = "";
-        for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charset.length);
-            password += charset[randomIndex];
-        }
-        return password;
-    }
-
-    function setGeneratedPassword() {
-        const passwordField = document.getElementById('addPassword');
-        if (passwordField) {
-            passwordField.value = generatePassword(12); // Change the number to set the length of the password
-        }
-    }
-
-    // Call the function to set the generated password when the modal or form is shown
-    document.addEventListener('DOMContentLoaded', function() {
-        setGeneratedPassword();
-    });
 </script>
+
+
+<script src="js/input-validation-addguarantors.js"></script>
+<script src="js/close-status.js"></script>

@@ -95,7 +95,7 @@ session_start();
                 </div>
 
                 <div class="container-content">
-                    <div id="search-results" class="contents-big-padding">
+                    <div id="search-results" style="padding: 40px 0">
 
                         <?php
                         if (!isset($_SESSION['patrons_id'])) {
@@ -130,7 +130,7 @@ session_start();
                                     LEFT JOIN 
                                         favorites f ON b.book_id = f.book_id AND f.patrons_id = ?
                                     WHERE 
-                                        br.patrons_id = ?
+                                        br.patrons_id = ? AND br.status != 'Pending'
                                     GROUP BY 
                                         b.book_id, br.borrow_date, br.status, f.status, a.author, c.category
                                     ORDER BY 
@@ -154,84 +154,99 @@ session_start();
                         } catch (PDOException $e) {
                             echo "Error: " . $e->getMessage();
                         }
+
+
+                        uasort($groupedResults, function ($a, $b) {
+                            // Extract the 'borrow_date' from the first item in the arrays $a and $b
+                            $dateA = DateTime::createFromFormat('m/d/Y', $a[0]['borrow_date']); // Assuming 'borrow_date' is in 'Y-m-d' format
+                            $dateB = DateTime::createFromFormat('m/d/Y', $b[0]['borrow_date']);
+
+                            // Return the comparison of the DateTime objects (will sort in ascending order)
+                            return $dateB <=> $dateA;
+                        });
+
                         ?>
 
 
 
 
-                        <div class="contents">
-                            <?php foreach ($groupedResults as $date => $books): ?>
-                                <div class="row row-between">
-                                    <div><?php echo htmlspecialchars($date); ?></div>
 
+                        <?php foreach ($groupedResults as $date => $books): ?>
+                            <div class="row row-between" id="transactionDate" style="padding: 0 50px;">
+                                <div>
+                                    <?php
+                                    $dateObj = DateTime::createFromFormat('m/d/Y', $date);
+                                    echo $dateObj ? $dateObj->format('F d, Y') : htmlspecialchars($date);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row-books-container" style="padding: 10px 50px 40px;">
+                                <div class="arrow-left">
+                                    <div class="arrow-image">
+                                        <img src="../images/prev-black.png" alt="" class="image">
+                                    </div>
                                 </div>
 
-                                <div class="row-books-container">
-                                    <div class="arrow-left">
-                                        <div class="arrow-image">
-                                            <img src="../images/prev-black.png" alt="" class="image">
-                                        </div>
-                                    </div>
-
-                                    <div class="row-books">
-                                        <?php foreach ($books as $book): ?>
-                                            <div class="container-books">
-                                                <div class="books-id" style="display: none;"><?php echo htmlspecialchars($book['book_id']); ?></div>
+                                <div class="row-books">
+                                    <?php foreach ($books as $book): ?>
+                                        <div class="container-books">
+                                            <div class="books-id" style="display: none;"><?php echo htmlspecialchars($book['book_id']); ?></div>
 
 
-                                                <div class="books-image">
-                                                    <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
-                                                </div>
-
-                                                <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
-                                                <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
-                                                <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
-                                                <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
-                                                <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['user_rating']); ?></div>
-
-                                                <div class="books-name"><?php echo htmlspecialchars($book['title']); ?></div>
-                                                <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['author_name']); ?></div>
-
+                                            <div class="books-image">
+                                                <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
                                             </div>
 
-                                            <!-- Hidden form for borrowing books -->
-                                            <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
-                                                <input type="hidden" name="book_id" id="bookIdInput">
-                                                <input type="hidden" name="patrons_id" id="userIdInput">
-                                                <input type="hidden" name="status" value="Pending">
-                                                <input type="hidden" name="borrow_date" value="">
-                                                <input type="hidden" name="return_date" value="">
-                                                <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                            </form>
+                                            <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
+                                            <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
+                                            <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
+                                            <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
+                                            <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['user_rating']); ?></div>
 
+                                            <div class="books-name"><?php echo htmlspecialchars($book['title']); ?></div>
+                                            <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['author_name']); ?></div>
 
-                                            <!-- Hidden form for add favorite books -->
-                                            <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
-                                                <input type="hidden" name="add_book_id" id="addBookIdInput">
-                                                <input type="hidden" name="add_patrons_id" id="addUserIdInput">
-                                                <input type="hidden" name="status" id="statusInput" value="Added">
-                                                <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                            </form>
-
-                                            <!-- Hidden form for remove favorite books -->
-                                            <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
-                                                <input type="hidden" name="remove_book_id" id="removeBookIdInput">
-                                                <input type="hidden" name="remove_patrons_id" id="removeUserIdInput">
-                                                <input type="hidden" name="status" id="statusInput" value="Remove">
-                                                <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                                            </form>
-
-                                        <?php endforeach; ?>
-                                    </div>
-
-                                    <div class="arrow-right">
-                                        <div class="arrow-image">
-                                            <img src="../images/next-black.png" alt="" class="image">
                                         </div>
+
+                                        <!-- Hidden form for borrowing books -->
+                                        <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
+                                            <input type="hidden" name="book_id" id="bookIdInput">
+                                            <input type="hidden" name="patrons_id" id="userIdInput">
+                                            <input type="hidden" name="status" value="Pending">
+                                            <input type="hidden" name="borrow_date" value="">
+                                            <input type="hidden" name="return_date" value="">
+                                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                                        </form>
+
+
+                                        <!-- Hidden form for add favorite books -->
+                                        <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
+                                            <input type="hidden" name="add_book_id" id="addBookIdInput">
+                                            <input type="hidden" name="add_patrons_id" id="addUserIdInput">
+                                            <input type="hidden" name="status" id="statusInput" value="Added">
+                                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                                        </form>
+
+                                        <!-- Hidden form for remove favorite books -->
+                                        <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
+                                            <input type="hidden" name="remove_book_id" id="removeBookIdInput">
+                                            <input type="hidden" name="remove_patrons_id" id="removeUserIdInput">
+                                            <input type="hidden" name="status" id="statusInput" value="Remove">
+                                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                                        </form>
+
+                                    <?php endforeach; ?>
+                                </div>
+
+                                <div class="arrow-right">
+                                    <div class="arrow-image">
+                                        <img src="../images/next-black.png" alt="" class="image">
                                     </div>
                                 </div>
-                            <?php endforeach; ?>
-                        </div>
+                            </div>
+                        <?php endforeach; ?>
+
 
 
                         <div id="not-found-message" class="container-unavailable" style="display: none;">
@@ -320,8 +335,10 @@ session_start();
                     </div>
                 </div>
 
-                <script src="js/book-details-toggle.js"></script>
+                <script src="js/book-details-toggle-transaction.js"></script>
             </div>
+
+
 
         </div>
 
@@ -341,7 +358,6 @@ session_start();
 
 
 <script src="js/sidebar.js"></script>
-<script src="js/book-scroll.js"></script>
 <script src="js/book-with-date-filter.js"></script>
 
 <script src="js/close-status.js"></script>
@@ -349,7 +365,50 @@ session_start();
 
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.row-books-container').forEach(container => {
+            const rowBooks = container.querySelector('.row-books');
+            const arrowLeft = container.querySelector('.arrow-left');
+            const arrowRight = container.querySelector('.arrow-right');
+            const viewMore = container.closest('.contents, .contents-big-padding')?.querySelector('.button-view-more');
 
+            function checkOverflow() {
+                console.log('scrollWidth:', rowBooks.scrollWidth, 'clientWidth:', rowBooks.clientWidth);
+                if (rowBooks.scrollWidth - rowBooks.clientWidth > 5) {
+                    arrowLeft.style.display = 'flex';
+                    arrowRight.style.display = 'flex';
+                    if (viewMore) viewMore.style.display = 'block';
+                } else {
+                    arrowLeft.style.display = 'none';
+                    arrowRight.style.display = 'none';
+                    if (viewMore) viewMore.style.display = 'none';
+                }
+            }
+
+            // Check overflow on page load
+            window.addEventListener('load', checkOverflow);
+
+            // Optionally, check overflow on window resize
+            window.addEventListener('resize', checkOverflow);
+
+            // Scroll functionality
+            arrowLeft.addEventListener('click', () => {
+                rowBooks.scrollBy({
+                    left: -200,
+                    behavior: 'smooth'
+                });
+            });
+
+            arrowRight.addEventListener('click', () => {
+                rowBooks.scrollBy({
+                    left: 200,
+                    behavior: 'smooth'
+                });
+            });
+        });
+    });
+</script>
 
 
 

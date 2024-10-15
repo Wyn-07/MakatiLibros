@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 26, 2024 at 06:14 AM
+-- Generation Time: Sep 19, 2024 at 03:25 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -163,7 +163,7 @@ CREATE TABLE `books` (
 --
 
 INSERT INTO `books` (`book_id`, `acc_number`, `class_number`, `title`, `author_id`, `copyright`, `category_id`, `image`) VALUES
-(1, '565108 pl', '959.9', 'The Phils. In the 6th to 16th centuries', 20, 1999, 2, 'book_sample.png'),
+(1, '35603 plfd', '31.02', '100 Questions Filipino Kids Ask', 1, 2005, 1, 'book_sample.png'),
 (2, '00891 plfd', '808.8', 'Totto Chan : Ang batang babae sa bintana', 2, 1981, 1, 'book_sample.png'),
 (3, '755489 pl', '28.5', 'Ancient Civilization', 3, 2002, 1, 'book_sample.png'),
 (4, '755490 pl', '28.5', 'Human Body', 3, 2002, 1, 'book_sample.png'),
@@ -526,7 +526,7 @@ INSERT INTO `borrow` (`borrow_id`, `book_id`, `patrons_id`, `status`, `borrow_da
 (157, 61, 25, 'Borrowed', '5/5/2024', ''),
 (158, 62, 26, 'Borrowed', '5/6/2024', ''),
 (159, 63, 27, 'Borrowed', '5/7/2024', ''),
-(160, 64, 28, 'Returned', '5/8/2024', '09/21/2024'),
+(160, 64, 28, 'Borrowed', '5/8/2024', ''),
 (161, 65, 29, 'Borrowed', '5/9/2024', ''),
 (162, 66, 30, 'Borrowed', '5/10/2024', ''),
 (163, 67, 31, 'Borrowed', '5/11/2024', ''),
@@ -543,37 +543,7 @@ INSERT INTO `borrow` (`borrow_id`, `book_id`, `patrons_id`, `status`, `borrow_da
 (174, 44, 42, 'Borrowed', '5/22/2024', ''),
 (175, 45, 43, 'Borrowed', '5/23/2024', ''),
 (176, 46, 44, 'Borrowed', '5/24/2024', ''),
-(179, 41, 1, 'Pending', '09/18/2024 23:16', ''),
-(180, 6, 7, 'Borrowed', '09/21/2024', NULL),
-(181, 38, 7, 'Borrowed', '09/21/2024', NULL),
-(182, 7, 7, 'Borrowed', '09/21/2024', NULL),
-(183, 1, 34, 'Borrowed', '09/25/2024', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `borrow_logs`
---
-
-CREATE TABLE `borrow_logs` (
-  `log_id` int(11) NOT NULL,
-  `log_date` varchar(255) DEFAULT NULL,
-  `name` varchar(255) DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  `gender` varchar(255) DEFAULT NULL,
-  `barangay` varchar(255) DEFAULT NULL,
-  `city` varchar(255) DEFAULT NULL,
-  `category` varchar(255) DEFAULT NULL,
-  `book_title` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `borrow_logs`
---
-
-INSERT INTO `borrow_logs` (`log_id`, `log_date`, `name`, `age`, `gender`, `barangay`, `city`, `category`, `book_title`) VALUES
-(1, '2024-09-25', 'kj', 21, 'Male', 'sta', 'sds', 'Filipiniana', 'Governance of State Universities ?'),
-(2, '2024-09', 'Francis Baliw Evangelista Jr.', 32, 'Female', 'sasad', 'sasas', 'Circulation', 'Aspects of Philippine Labor ?');
+(179, 41, 1, 'Pending', '09/18/2024 23:16', '');
 
 -- --------------------------------------------------------
 
@@ -596,31 +566,6 @@ INSERT INTO `category` (`category_id`, `category`) VALUES
 (3, 'Reference'),
 (4, 'Law'),
 (5, 'Filipiniana');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `condemned`
---
-
-CREATE TABLE `condemned` (
-  `condemned_id` int(11) NOT NULL,
-  `acc_number` varchar(255) DEFAULT NULL,
-  `class_number` varchar(255) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `author_id` int(11) DEFAULT NULL,
-  `copyright` int(11) DEFAULT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `condemned`
---
-
-INSERT INTO `condemned` (`condemned_id`, `acc_number`, `class_number`, `title`, `author_id`, `copyright`, `category_id`, `image`) VALUES
-(1, '35603 plfd', '31.02', '100 Questions Filipino Kids Ask', 1, 2007, 1, ''),
-(2, '755493 pl', '28.8', 'Our Environment', 3, 2002, 1, '');
 
 -- --------------------------------------------------------
 
@@ -739,87 +684,6 @@ INSERT INTO `favorites` (`favorite_id`, `book_id`, `patrons_id`, `date`, `status
 -- --------------------------------------------------------
 
 --
--- Table structure for table `guarantor`
---
-
-CREATE TABLE `guarantor` (
-  `guarantor_id` int(11) NOT NULL,
-  `firstname` varchar(255) DEFAULT NULL,
-  `middlename` varchar(255) DEFAULT NULL,
-  `lastname` varchar(255) DEFAULT NULL,
-  `suffix` varchar(255) DEFAULT NULL,
-  `contact` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `company_name` varchar(255) DEFAULT NULL,
-  `company_contact` varchar(255) DEFAULT NULL,
-  `company_address` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `guarantor`
---
-
-INSERT INTO `guarantor` (`guarantor_id`, `firstname`, `middlename`, `lastname`, `suffix`, `contact`, `address`, `company_name`, `company_contact`, `company_address`) VALUES
-(1, 'Sanji', 'Leg', 'Cayabyab', 'Jr.', '+639983388227', 'Baratie CIty', 'Strawhats', '+63983948343', '4308 Grandline'),
-(2, 'Luffy', '', 'Monkey', '', '+6388299223334', 'East Blue', 'Strawhats', '889220392', 'Makati City');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `librarians`
---
-
-CREATE TABLE `librarians` (
-  `librarians_id` int(11) NOT NULL,
-  `firstname` varchar(255) DEFAULT NULL,
-  `middlename` varchar(255) DEFAULT NULL,
-  `lastname` varchar(255) DEFAULT NULL,
-  `suffix` varchar(255) DEFAULT NULL,
-  `birthdate` varchar(255) DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  `gender` varchar(255) DEFAULT NULL,
-  `contact` varchar(255) DEFAULT NULL,
-  `address` varchar(255) DEFAULT NULL,
-  `email` varchar(255) DEFAULT NULL,
-  `password` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `librarians`
---
-
-INSERT INTO `librarians` (`librarians_id`, `firstname`, `middlename`, `lastname`, `suffix`, `birthdate`, `age`, `gender`, `contact`, `address`, `email`, `password`) VALUES
-(1, 'Adrian', '', 'Cuerdo', '', '02/28/2002', 22, 'Male', '+639676878888', 'Sd Sfdf Sgfdg', 'cuerdo@gmail.com', 'cuerdo123'),
-(2, 'Raphael', 'Orap Orap', 'Macatangay', 'Jr.', '2006-09-12', 18, 'Male', '+639756756768', 'Fghfgh', 'macatangay@gmail.com', '$2y$10$oslL4KGH5dVymUGUrvo/a.N/SpvjCunnRhoIk0J9aczXm/Xj0CYcO');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `missing`
---
-
-CREATE TABLE `missing` (
-  `missing_id` int(11) NOT NULL,
-  `acc_number` varchar(255) DEFAULT NULL,
-  `class_number` varchar(255) DEFAULT NULL,
-  `title` varchar(255) DEFAULT NULL,
-  `author_id` int(11) DEFAULT NULL,
-  `copyright` int(11) DEFAULT NULL,
-  `category_id` int(11) DEFAULT NULL,
-  `image` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `missing`
---
-
-INSERT INTO `missing` (`missing_id`, `acc_number`, `class_number`, `title`, `author_id`, `copyright`, `category_id`, `image`) VALUES
-(1, '565108 pl', '959.9', 'The Phils. In the 6th to 16th centuries', 20, 1990, 2, ''),
-(2, '3826 md', '333.3', 'Institute on the Legal Aspects of?', 79, 1984, 4, '');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `patrons`
 --
 
@@ -833,14 +697,7 @@ CREATE TABLE `patrons` (
   `age` int(11) DEFAULT NULL,
   `gender` varchar(255) DEFAULT NULL,
   `contact` varchar(255) DEFAULT NULL,
-  `house_num` varchar(255) DEFAULT '4308',
-  `street` varchar(255) DEFAULT 'Montojo Steet',
-  `barangay` varchar(255) DEFAULT 'Brgy. Sta Cruz',
-  `city` varchar(255) DEFAULT 'Makati City',
   `address` varchar(255) DEFAULT NULL,
-  `company_name` varchar(255) DEFAULT NULL,
-  `company_contact` varchar(255) DEFAULT NULL,
-  `company_address` varchar(255) DEFAULT NULL,
   `interest` text DEFAULT NULL,
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL
@@ -850,104 +707,51 @@ CREATE TABLE `patrons` (
 -- Dumping data for table `patrons`
 --
 
-INSERT INTO `patrons` (`patrons_id`, `firstname`, `middlename`, `lastname`, `suffix`, `birthdate`, `age`, `gender`, `contact`, `house_num`, `street`, `barangay`, `city`, `address`, `company_name`, `company_contact`, `company_address`, `interest`, `email`, `password`) VALUES
-(1, 'John Lemuell', 'Bacolod', '', '', '6/7/2003', 21, 'Male', ' +63995773887', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', 'Makati City', NULL, NULL, NULL, 'Reference,Filipiniana', 'bacolod@gmail.com', 'bacolod123'),
-(2, 'Isaaq ', 'Gavieres', '', '', '6/7/2003', 21, 'Male', '63995773887', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', 'Makati City', NULL, NULL, NULL, 'Reference,Filipiniana', 'gavieres@gmail.com', 'gavieres123'),
-(3, 'Mark Luis', 'Yuson', '', '', '6/7/2003', 21, 'Male', ' +63995773887', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', 'Makati City', NULL, NULL, NULL, 'Reference,Filipiniana', 'yuson@gmail.com', 'yuson123'),
-(4, 'Jerico', 'Gumahin', '', '', '6/7/2003', 21, 'Male', ' +63995773887', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', 'Makati City', NULL, NULL, NULL, 'Reference,Filipiniana', 'gumahin@gmail.com', 'gumahin123'),
-(5, 'Emma', 'Jane', 'Doe', '', '1/15/2012', 12, 'Female', '+639967766551', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '123 Elm St', NULL, NULL, NULL, 'Children, Circulation', 'emma.doe@example.com', 'pass001'),
-(6, 'Liam', 'Michael', 'Smith', '', '3/22/2011', 13, 'Male', '+639967766552', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '456 Maple Ave', NULL, NULL, NULL, 'Children, Reference', 'liam.smith@example.com', 'pass002'),
-(7, 'Sophia', 'Marie', 'Johnson', '', '5/10/2010', 14, 'Female', '+639967766553', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '789 Oak Rd', NULL, NULL, NULL, 'Children, Filipiniana', 'sophia.johnson@example.com', 'pass003'),
-(8, 'Noah', 'James', 'Williams', '', '7/30/2011', 13, 'Male', '+639967766554', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '101 Pine St', NULL, NULL, NULL, 'Children, Law', 'noah.williams@example.com', 'pass004'),
-(9, 'Olivia', 'Rose', 'Brown', '', '9/14/2012', 12, 'Female', '+639967766555', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '202 Cedar Ln', NULL, NULL, NULL, 'Children, Circulation', 'olivia.brown@example.com', 'pass005'),
-(10, 'Ethan', 'Daniel', 'Davis', '', '11/23/2010', 14, 'Male', '+639967766556', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '303 Birch Blvd', NULL, NULL, NULL, 'Children, Reference', 'ethan.davis@example.com', 'pass006'),
-(11, 'Ava', 'Grace', 'Miller', '', '2/11/2011', 13, 'Female', '+639967766557', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '404 Elm St', NULL, NULL, NULL, 'Children, Filipiniana', 'ava.miller@example.com', 'pass007'),
-(12, 'Mason', 'Alexander', 'Wilson', '', '6/17/2010', 14, 'Male', '+639967766558', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '505 Maple Ave', NULL, NULL, NULL, 'Children, Law', 'mason.wilson@example.com', 'pass008'),
-(13, 'Isabella', 'Kate', 'Moore', '', '4/29/2012', 12, 'Female', '+639967766559', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '606 Oak Rd', NULL, NULL, NULL, 'Children, Circulation', 'isabella.moore@example.com', 'pass009'),
-(14, 'Lucas', 'Henry', 'Taylor', '', '8/25/2011', 13, 'Male', '+639967766560', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '707 Pine St', NULL, NULL, NULL, 'Children, Reference', 'lucas.taylor@example.com', 'pass010'),
-(15, 'Mia', 'Lynn', 'Anderson', '', '2/8/2006', 18, 'Female', '+639967766561', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '808 Cedar Ln', NULL, NULL, NULL, 'Circulation, Reference', 'mia.anderson@example.com', 'pass011'),
-(16, 'Jack', 'Thomas', 'Martinez', '', '4/16/2005', 19, 'Male', '+639967766562', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '909 Birch Blvd', NULL, NULL, NULL, 'Circulation, Filipiniana', 'jack.martinez@example.com', 'pass012'),
-(17, 'Emily', 'Claire', 'Thompson', '', '6/20/2004', 20, 'Female', '+639967766563', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1010 Oak Rd', NULL, NULL, NULL, 'Reference, Law', 'emily.thompson@example.com', 'pass013'),
-(18, 'Ryan', 'Charles', 'Robinson', '', '8/25/2003', 21, 'Male', '+639967766564', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1111 Maple Ave', NULL, NULL, NULL, 'Reference, Filipiniana', 'ryan.robinson@example.com', 'pass014'),
-(19, 'Chloe', 'Mae', 'White', '', '10/30/2002', 22, 'Female', '+639967766565', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1212 Pine St', NULL, NULL, NULL, 'Filipiniana, Law', 'chloe.white@example.com', 'pass015'),
-(20, 'James', 'Lee', 'Harris', '', '12/15/2001', 23, 'Male', '+639967766566', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1313 Elm St', NULL, NULL, NULL, 'Circulation, Filipiniana', 'james.harris@example.com', 'pass016'),
-(21, 'Lily', 'Ann', 'Clark', '', '1/20/2000', 24, 'Female', '+639967766567', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1414 Cedar Ln', NULL, NULL, NULL, 'Law, Reference', 'lily.clark@example.com', 'pass017'),
-(22, 'Alexander', 'John', 'Lewis', '', '3/12/1999', 25, 'Male', '+639967766568', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1515 Birch Blvd', NULL, NULL, NULL, 'Filipiniana, Circulation', 'alexander.lewis@example.com', 'pass018'),
-(23, 'Grace', 'Elizabeth', 'Walker', '', '5/24/1998', 26, 'Female', '+639967766569', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1616 Oak Rd', NULL, NULL, NULL, 'Reference, Law', 'grace.walker@example.com', 'pass019'),
-(24, 'William', 'Joseph', 'Young', '', '7/14/1997', 27, 'Male', '+639967766570', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1717 Maple Ave', NULL, NULL, NULL, 'Law, Circulation', 'william.young@example.com', 'pass020'),
-(25, 'Dorothy', 'Alice', 'Adams', '', '1/11/1949', 75, 'Female', '+639967766571', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1818 Pine St', NULL, NULL, NULL, 'Reference, Circulation', 'dorothy.adams@example.com', 'pass021'),
-(26, 'George', 'Henry', 'Scott', '', '3/19/1948', 76, 'Male', '+639967766572', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '1919 Elm St', NULL, NULL, NULL, 'Law, Filipiniana', 'george.scott@example.com', 'pass022'),
-(27, 'Margaret', 'Helen', 'Baker', '', '5/25/1947', 77, 'Female', '+639967766573', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2020 Cedar Ln', NULL, NULL, NULL, 'Circulation, Reference', 'margaret.baker@example.com', 'pass023'),
-(28, 'Charles', 'Edward', 'Green', '', '7/30/1946', 78, 'Male', '+639967766574', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2121 Maple Ave', NULL, NULL, NULL, 'Filipiniana, Reference', 'charles.green@example.com', 'pass024'),
-(29, 'Eleanor', 'Mae', 'Collins', '', '9/5/1945', 79, 'Female', '+639967766575', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2222 Birch Blvd', NULL, NULL, NULL, 'Reference, Circulation', 'eleanor.collins@example.com', 'pass025'),
-(30, 'Samuel', 'David', 'Morris', '', '11/10/1944', 80, 'Male', '+639967766576', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2323 Oak Rd', NULL, NULL, NULL, 'Law, Filipiniana', 'samuel.morris@example.com', 'pass026'),
-(31, 'Rose', 'May', 'Rogers', '', '1/12/1943', 81, 'Female', '+639967766577', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2424 Pine St', NULL, NULL, NULL, 'Circulation, Reference', 'rose.rogers@example.com', 'pass027'),
-(32, 'Edward', 'Michael', 'Murphy', '', '3/14/1942', 82, 'Male', '+639967766578', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2525 Cedar Ln', NULL, NULL, NULL, 'Law, Filipiniana', 'edward.murphy@example.com', 'pass028'),
-(33, 'Clara', 'Rose', 'Bell', '', '5/18/1941', 83, 'Female', '+639967766579', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2626 Elm St', NULL, NULL, NULL, 'Reference, Circulation', 'clara.bell@example.com', 'pass029'),
-(34, 'Frank', 'James', 'Wood', '', '7/21/1940', 84, 'Male', '+639967766580', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2727 Birch Blvd', NULL, NULL, NULL, 'Circulation, Law', 'frank.wood@example.com', 'pass030'),
-(35, 'Emma', 'Jane', 'Smith', '', '5/20/1990', 34, 'Female', '+639967766581', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2828 Oak Rd', NULL, NULL, NULL, 'Circulation, Reference', 'emma.smith@example.com', 'pass031'),
-(36, 'Michael', 'Allen', 'Johnson', '', '8/15/1985', 39, 'Male', '+639967766582', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '2929 Pine St', NULL, NULL, NULL, 'Filipiniana, Law', 'michael.johnson@example.com', 'pass032'),
-(37, 'Ava', 'Marie', 'Brown', '', '11/25/1975', 49, 'Female', '+639967766583', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3030 Cedar Ln', NULL, NULL, NULL, 'Reference, Law', 'ava.brown@example.com', 'pass033'),
-(38, 'Daniel', 'Paul', 'Lee', '', '12/25/1978', 46, 'Male', '+639967766584', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3131 Birch Blvd', NULL, NULL, NULL, 'Circulation, Reference', 'daniel.lee@example.com', 'pass034'),
-(39, 'Mia', 'Rose', 'White', '', '3/10/1975', 49, 'Female', '+639967766585', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3232 Maple Ave', NULL, NULL, NULL, 'Reference, Circulation', 'mia.white@example.com', 'pass035'),
-(40, 'Jacob', 'Ryan', 'Smith', '', '6/5/1972', 52, 'Male', '+639967766586', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3333 Elm St', NULL, NULL, NULL, 'Filipiniana, Reference', 'jacob.smith@example.com', 'pass036'),
-(41, 'Isabella', 'Faith', 'Turner', '', '9/20/1968', 56, 'Female', '+639967766587', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3434 Oak Rd', NULL, NULL, NULL, 'Law, Reference', 'isabella.turner@example.com', 'pass037'),
-(42, 'William', 'John', 'Brown', '', '12/10/1964', 60, 'Male', '+639967766588', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3535 Pine St', NULL, NULL, NULL, 'Circulation, Filipiniana', 'william.brown@example.com', 'pass038'),
-(43, 'Olivia', 'Grace', 'Martinez', '', '7/25/1959', 65, 'Female', '+639967766589', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3636 Cedar Ln', NULL, NULL, NULL, 'Reference, Circulation', 'olivia.martinez@example.com', 'pass039'),
-(44, 'James', 'Edward', 'Wilson', '', '3/12/1955', 69, 'Male', '+639967766590', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', '3737 Maple Ave', NULL, NULL, NULL, 'Law, Filipiniana', 'james.wilson@example.com', 'pass040'),
-(45, 'Francis', 'Baliw', 'Evangelista', 'Jr.', '2003-06-20', 21, 'Male', '+639999999993', '4308', 'Montojo Steet', 'Brgy. Sta Cruz', 'Makati City', 'Makati City', NULL, NULL, NULL, '', 'evangelista@gmail.com', '$2y$10$oT3CWrhrj.MgX5aTcHsXp..BicCf2.D08p.hiCrej2Ez8dChYLaea');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `patrons_library_id`
---
-
-CREATE TABLE `patrons_library_id` (
-  `library_id` int(11) NOT NULL,
-  `patrons_id` int(11) DEFAULT NULL,
-  `guarantor_id` int(11) DEFAULT NULL,
-  `date_issued` varchar(255) DEFAULT NULL,
-  `valid_until` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `patrons_library_id`
---
-
-INSERT INTO `patrons_library_id` (`library_id`, `patrons_id`, `guarantor_id`, `date_issued`, `valid_until`) VALUES
-(1, 7, 1, '2024-09-23', '2025-09-23'),
-(2, 45, 1, '2024-09-24', '2025-09-24');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `patron_logs`
---
-
-CREATE TABLE `patron_logs` (
-  `log_id` int(11) NOT NULL,
-  `log_date` varchar(255) DEFAULT NULL,
-  `firstname` varchar(255) DEFAULT NULL,
-  `middlename` varchar(255) DEFAULT NULL,
-  `lastname` varchar(255) DEFAULT NULL,
-  `suffix` varchar(255) DEFAULT NULL,
-  `age` int(11) DEFAULT NULL,
-  `gender` varchar(255) DEFAULT NULL,
-  `barangay` varchar(255) DEFAULT NULL,
-  `city` varchar(255) DEFAULT NULL,
-  `purpose` varchar(255) DEFAULT NULL,
-  `sector` varchar(255) DEFAULT NULL,
-  `sector_details` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `patron_logs`
---
-
-INSERT INTO `patron_logs` (`log_id`, `log_date`, `firstname`, `middlename`, `lastname`, `suffix`, `age`, `gender`, `barangay`, `city`, `purpose`, `sector`, `sector_details`) VALUES
-(1, '2024-09-25', 'sds', 'dsd', 'sd', 'dsd', 45, 'Female', 'fgdfg', 'dfgdgd', 'gfgf', 'Senior Citizen', 'gfdg'),
-(2, '2024-09-25', 'asd', 'asd', 'aasd', 'asd', 56, 'Female', 'sda', 'daasdd', 'dasd', 'Student', 'asdas');
+INSERT INTO `patrons` (`patrons_id`, `firstname`, `middlename`, `lastname`, `suffix`, `birthdate`, `age`, `gender`, `contact`, `address`, `interest`, `email`, `password`) VALUES
+(1, 'John Lemuell', 'Bacolod', '', '', '6/7/2003', 21, 'Male', ' +63995773887', 'Makati City', 'Reference,Filipiniana', 'bacolod@gmail.com', 'bacolod123'),
+(2, 'Isaaq ', 'Gavieres', '', '', '6/7/2003', 21, 'Male', '63995773887', 'Makati City', 'Reference,Filipiniana', 'gavieres@gmail.com', 'gavieres123'),
+(3, 'Mark Luis', 'Yuson', '', '', '6/7/2003', 21, 'Male', ' +63995773887', 'Makati City', 'Reference,Filipiniana', 'yuson@gmail.com', 'yuson123'),
+(4, 'Jerico', 'Gumahin', '', '', '6/7/2003', 21, 'Male', ' +63995773887', 'Makati City', 'Reference,Filipiniana', 'gumahin@gmail.com', 'gumahin123'),
+(5, 'Emma', 'Jane', 'Doe', '', '1/15/2012', 12, 'Female', '+639967766551', '123 Elm St', 'Children, Circulation', 'emma.doe@example.com', 'pass001'),
+(6, 'Liam', 'Michael', 'Smith', '', '3/22/2011', 13, 'Male', '+639967766552', '456 Maple Ave', 'Children, Reference', 'liam.smith@example.com', 'pass002'),
+(7, 'Sophia', 'Marie', 'Johnson', '', '5/10/2010', 14, 'Female', '+639967766553', '789 Oak Rd', 'Children, Filipiniana', 'sophia.johnson@example.com', 'pass003'),
+(8, 'Noah', 'James', 'Williams', '', '7/30/2011', 13, 'Male', '+639967766554', '101 Pine St', 'Children, Law', 'noah.williams@example.com', 'pass004'),
+(9, 'Olivia', 'Rose', 'Brown', '', '9/14/2012', 12, 'Female', '+639967766555', '202 Cedar Ln', 'Children, Circulation', 'olivia.brown@example.com', 'pass005'),
+(10, 'Ethan', 'Daniel', 'Davis', '', '11/23/2010', 14, 'Male', '+639967766556', '303 Birch Blvd', 'Children, Reference', 'ethan.davis@example.com', 'pass006'),
+(11, 'Ava', 'Grace', 'Miller', '', '2/11/2011', 13, 'Female', '+639967766557', '404 Elm St', 'Children, Filipiniana', 'ava.miller@example.com', 'pass007'),
+(12, 'Mason', 'Alexander', 'Wilson', '', '6/17/2010', 14, 'Male', '+639967766558', '505 Maple Ave', 'Children, Law', 'mason.wilson@example.com', 'pass008'),
+(13, 'Isabella', 'Kate', 'Moore', '', '4/29/2012', 12, 'Female', '+639967766559', '606 Oak Rd', 'Children, Circulation', 'isabella.moore@example.com', 'pass009'),
+(14, 'Lucas', 'Henry', 'Taylor', '', '8/25/2011', 13, 'Male', '+639967766560', '707 Pine St', 'Children, Reference', 'lucas.taylor@example.com', 'pass010'),
+(15, 'Mia', 'Lynn', 'Anderson', '', '2/8/2006', 18, 'Female', '+639967766561', '808 Cedar Ln', 'Circulation, Reference', 'mia.anderson@example.com', 'pass011'),
+(16, 'Jack', 'Thomas', 'Martinez', '', '4/16/2005', 19, 'Male', '+639967766562', '909 Birch Blvd', 'Circulation, Filipiniana', 'jack.martinez@example.com', 'pass012'),
+(17, 'Emily', 'Claire', 'Thompson', '', '6/20/2004', 20, 'Female', '+639967766563', '1010 Oak Rd', 'Reference, Law', 'emily.thompson@example.com', 'pass013'),
+(18, 'Ryan', 'Charles', 'Robinson', '', '8/25/2003', 21, 'Male', '+639967766564', '1111 Maple Ave', 'Reference, Filipiniana', 'ryan.robinson@example.com', 'pass014'),
+(19, 'Chloe', 'Mae', 'White', '', '10/30/2002', 22, 'Female', '+639967766565', '1212 Pine St', 'Filipiniana, Law', 'chloe.white@example.com', 'pass015'),
+(20, 'James', 'Lee', 'Harris', '', '12/15/2001', 23, 'Male', '+639967766566', '1313 Elm St', 'Circulation, Filipiniana', 'james.harris@example.com', 'pass016'),
+(21, 'Lily', 'Ann', 'Clark', '', '1/20/2000', 24, 'Female', '+639967766567', '1414 Cedar Ln', 'Law, Reference', 'lily.clark@example.com', 'pass017'),
+(22, 'Alexander', 'John', 'Lewis', '', '3/12/1999', 25, 'Male', '+639967766568', '1515 Birch Blvd', 'Filipiniana, Circulation', 'alexander.lewis@example.com', 'pass018'),
+(23, 'Grace', 'Elizabeth', 'Walker', '', '5/24/1998', 26, 'Female', '+639967766569', '1616 Oak Rd', 'Reference, Law', 'grace.walker@example.com', 'pass019'),
+(24, 'William', 'Joseph', 'Young', '', '7/14/1997', 27, 'Male', '+639967766570', '1717 Maple Ave', 'Law, Circulation', 'william.young@example.com', 'pass020'),
+(25, 'Dorothy', 'Alice', 'Adams', '', '1/11/1949', 75, 'Female', '+639967766571', '1818 Pine St', 'Reference, Circulation', 'dorothy.adams@example.com', 'pass021'),
+(26, 'George', 'Henry', 'Scott', '', '3/19/1948', 76, 'Male', '+639967766572', '1919 Elm St', 'Law, Filipiniana', 'george.scott@example.com', 'pass022'),
+(27, 'Margaret', 'Helen', 'Baker', '', '5/25/1947', 77, 'Female', '+639967766573', '2020 Cedar Ln', 'Circulation, Reference', 'margaret.baker@example.com', 'pass023'),
+(28, 'Charles', 'Edward', 'Green', '', '7/30/1946', 78, 'Male', '+639967766574', '2121 Maple Ave', 'Filipiniana, Reference', 'charles.green@example.com', 'pass024'),
+(29, 'Eleanor', 'Mae', 'Collins', '', '9/5/1945', 79, 'Female', '+639967766575', '2222 Birch Blvd', 'Reference, Circulation', 'eleanor.collins@example.com', 'pass025'),
+(30, 'Samuel', 'David', 'Morris', '', '11/10/1944', 80, 'Male', '+639967766576', '2323 Oak Rd', 'Law, Filipiniana', 'samuel.morris@example.com', 'pass026'),
+(31, 'Rose', 'May', 'Rogers', '', '1/12/1943', 81, 'Female', '+639967766577', '2424 Pine St', 'Circulation, Reference', 'rose.rogers@example.com', 'pass027'),
+(32, 'Edward', 'Michael', 'Murphy', '', '3/14/1942', 82, 'Male', '+639967766578', '2525 Cedar Ln', 'Law, Filipiniana', 'edward.murphy@example.com', 'pass028'),
+(33, 'Clara', 'Rose', 'Bell', '', '5/18/1941', 83, 'Female', '+639967766579', '2626 Elm St', 'Reference, Circulation', 'clara.bell@example.com', 'pass029'),
+(34, 'Frank', 'James', 'Wood', '', '7/21/1940', 84, 'Male', '+639967766580', '2727 Birch Blvd', 'Circulation, Law', 'frank.wood@example.com', 'pass030'),
+(35, 'Emma', 'Jane', 'Smith', '', '5/20/1990', 34, 'Female', '+639967766581', '2828 Oak Rd', 'Circulation, Reference', 'emma.smith@example.com', 'pass031'),
+(36, 'Michael', 'Allen', 'Johnson', '', '8/15/1985', 39, 'Male', '+639967766582', '2929 Pine St', 'Filipiniana, Law', 'michael.johnson@example.com', 'pass032'),
+(37, 'Ava', 'Marie', 'Brown', '', '11/25/1975', 49, 'Female', '+639967766583', '3030 Cedar Ln', 'Reference, Law', 'ava.brown@example.com', 'pass033'),
+(38, 'Daniel', 'Paul', 'Lee', '', '12/25/1978', 46, 'Male', '+639967766584', '3131 Birch Blvd', 'Circulation, Reference', 'daniel.lee@example.com', 'pass034'),
+(39, 'Mia', 'Rose', 'White', '', '3/10/1975', 49, 'Female', '+639967766585', '3232 Maple Ave', 'Reference, Circulation', 'mia.white@example.com', 'pass035'),
+(40, 'Jacob', 'Ryan', 'Smith', '', '6/5/1972', 52, 'Male', '+639967766586', '3333 Elm St', 'Filipiniana, Reference', 'jacob.smith@example.com', 'pass036'),
+(41, 'Isabella', 'Faith', 'Turner', '', '9/20/1968', 56, 'Female', '+639967766587', '3434 Oak Rd', 'Law, Reference', 'isabella.turner@example.com', 'pass037'),
+(42, 'William', 'John', 'Brown', '', '12/10/1964', 60, 'Male', '+639967766588', '3535 Pine St', 'Circulation, Filipiniana', 'william.brown@example.com', 'pass038'),
+(43, 'Olivia', 'Grace', 'Martinez', '', '7/25/1959', 65, 'Female', '+639967766589', '3636 Cedar Ln', 'Reference, Circulation', 'olivia.martinez@example.com', 'pass039'),
+(44, 'James', 'Edward', 'Wilson', '', '3/12/1955', 69, 'Male', '+639967766590', '3737 Maple Ave', 'Law, Filipiniana', 'james.wilson@example.com', 'pass040');
 
 -- --------------------------------------------------------
 
@@ -1204,7 +1008,11 @@ INSERT INTO `ratings` (`rating_id`, `book_id`, `patrons_id`, `date`, `ratings`) 
 (234, 180, 14, '5/25/2024', 3),
 (235, 181, 15, '5/26/2024', 5),
 (236, 182, 16, '5/27/2024', 5),
-(237, 183, 17, '5/28/2024', 2);
+(237, 183, 17, '5/28/2024', 2),
+(238, 42, 1, NULL, 1),
+(239, 43, 1, NULL, 5),
+(240, 3, 1, NULL, 3),
+(241, 2, 1, NULL, 3);
 
 --
 -- Indexes for dumped tables
@@ -1233,24 +1041,10 @@ ALTER TABLE `borrow`
   ADD KEY `patrons_id` (`patrons_id`);
 
 --
--- Indexes for table `borrow_logs`
---
-ALTER TABLE `borrow_logs`
-  ADD PRIMARY KEY (`log_id`);
-
---
 -- Indexes for table `category`
 --
 ALTER TABLE `category`
   ADD PRIMARY KEY (`category_id`);
-
---
--- Indexes for table `condemned`
---
-ALTER TABLE `condemned`
-  ADD PRIMARY KEY (`condemned_id`),
-  ADD KEY `author_id` (`author_id`),
-  ADD KEY `category_id` (`category_id`);
 
 --
 -- Indexes for table `favorites`
@@ -1261,44 +1055,10 @@ ALTER TABLE `favorites`
   ADD KEY `patrons_id` (`patrons_id`);
 
 --
--- Indexes for table `guarantor`
---
-ALTER TABLE `guarantor`
-  ADD PRIMARY KEY (`guarantor_id`);
-
---
--- Indexes for table `librarians`
---
-ALTER TABLE `librarians`
-  ADD PRIMARY KEY (`librarians_id`);
-
---
--- Indexes for table `missing`
---
-ALTER TABLE `missing`
-  ADD PRIMARY KEY (`missing_id`),
-  ADD KEY `author_id` (`author_id`),
-  ADD KEY `category_id` (`category_id`);
-
---
 -- Indexes for table `patrons`
 --
 ALTER TABLE `patrons`
   ADD PRIMARY KEY (`patrons_id`);
-
---
--- Indexes for table `patrons_library_id`
---
-ALTER TABLE `patrons_library_id`
-  ADD PRIMARY KEY (`library_id`),
-  ADD KEY `patrons_id` (`patrons_id`),
-  ADD KEY `guarantor_id` (`guarantor_id`);
-
---
--- Indexes for table `patron_logs`
---
-ALTER TABLE `patron_logs`
-  ADD PRIMARY KEY (`log_id`);
 
 --
 -- Indexes for table `ratings`
@@ -1316,25 +1076,19 @@ ALTER TABLE `ratings`
 -- AUTO_INCREMENT for table `author`
 --
 ALTER TABLE `author`
-  MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `author_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT for table `books`
 --
 ALTER TABLE `books`
-  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=187;
+  MODIFY `book_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=184;
 
 --
 -- AUTO_INCREMENT for table `borrow`
 --
 ALTER TABLE `borrow`
-  MODIFY `borrow_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=184;
-
---
--- AUTO_INCREMENT for table `borrow_logs`
---
-ALTER TABLE `borrow_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `borrow_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=180;
 
 --
 -- AUTO_INCREMENT for table `category`
@@ -1343,52 +1097,16 @@ ALTER TABLE `category`
   MODIFY `category_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `condemned`
---
-ALTER TABLE `condemned`
-  MODIFY `condemned_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT for table `favorites`
 --
 ALTER TABLE `favorites`
   MODIFY `favorite_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
--- AUTO_INCREMENT for table `guarantor`
---
-ALTER TABLE `guarantor`
-  MODIFY `guarantor_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `librarians`
---
-ALTER TABLE `librarians`
-  MODIFY `librarians_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `missing`
---
-ALTER TABLE `missing`
-  MODIFY `missing_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
 -- AUTO_INCREMENT for table `patrons`
 --
 ALTER TABLE `patrons`
-  MODIFY `patrons_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
-
---
--- AUTO_INCREMENT for table `patrons_library_id`
---
-ALTER TABLE `patrons_library_id`
-  MODIFY `library_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
-
---
--- AUTO_INCREMENT for table `patron_logs`
---
-ALTER TABLE `patron_logs`
-  MODIFY `log_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `patrons_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
 --
 -- AUTO_INCREMENT for table `ratings`
@@ -1415,32 +1133,11 @@ ALTER TABLE `borrow`
   ADD CONSTRAINT `borrow_ibfk_2` FOREIGN KEY (`patrons_id`) REFERENCES `patrons` (`patrons_id`);
 
 --
--- Constraints for table `condemned`
---
-ALTER TABLE `condemned`
-  ADD CONSTRAINT `condemned_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `author` (`author_id`),
-  ADD CONSTRAINT `condemned_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`);
-
---
 -- Constraints for table `favorites`
 --
 ALTER TABLE `favorites`
   ADD CONSTRAINT `favorites_ibfk_1` FOREIGN KEY (`book_id`) REFERENCES `books` (`book_id`),
   ADD CONSTRAINT `favorites_ibfk_2` FOREIGN KEY (`patrons_id`) REFERENCES `patrons` (`patrons_id`);
-
---
--- Constraints for table `missing`
---
-ALTER TABLE `missing`
-  ADD CONSTRAINT `missing_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `author` (`author_id`),
-  ADD CONSTRAINT `missing_ibfk_2` FOREIGN KEY (`category_id`) REFERENCES `category` (`category_id`);
-
---
--- Constraints for table `patrons_library_id`
---
-ALTER TABLE `patrons_library_id`
-  ADD CONSTRAINT `patrons_library_id_ibfk_1` FOREIGN KEY (`patrons_id`) REFERENCES `patrons` (`patrons_id`),
-  ADD CONSTRAINT `patrons_library_id_ibfk_2` FOREIGN KEY (`guarantor_id`) REFERENCES `guarantor` (`guarantor_id`);
 
 --
 -- Constraints for table `ratings`

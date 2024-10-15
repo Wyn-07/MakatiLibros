@@ -8,6 +8,12 @@
             <span class="modal-close" onclick="closeEditProfileModal()">&times;</span>
         </div>
 
+        <div class="container-error" id="container-error" style="display: none">
+            <div class="container-error-description" id="message"></div>
+            <button type="button" class="button-error-close" onclick="closeErrorStatus()">&times;</button>
+        </div>
+
+
         <form action="functions/update_profile.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateForm()">
 
             <input type="hidden" id="editLibrarianId" name="librarian_id" value="<?php echo htmlspecialchars($librarian_id); ?>">
@@ -18,9 +24,16 @@
 
                     <div class="container-form-profile">
                         <div class="form-profile">
-                            <img src="../images/no-image.png" alt="" class="image">
+                            <img src="../librarian_images/<?php echo htmlspecialchars($image); ?>" class="image" id="imageProfilePreview">
                         </div>
                     </div>
+
+                    <div class="row-center">
+                        <div class="container-input-file-profile">
+                            <input type="file" class="file" name="profile_image" id="profile_image" accept="image/*" onchange="previewProfileImage(event)">
+                        </div>
+                    </div>
+
 
                     <div class="container-input-49">
                         <div class="row row-between">
@@ -137,4 +150,58 @@
     function saveChanges() {
         closeEditProfileModal();
     }
+</script>
+
+
+<script>
+    function previewProfileImage(event) {
+        var reader = new FileReader();
+        reader.onload = function() {
+            var imageHistoryPreview = document.getElementById('imageProfilePreview');
+            imageHistoryPreview.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+
+
+    function validateForm(filenames) {
+        var resultErrorContainer = document.getElementById("container-error");
+        var message = document.getElementById("message");
+        message.innerHTML = "";
+
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png)$/i;
+        var isValid = true;
+
+        filenames.forEach(function(filename) {
+            var fileInput = document.getElementById(filename);
+            var filePath = fileInput.value;
+
+            if (!filePath) {
+                return;
+            }
+
+            if (!allowedExtensions.exec(filePath)) {
+                isValid = false;
+                resultErrorContainer.style.display = "flex";
+                message.innerHTML = "Only PNG, JPG, and JPEG files are accepted.";
+                message.style.display = "block";
+                fileInput.style.border = '2px solid red';
+                fileInput.value = '';
+            } else {
+                fileInput.style.border = '';
+            }
+        });
+
+        if (isValid) {
+            resultErrorContainer.style.display = "none";
+            message.style.display = "none";
+        }
+
+        return isValid;
+    }
+
+
+    document.getElementById('form').onsubmit = function() {
+            return validateForm(['profile_image']);
+    };
 </script>

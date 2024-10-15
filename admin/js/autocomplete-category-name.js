@@ -1,97 +1,199 @@
-// For borrow add modal
-const addborrowcategoryInput = document.getElementById('addCategory');
+// For book add modal
+const addbookcategoryInput = document.getElementById('category');
+const categoryIdInput = document.getElementById('category_id');
 
-// Add an event listener for the input event
-addborrowcategoryInput.addEventListener('input', function() {
-    let input = this.value;
 
-    // Filter categories based on user input
-    let suggestions = categoryList.filter(category => category.category.toLowerCase().startsWith(input.toLowerCase()));
+if (addbookcategoryInput) {
+    addbookcategoryInput.addEventListener('input', function () {
+        let input = this.value;
 
-    // Limit the suggestions to the top 10
-    suggestions = suggestions.slice(0, 10);
+        let suggestions = categoryList.filter(category => category.category.toLowerCase().startsWith(input.toLowerCase()));
 
-    // Clear previous suggestions
-    let datalist = document.getElementById('datalist-categories');
-    if (datalist) {
-        datalist.remove();
-    }
+        suggestions = suggestions.slice(0, 10);
 
-    // Create a new datalist for category suggestions
-    datalist = document.createElement('datalist');
-    datalist.id = 'datalist-categories';
+        let datalist = document.getElementById('datalist-categories');
+        if (datalist) {
+            datalist.remove();
+        }
 
-    // Populate the datalist with suggestions
-    suggestions.forEach(suggestion => {
-        let option = document.createElement('option');
-        option.value = suggestion.category;
-        datalist.appendChild(option);
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-categories';
+
+        suggestions.forEach(suggestion => {
+            let option = document.createElement('option');
+            option.value = suggestion.category;
+            datalist.appendChild(option);
+        });
+
+        document.body.appendChild(datalist);
+
+        addbookcategoryInput.setAttribute('list', 'datalist-categories');
     });
 
-    // Append the datalist to the document body
-    document.body.appendChild(datalist);
+    addbookcategoryInput.addEventListener('blur', function () {
+        const input = this.value;
 
-    // Set the datalist for the category input
-    addborrowcategoryInput.setAttribute('list', 'datalist-categories');
-});
+        const selectedCategory = categoryList.find(category => category.category.toLowerCase() === input.toLowerCase());
 
-// Add an event listener for the blur event
-addborrowcategoryInput.addEventListener('blur', function() {
-    const input = this.value;
-
-    // Check if input matches any of the suggestions
-    const selectedCategory = categoryList.find(category => category.category.toLowerCase() === input.toLowerCase());
-
-    if (!selectedCategory) {
-        // Clear the input if no valid selection is made
-        addborrowcategoryInput.value = '';
-    }
-});
+        if (selectedCategory) {
+            categoryIdInput.value = selectedCategory.category_id;
+        } else {
+            addbookcategoryInput.value = '';
+            categoryIdInput.value = '';
+        }
+    });
+}
 
 
 
 
+// For editt book add modal
+const editbookcategoryInput = document.getElementById('edit_category');
+const editcategoryIdInput = document.getElementById('edit_category_id');
 
 
+if (editbookcategoryInput) {
+    editbookcategoryInput.addEventListener('input', function () {
+        let input = this.value;
 
+        let suggestions = categoryList.filter(category => category.category.toLowerCase().startsWith(input.toLowerCase()));
 
+        suggestions = suggestions.slice(0, 10);
 
+        let datalist = document.getElementById('datalist-categories');
+        if (datalist) {
+            datalist.remove();
+        }
 
-//for editborrow
-const editborrowcategoryInput = document.getElementById('editCategory');
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-categories';
 
-editborrowcategoryInput.addEventListener('input', function() {
-    let input = this.value;
+        suggestions.forEach(suggestion => {
+            let option = document.createElement('option');
+            option.value = suggestion.category;
+            datalist.appendChild(option);
+        });
 
-    let suggestions = categoryList.filter(category => category.category.toLowerCase().startsWith(input.toLowerCase()));
+        document.body.appendChild(datalist);
 
-    suggestions = suggestions.slice(0, 10);
-
-    let datalist = document.getElementById('datalist-categories');
-    if (datalist) {
-        datalist.remove();
-    }
-
-    datalist = document.createElement('datalist');
-    datalist.id = 'datalist-categories';
-
-    suggestions.forEach(suggestion => {
-        let option = document.createElement('option');
-        option.value = suggestion.category;
-        datalist.appendChild(option);
+        editbookcategoryInput.setAttribute('list', 'datalist-categories');
     });
 
-    document.body.appendChild(datalist);
+    editbookcategoryInput.addEventListener('blur', function () {
+        const input = this.value;
 
-    editborrowcategoryInput.setAttribute('list', 'datalist-categories');
-});
+        const selectedCategory = categoryList.find(category => category.category.toLowerCase() === input.toLowerCase());
 
-editborrowcategoryInput.addEventListener('blur', function() {
-    const input = this.value;
+        if (selectedCategory) {
+            editcategoryIdInput.value = selectedCategory.category_id;
+        } else {
+            editbookcategoryInput.value = '';
+            editcategoryIdInput.value = '';
+        }
+    });
+}
 
-    const selectedCategory = categoryList.find(category => category.category.toLowerCase() === input.toLowerCase());
 
-    if (!selectedCategory) {
-        editborrowcategoryInput.value = '';
-    }
-});
+
+
+
+
+
+
+
+
+
+
+const addBookLogsCategory = document.getElementById('addBorrowLogCategory');
+const addBookLogsIDCategory = document.getElementById('addBorrowLogCategoryId');
+
+if (addBookLogsCategory) {
+    addBookLogsCategory.addEventListener('input', function () {
+        let input = this.value;
+
+        let suggestions = categoryList.filter(category => category.category.toLowerCase().startsWith(input.toLowerCase()));
+
+        suggestions = suggestions.slice(0, 10);
+
+        let datalist = document.getElementById('datalist-categories');
+        if (datalist) {
+            datalist.remove();
+        }
+
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-categories';
+
+        suggestions.forEach(suggestion => {
+            let option = document.createElement('option');
+            option.value = suggestion.category;
+            datalist.appendChild(option);
+        });
+
+        document.body.appendChild(datalist);
+        addBookLogsCategory.setAttribute('list', 'datalist-categories');
+    });
+
+    addBookLogsCategory.addEventListener('blur', function () {
+        const input = this.value;
+
+        const selectedCategory = categoryList.find(category => category.category.toLowerCase() === input.toLowerCase());
+
+        if (selectedCategory) {
+            addBookLogsIDCategory.value = selectedCategory.category_id;
+        } else {
+            addBookLogsCategory.value = '';
+            addBookLogsIDCategory.value = '';
+        }
+    });
+}
+
+
+
+
+
+
+// For edit borrow modal
+const editBookLogsCategory = document.getElementById('editBorrowLogCategory');
+const editBookLogsCategoryId = document.getElementById('editBorrowLogCategoryId');
+
+if (editBookLogsCategory) {
+    editBookLogsCategory.addEventListener('input', function () {
+        let input = this.value;
+
+        let suggestions = categoryList.filter(category => category.category.toLowerCase().startsWith(input.toLowerCase()));
+
+        suggestions = suggestions.slice(0, 10);
+
+        let datalist = document.getElementById('datalist-categories');
+        if (datalist) {
+            datalist.remove();
+        }
+
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-categories';
+
+        suggestions.forEach(suggestion => {
+            let option = document.createElement('option');
+            option.value = suggestion.category;
+            datalist.appendChild(option);
+        });
+
+        document.body.appendChild(datalist);
+
+        editBookLogsCategory.setAttribute('list', 'datalist-categories');
+    });
+
+    editBookLogsCategory.addEventListener('blur', function () {
+        const input = this.value;
+        const selectedCategory = categoryList.find(category => category.category.toLowerCase() === input.toLowerCase());
+
+        if (selectedCategory) {
+            editBookLogsCategoryId.value = selectedCategory.category_id;
+        } else {
+            editBookLogsCategory.value = '';
+            editBookLogsCategoryId.value = '';
+        }
+    });
+}
+
+

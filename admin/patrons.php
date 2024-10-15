@@ -40,7 +40,6 @@ $patronsOnline = getPatrons($pdo);
 
             </div>
 
-
             <div class="body">
                 <div class="row">
                     <div class="title-26px">
@@ -113,12 +112,6 @@ $patronsOnline = getPatrons($pdo);
                                             <img id="sort-icon-2" src="../images/sort.png" class="sort">
                                         </div>
                                     </th>
-                                    <th onclick="sortTable(3)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Last Visit</div>
-                                            <img id="sort-icon-3" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
                                     <th>
                                         <div class="column-title">Tools</div>
                                     </th>
@@ -142,7 +135,6 @@ $patronsOnline = getPatrons($pdo);
                                             <td><?php echo htmlspecialchars($patrons['firstname'] . ' ' . $patrons['lastname'] . ' ' . $patrons['suffix']); ?></td>
                                             <td><?php echo htmlspecialchars($patrons['age']); ?></td>
                                             <td><?php echo htmlspecialchars($patrons['contact']); ?></td>
-                                            <td></td>
                                             <td>
                                                 <div class="td-center">
                                                     <div class="button-edit" onclick="openEditModal(
@@ -156,32 +148,19 @@ $patronsOnline = getPatrons($pdo);
                             '<?php echo addslashes($patrons['gender']); ?>',
                             '<?php echo addslashes($patrons['contact']); ?>',
                             '<?php echo addslashes($patrons['address']); ?>',
-                            '<?php echo addslashes($patrons['interest']); ?>',
+                            '<?php echo addslashes($patrons['company_name']); ?>',
+                            '<?php echo addslashes($patrons['company_contact']); ?>',
+                            '<?php echo addslashes($patrons['company_address']); ?>',
                             '<?php echo addslashes($patrons['email']); ?>',
-                            '<?php echo addslashes($patrons['password']); ?>'
+                            '<?php echo addslashes($patrons['password']); ?>',
+                             '<?php echo addslashes($patrons['image']); ?>'
                         )">
                                                         <img src="../images/edit-white.png" class="image">
                                                     </div>
-                                                    <div class="button-view" onclick="openViewModal(
-                            <?php echo $patrons['patrons_id']; ?>, 
-                            '<?php echo addslashes($patrons['firstname']); ?>',
-                            '<?php echo addslashes($patrons['middlename']); ?>',
-                            '<?php echo addslashes($patrons['lastname']); ?>',
-                            '<?php echo addslashes($patrons['suffix']); ?>',
-                            '<?php echo addslashes($patrons['birthdate']); ?>',
-                            <?php echo $patrons['age']; ?>,
-                            '<?php echo addslashes($patrons['gender']); ?>',
-                            '<?php echo addslashes($patrons['contact']); ?>',
-                            '<?php echo addslashes($patrons['address']); ?>',
-                            '<?php echo addslashes($patrons['interest']); ?>',
-                            '<?php echo addslashes($patrons['email']); ?>',
-                            '<?php echo addslashes($patrons['password']); ?>'
-                        )">
-                                                        <img src="../images/view-white.png" class="image">
-                                                    </div>
-                                                    <div class="button-delete" onclick="openDeleteModal()">
-                                                        <img src="../images/delete-white.png" class="image">
-                                                    </div>
+
+
+
+                                                   
                                                 </div>
                                             </td>
                                         </tr>
@@ -209,7 +188,6 @@ $patronsOnline = getPatrons($pdo);
 
         <?php include 'modal/add_patrons_modal.php'; ?>
         <?php include 'modal/edit_patrons_modal.php'; ?>
-        <?php include 'modal/view_patrons_modal.php'; ?>
 
 
     </div>
@@ -219,7 +197,7 @@ $patronsOnline = getPatrons($pdo);
 
 
 <script>
-    let sortDirections = [0, 0, 0, 0];
+    let sortDirections = [0, 0, 0];
     const NO_RESULT_COLSPAN = 5;
 </script>
 <script src="js/table.js"></script>

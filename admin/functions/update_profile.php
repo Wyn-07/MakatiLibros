@@ -1,10 +1,10 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');  
 
 include '../../connection.php';
 
 if (isset($_POST['submit'])) {
-    // Sanitize and validate the input data
     $librarianId = filter_var($_POST['librarian_id'], FILTER_SANITIZE_NUMBER_INT);
     $firstname = filter_var($_POST['profile_firstname'], FILTER_SANITIZE_STRING);
     $middlename = filter_var($_POST['profile_middlename'], FILTER_SANITIZE_STRING);
@@ -20,25 +20,67 @@ if (isset($_POST['submit'])) {
     $date = DateTime::createFromFormat('Y-m-d', $birthdate);
     $formattedBirthdate = $date->format('m/d/Y');
 
-    // Check if required fields are empty
+    // Initialize image variable
+    $imageName = null;
+
+    // Process the image
+    if (isset($_FILES['profile_image']) && $_FILES['profile_image']['error'] === UPLOAD_ERR_OK) {
+        $image = $_FILES['profile_image'];
+        $imageTmpName = $image['tmp_name'];
+
+        // Extract current date and time
+        $currentDateTime = date('Ymd_His');
+
+        // Define the image name format: "librarianid_lastname_date_time"
+        $imageName = $librarianId . '_' . $lastname . '_' . $currentDateTime . '.jpg';
+
+        // Set the target directory and file path
+        $targetDir = '../../librarian_images/';
+        $targetFilePath = $targetDir . $imageName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($imageTmpName, $targetFilePath)) {
+            $_SESSION['error_message'] = 'Failed to upload image.';
+            header('Location: ../dashboard.php');
+            exit();
+        }
+    }
+
     if (!empty($librarianId) && !empty($firstname) && !empty($lastname)) {
         try {
-            // Prepare the SQL statement for updating the librarian's information
-            $stmt = $pdo->prepare("UPDATE librarians SET firstname = :firstname, middlename = :middlename, lastname = :lastname, suffix = :suffix, birthdate = :birthdate, age = :age, gender = :gender, contact = :contact, address = :address WHERE librarians_id = :librarian_id");
+            // Prepare the SQL update statement
+            $sql = "UPDATE librarians SET 
+                        firstname = :firstname, 
+                        middlename = :middlename, 
+                        lastname = :lastname, 
+                        suffix = :suffix, 
+                        birthdate = :birthdate, 
+                        age = :age, 
+                        gender = :gender, 
+                        contact = :contact, 
+                        address = :address" . 
+                        (!empty($imageName) ? ", image = :image" : "") . 
+                    " WHERE librarians_id = :librarian_id";
 
-            // Bind parameters
+            $stmt = $pdo->prepare($sql);
+
             $stmt->bindParam(':firstname', $firstname);
             $stmt->bindParam(':middlename', $middlename);
             $stmt->bindParam(':lastname', $lastname);
             $stmt->bindParam(':suffix', $suffix);
-            $stmt->bindParam(':birthdate', $formattedBirthdate); // Use the formatted birthdate
+            $stmt->bindParam(':birthdate', $formattedBirthdate); 
             $stmt->bindParam(':age', $age, PDO::PARAM_INT);
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':contact', $contact);
             $stmt->bindParam(':address', $address);
             $stmt->bindParam(':librarian_id', $librarianId, PDO::PARAM_INT);
+            
+            // Bind the image parameter only if a new image was uploaded
+            if (!empty($imageName)) {
+                $stmt->bindParam(':image', $imageName);
+            }
 
-            // Execute the statement
+            // Execute the update
             if ($stmt->execute()) {
                 $_SESSION['success_message'] = 'Librarian information updated successfully.';
                 $_SESSION['success_display'] = 'flex';
@@ -50,7 +92,6 @@ if (isset($_POST['submit'])) {
             $_SESSION['error_message'] = 'Failed to update librarian information. Error: ' . $e->getMessage();
         }
 
-        // Redirect to the appropriate page
         header('Location: ../dashboard.php');
         exit();
     } else {

@@ -18,14 +18,6 @@
     </div>
 </a> -->
 
-<a href="favorites.php">
-    <div class="sidebar-items">
-        <div class="sidebar-image">
-            <img src="../images/bookmark-white.png" class="image" id="sidebar-bookmark-image">
-        </div>
-        Favorites
-    </div>
-</a>
 
 <a href="borrow.php">
     <div class="sidebar-items">
@@ -42,6 +34,16 @@
             <img src="../images/return-white.png" class="image" id="sidebar-return-image">
         </div>
         Returned
+    </div>
+</a>
+
+
+<a href="favorites.php">
+    <div class="sidebar-items">
+        <div class="sidebar-image">
+            <img src="../images/bookmark-white.png" class="image" id="sidebar-bookmark-image">
+        </div>
+        Favorites
     </div>
 </a>
 

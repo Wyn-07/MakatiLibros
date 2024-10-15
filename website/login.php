@@ -34,65 +34,18 @@ if (isset($_POST['login'])) {
 
         // Check if the stored password is hashed (assuming it starts with $2y$ if hashed by bcrypt)
         if (password_verify($password, $storedPassword) || $storedPassword === $password) {
-            // Password matches, whether hashed or plain
-            $_SESSION['loginStatus'] = "Logged In Successfully.";
-            $_SESSION['loginColor'] = "green";
             $_SESSION['email'] = $emailadd;
             $_SESSION['patrons_id'] = $patron['patrons_id'];
             header("Location: userpage.php");
             exit();
         } else {
-            // Password is incorrect
             $_SESSION['loginStatus'] = "Invalid Password";
-            $_SESSION['loginColor'] = "red";
-            $_SESSION['loginPassBorderColor'] = "red;";
-            $_SESSION['loginEmailBorderColor'] = "";
         }
     } else {
-        // Email not found
         $_SESSION['loginStatus'] = "Invalid Email";
-        $_SESSION['loginColor'] = "red";
-        $_SESSION['loginEmailBorderColor'] = "red;";
-        $_SESSION['loginPassBorderColor'] = "";
     }
 }
 
-
-// if (isset($_POST['login'])) {
-//     $emailadd = $_POST['email'];
-//     $password = $_POST['password'];
-
-//     // Prepare and execute the PDO query
-//     $query = "SELECT * FROM patrons WHERE email = :email";
-//     $stmt = $pdo->prepare($query);
-//     $stmt->bindParam(':email', $emailadd);
-//     $stmt->execute();
-//     $patron = $stmt->fetch(PDO::FETCH_ASSOC);
-
-//     if ($patron) {
-//         // Verify the hashed password
-//         if (password_verify($password, $patron['password'])) {
-//             $_SESSION['loginStatus'] = "Logged In Successfully.";
-//             $_SESSION['loginColor'] = "green";
-//             $_SESSION['email'] = $emailadd;
-//             $_SESSION['patrons_id'] = $patron['patrons_id'];
-//             header("Location: userpage.php");
-//             exit();
-//         } else {
-//             // Password is incorrect
-//             $_SESSION['loginStatus'] = "Invalid Password";
-//             $_SESSION['loginColor'] = "red";
-//             $_SESSION['loginPassBorderColor'] = "red;";
-//             $_SESSION['loginEmailBorderColor'] = "";
-//         }
-//     } else {
-//         // Email not found
-//         $_SESSION['loginStatus'] = "Invalid Email";
-//         $_SESSION['loginColor'] = "red";
-//         $_SESSION['loginEmailBorderColor'] = "red;";
-//         $_SESSION['loginPassBorderColor'] = "";
-//     }
-// }
 ?>
 
 
@@ -160,8 +113,30 @@ if (isset($_GET['message'])) {
 
                             <div class="container-form">
 
-                                <div class="container-success" id="container-success" data-message="<?php echo $message; ?>" style="display: none;">
-                                    <div class="container-success-description"><?php echo $message; ?></div>
+
+
+                                <div class="container-error" id="container-error" style="display: <?php echo isset($_SESSION['loginStatus']) ? 'flex' : 'none'; ?>;">
+                                    <div class="container-error-description">
+                                        <?php
+                                        if (isset($_SESSION['loginStatus'])) {
+                                            echo $_SESSION['loginStatus'];
+                                            unset($_SESSION['loginStatus']);
+                                        }
+                                        ?>
+                                    </div>
+                                    <button type="button" class="button-error-close" onclick="closeErrorStatus()">&times;</button>
+                                </div>
+
+
+                                <div class="container-success" id="container-success"  style="display: <?php echo isset($_SESSION['signupStatus']) ? 'flex' : 'none'; ?>;">
+                                    <div class="container-success-description">
+                                        <?php
+                                        if (isset($_SESSION['signupStatus'])) {
+                                            echo $_SESSION['signupStatus'];
+                                            unset($_SESSION['signupStatus']);
+                                        }
+                                        ?>
+                                    </div>
                                     <button type="button" class="button-success-close" onclick="closeSuccessStatus()">&times;</button>
                                 </div>
 
@@ -169,30 +144,7 @@ if (isset($_GET['message'])) {
                                     Login
                                 </div>
 
-                                <div>
-                                    <?php
-                                    if (isset($_SESSION['loginStatus']) && $_SESSION['loginStatus'] != '') {
-                                        $containerClass = ($_SESSION['loginColor'] == 'green') ? 'alert-success' : 'alert-danger';
-                                    ?>
-                                        <div id="status-container" class="<?php echo $containerClass; ?>">
-                                            <?php echo $_SESSION['loginStatus']; ?>
-                                            <button type="button" class="close-btn" onclick="closeStatus()">&times;</button>
-                                        </div>
-                                    <?php
-                                        unset($_SESSION['loginStatus']);
-                                        unset($_SESSION['loginColor']);
-                                    }
-                                    ?>
 
-
-                                    <script>
-                                        function closeStatus() {
-                                            var status = document.getElementById("status-container");
-                                            status.style.display = "none";
-                                        }
-                                    </script>
-
-                                </div>
 
                                 <div class="container-input-100">
                                     <label for="email">Email</label>
@@ -254,20 +206,3 @@ if (isset($_GET['message'])) {
 
 <script src="js/close-status.js"></script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get the container and its data attribute
-        var successContainer = document.getElementById('container-success');
-        var message = successContainer.getAttribute('data-message');
-
-        // Check if the message is not empty
-        if (message && message.trim() !== '') {
-            // Display the container if there's a message
-            successContainer.style.display = 'flex';
-        } else {
-            // Hide the container if there's no message
-            successContainer.style.display = 'none';
-        }
-    });
-
-</script>
