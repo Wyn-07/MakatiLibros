@@ -89,7 +89,7 @@ book_content_df.loc[:, 'Content'] = book_content_df.apply(
 tfidf_vectorizer = TfidfVectorizer(
     stop_words='english',  
     ngram_range=(1, 2),  
-    min_df=0.01,             
+    min_df=0.001,             
     max_features=10000,  
 )
 

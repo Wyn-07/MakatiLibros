@@ -73,7 +73,7 @@ def get_latest_rated_book_info(patrons_id):
     return result if result else (None, None)  # Return book ID and title or (None, None) if not found
 
 # Fetch the latest rated book ID and title for a specific patron
-patrons_id = 1
+patrons_id = 2
 
 latest_book_id, latest_book_title = get_latest_rated_book_info(patrons_id)
 print(f"Latest rated book ID for patron {patrons_id}: {latest_book_id}, Title: {latest_book_title}")
@@ -92,7 +92,7 @@ book_content_df.loc[:, 'Content'] = book_content_df.apply(
 tfidf_vectorizer = TfidfVectorizer(
     stop_words='english',  
     ngram_range=(1, 2),  
-    min_df=0.01,             
+    min_df=0.001,             
     max_features=10000,  
 )
 

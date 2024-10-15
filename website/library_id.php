@@ -120,7 +120,7 @@
 
                                 <div class="page-title" id="pageTitle">Page 1 Checklist</div>
 
-                                <a href="library_id_print.php" style="display: flex; justify-content: center;" >
+                                <a href="library_id_print.php" style="display: flex; justify-content: center;">
                                     <button class="button-download">Download</button>
                                 </a>
                             </div>
@@ -370,6 +370,16 @@
 
 
                         <script>
+                            // Function to set the height of the application-form-container
+                            function setApplicationFormContainerHeight() {
+                                const applicationFormContainer = document.getElementById('application-form');
+                                if (document.getElementById('application-forms').classList.contains('visible')) {
+                                    applicationFormContainer.style.height = '1500px'; // Set height when visible
+                                } else {
+                                    applicationFormContainer.style.height = ''; // Reset height when not visible
+                                }
+                            }
+
                             // Event listener for the Next button
                             document.getElementById('nextButton').addEventListener('click', function() {
                                 document.getElementById('checklist-form').classList.remove('visible');
@@ -381,6 +391,8 @@
                                 document.getElementById('pageTitle').innerText = 'Page 2 Application Form';
                                 document.getElementById('prevButton').disabled = false;
                                 document.getElementById('nextButton').disabled = true;
+
+                                setApplicationFormContainerHeight(); // Set height when moving to application forms
                             });
 
                             // Event listener for the Previous button
@@ -394,8 +406,14 @@
                                 document.getElementById('pageTitle').innerText = 'Page 1 Checklist';
                                 document.getElementById('prevButton').disabled = true;
                                 document.getElementById('nextButton').disabled = false;
+
+                                setApplicationFormContainerHeight(); // Set height when moving back to checklist
                             });
+
+                            // Initial height setup
+                            setApplicationFormContainerHeight(); // Call this to set the initial height based on visibility
                         </script>
+
 
                     </div>
 
@@ -427,24 +445,6 @@
 <script src="js/sidebar.js"></script>
 
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function adjustHeight() {
-            var containerScroll = document.querySelector('.container-scroll');
-            var aboutHistoryContents = document.querySelector('.about-history-contents');
-
-            if (containerScroll && aboutHistoryContents) {
-                var containerScrollHeight = containerScroll.offsetHeight;
-                var extraSpace = 170; // Adjust this value to add more space below
-                aboutHistoryContents.style.height = (containerScrollHeight + extraSpace) + 'px';
-            }
-        }
-
-        adjustHeight();
-
-        window.addEventListener('resize', adjustHeight);
-    });
-</script>
 
 
 <script>

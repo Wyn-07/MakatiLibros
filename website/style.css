@@ -193,6 +193,7 @@ a {
     flex-direction: column;
     box-sizing: border-box;
     width: 100%;
+    padding: 20px;
 }
 
 
@@ -344,7 +345,7 @@ body.no-scroll {
     width: 25%;
     height: calc(100vh - 120px);
     gap: 5px;
-    z-index: 1;
+    z-index: 3;
     background-color: black;
     opacity: 0;
     transform: translateX(-100%);
@@ -1923,7 +1924,6 @@ label {
 }
 
 .contact-white-container:hover {
-    cursor: pointer;
     transform: scale(1.1);
 }
 
@@ -2022,6 +2022,7 @@ label {
     width: 62%;
     padding: 20px;
     border: 1px solid black;
+    
 }
 
 
@@ -2209,12 +2210,15 @@ label {
     transition: opacity 0.5s ease, transform 0.5s ease;
     position: absolute;
 
+
+
 }
 
 .application-form.visible,
 .application-checklist-container.visible {
     opacity: 1;
     transform: translateY(0);
+ 
 }
 
 .application-form.hidden,

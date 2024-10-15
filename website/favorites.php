@@ -168,7 +168,7 @@ include 'functions/fetch_favorites.php';
                                         <!-- Hidden form for borrowing books -->
                                         <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
                                             <input type="hidden" name="book_id" id="bookIdInput">
-                                            <input type="hidden" name="patrons_id" id="userIdInput">
+                                            <input type="hidden" name="patrons_id" id="patronIdInput">
                                             <input type="hidden" name="status" value="Pending">
                                             <input type="hidden" name="borrow_date" value="">
                                             <input type="hidden" name="return_date" value="">
@@ -179,7 +179,7 @@ include 'functions/fetch_favorites.php';
                                         <!-- Hidden form for add favorite books -->
                                         <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
                                             <input type="hidden" name="add_book_id" id="addBookIdInput">
-                                            <input type="hidden" name="add_patrons_id" id="addUserIdInput">
+                                            <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
                                             <input type="hidden" name="status" id="statusInput" value="Added">
                                             <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
                                         </form>
@@ -187,7 +187,7 @@ include 'functions/fetch_favorites.php';
                                         <!-- Hidden form for remove favorite books -->
                                         <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
                                             <input type="hidden" name="remove_book_id" id="removeBookIdInput">
-                                            <input type="hidden" name="remove_patrons_id" id="removeUserIdInput">
+                                            <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
                                             <input type="hidden" name="status" id="statusInput" value="Remove">
                                             <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
                                         </form>
@@ -342,89 +342,23 @@ include 'functions/fetch_favorites.php';
 <script src="js/close-status.js"></script>
 <script src="js/tooltips.js"></script>
 
+<script>
+    const patronId = <?php echo json_encode($patrons_id); ?>;
+    const addPatronId = <?php echo json_encode($patrons_id); ?>;
+    const removePatronId = <?php echo json_encode($patrons_id); ?>;
+</script>
+
+<script src="js/borrow-submit.js"></script>
+<script src="js/add-favorites-submit.js"></script>
+<script src="js/remove-favorites-submit.js"></script>
+
+
+
 
 <!-- <script src="js/book-list-pagination.js"></script> -->
 
 
-<!-- borrow submit -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const borrowButton = document.querySelector('.button-borrow');
 
-        if (borrowButton) {
-            borrowButton.addEventListener('click', function() {
-                // Get the book ID from the DOM
-                const bookId = document.querySelector('.books-contents-id').textContent.trim();
-
-                // Get the user ID from PHP (passed into the script)
-                const userId = <?php echo json_encode($patrons_id); ?>;
-
-                if (bookId && userId) {
-                    // Populate the hidden form fields with book and user data
-                    document.getElementById('bookIdInput').value = bookId;
-                    document.getElementById('userIdInput').value = userId;
-
-                    // Submit the form
-                    document.getElementById('borrowForm').submit();
-                }
-            });
-        }
-    });
-</script>
-
-
-
-<!-- add favorites submit -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const favoriteButton = document.querySelector('.button-bookmark');
-
-        if (favoriteButton) {
-            favoriteButton.addEventListener('click', function() {
-                // Get the book ID from the DOM
-                const addBookId = document.querySelector('.books-contents-id').textContent.trim();
-
-                // Get the user ID from PHP (passed into the script)
-                const addUserId = <?php echo json_encode($patrons_id); ?>;
-
-                if (addBookId && addUserId) {
-                    // Populate the hidden form fields with book and user data
-                    document.getElementById('addBookIdInput').value = addBookId;
-                    document.getElementById('addUserIdInput').value = addUserId;
-
-                    // Submit the form
-                    document.getElementById('addFavoriteForm').submit();
-                }
-            });
-        }
-    });
-</script>
-
-<!-- remove favorites submit -->
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const favoriteButton = document.querySelector('.button-bookmark-red');
-
-        if (favoriteButton) {
-            favoriteButton.addEventListener('click', function() {
-                // Get the book ID from the DOM
-                const removeBookId = document.querySelector('.books-contents-id').textContent.trim();
-
-                // Get the user ID from PHP (passed into the script)
-                const removeUserId = <?php echo json_encode($patrons_id); ?>;
-
-                if (removeBookId && removeUserId) {
-                    // Populate the hidden form fields with book and user data
-                    document.getElementById('removeBookIdInput').value = removeBookId;
-                    document.getElementById('removeUserIdInput').value = removeUserId;
-
-                    // Submit the form
-                    document.getElementById('removeFavoriteForm').submit();
-                }
-            });
-        }
-    });
-</script>
 
 
 <script>

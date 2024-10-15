@@ -83,6 +83,7 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
                         </div>
 
                     </div>
+
                 </div>
 
 
@@ -97,28 +98,28 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
 
                     // Prepare the SQL query with a JOIN to the category table
                     $query = "SELECT 
-                b.category_id, 
-                c.category AS category_name, 
-                b.title, 
-                b.image, 
-                b.book_id, 
-                b.author_id, 
-                a.author, -- Fetch the author's name
-                IFNULL(ROUND(AVG(r.ratings), 2), 0) as avg_rating,
-                br.status AS borrow_status, -- Fetch the borrow status specific to the patron
-                f.status AS favorite_status,
-                pr.ratings AS patron_rating -- Fetch the logged-in patron's rating
-            FROM books b
-            LEFT JOIN author a ON b.author_id = a.author_id -- Join to get the author's name
-            LEFT JOIN category c ON b.category_id = c.category_id -- Join to get the category name
-            LEFT JOIN ratings r ON b.book_id = r.book_id
-            LEFT JOIN borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id -- Join to get the borrow status specific to the patron
-            LEFT JOIN favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id -- Join to get the favorite status specific to the patron
-            LEFT JOIN ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id -- Join to get the patron's rating
-            LEFT JOIN condemned cd ON b.book_id = cd.book_id -- Left join with condemned table
-            LEFT JOIN missing ms ON b.book_id = ms.book_id -- Left join with missing table
-            WHERE 
-                cd.book_id IS NULL AND ms.book_id IS NULL";
+                                b.category_id, 
+                                c.category AS category_name, 
+                                b.title, 
+                                b.image, 
+                                b.book_id, 
+                                b.author_id, 
+                                a.author, -- Fetch the author's name
+                                IFNULL(ROUND(AVG(r.ratings), 2), 0) as avg_rating,
+                                br.status AS borrow_status, -- Fetch the borrow status specific to the patron
+                                f.status AS favorite_status,
+                                pr.ratings AS patron_rating -- Fetch the logged-in patron's rating
+                            FROM books b
+                            LEFT JOIN author a ON b.author_id = a.author_id -- Join to get the author's name
+                            LEFT JOIN category c ON b.category_id = c.category_id -- Join to get the category name
+                            LEFT JOIN ratings r ON b.book_id = r.book_id
+                            LEFT JOIN borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id -- Join to get the borrow status specific to the patron
+                            LEFT JOIN favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id -- Join to get the favorite status specific to the patron
+                            LEFT JOIN ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id -- Join to get the patron's rating
+                            LEFT JOIN condemned cd ON b.book_id = cd.book_id -- Left join with condemned table
+                            LEFT JOIN missing ms ON b.book_id = ms.book_id -- Left join with missing table
+                            WHERE 
+                                cd.book_id IS NULL AND ms.book_id IS NULL";
 
                     // Add the category filter to the query if it exists
                     if ($categoryFilter) {
@@ -161,7 +162,7 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
                     </div>
 
                     <div class="container-search row">
-                        <input type="text" class="search">
+                        <input type="text" placeholder="Search by title" class="search">
 
                         <div class="container-search-image">
                             <div class="search-image">
@@ -173,187 +174,163 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
                 </div>
 
 
-                <div class="row">
+                <div class="result-contents">
 
+                    <div class="row-contents-center" id="bookContainer">
+                        <?php if ($books): ?>
+                            <?php foreach ($books as $book): ?>
+                                <div class="container-books-2">
 
-                    <div class="result-contents">
+                                    <div class="books-id" style="display: none"><?php echo htmlspecialchars($book['book_id']); ?></div>
 
-                        <div class="row-contents-center" id="bookContainer">
-                            <?php if ($books): ?>
-                                <?php foreach ($books as $book): ?>
-                                    <div class="container-books-2">
-
-                                        <div class="books-id" style="display: none"><?php echo htmlspecialchars($book['book_id']); ?></div>
-
-                                        <div class="books-image-2">
-                                            <img src="../book_images/<?= htmlspecialchars($book['image']) ?>" class="image">
-                                        </div>
-
-                                        <div class="books-category" style="display: none"><?php echo htmlspecialchars($book['category_name']); ?></div>
-
-                                        <div class="books-borrow-status" style="display: none"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
-                                        <div class="books-favorite" style="display: none"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
-                                        <div class="books-ratings" style="display: none"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
-                                        <div class="books-user-ratings" style="display: none"><?php echo htmlspecialchars($book['patron_rating']); ?></div>
-
-                                        <div class="books-name"><?= htmlspecialchars($book['title']) ?></div>
-                                        <div class="books-author"><?= htmlspecialchars($book['author']) ?></div>
+                                    <div class="books-image-2">
+                                        <img src="../book_images/<?= htmlspecialchars($book['image']) ?>" class="image">
                                     </div>
 
+                                    <div class="books-category" style="display: none"><?php echo htmlspecialchars($book['category_name']); ?></div>
 
-                                <?php endforeach; ?>
-                            <?php else: ?>
-                                <div class="no-results">No books found for the selected category.</div>
-                            <?php endif; ?>
-                        </div>
+                                    <div class="books-borrow-status" style="display: none"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
+                                    <div class="books-favorite" style="display: none"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
+                                    <div class="books-ratings" style="display: none"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
+                                    <div class="books-user-ratings" style="display: none"><?php echo htmlspecialchars($book['patron_rating']); ?></div>
 
-
-                        <!-- Hidden form for borrowing books -->
-                        <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
-                            <input type="hidden" name="book_id" id="bookIdInput">
-                            <input type="hidden" name="patrons_id" id="patronIdInput">
-                            <input type="hidden" name="borrow_status" value="Pending">
-                            <input type="hidden" name="borrow_date" value="">
-                            <input type="hidden" name="return_date" value="">
-                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                        </form>
-
-
-                        <!-- Hidden form for add favorite books -->
-                        <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
-                            <input type="hidden" name="add_book_id" id="addBookIdInput">
-                            <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
-                            <input type="hidden" name="status" id="statusInput" value="Added">
-                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                        </form>
-
-                        <!-- Hidden form for remove favorite books -->
-                        <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
-                            <input type="hidden" name="remove_book_id" id="removeBookIdInput">
-                            <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
-                            <input type="hidden" name="status" id="statusInput" value="Remove">
-                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
-                        </form>
-
-                        <div class="row-books-contents" id="book-details" style="display: none;">
-                            <div class="container-books-contents">
-
-                                <div class="books-contents-id" style="display: none;">ID</div>
-
-                                <div class="books-contents-image">Image</div>
-                                <div class="books-contents">
-                                    <div class="row row-between">
-
-                                        <div class="books-contents-category" style="display:none;"></div>
-                                        <div class="books-contents-borrow-status" style="display:none;"></div>
-                                        <div class="books-contents-favorite" style="display:none;"></div>
-
-                                        <div class="books-contents-name">Book Sample</div>
-                                        <div class="button button-close">&times;</div>
-                                    </div>
-                                    <div class="books-contents-author">Book Author</div>
-
-                                    <div class="books-contents-ratings" style="display:none"></div>
-                                    <div class="books-contents-user-ratings" style="display: none;"></div>
-
-                                    <div class="row">
-                                        <div class="star-rating">
-                                            <span class="star" data-value="1">&#9733;</span>
-                                            <span class="star" data-value="2">&#9733;</span>
-                                            <span class="star" data-value="3">&#9733;</span>
-                                            <span class="star" data-value="4">&#9733;</span>
-                                            <span class="star" data-value="5">&#9733;</span>
-                                        </div>
-                                        <div class="ratings-description">
-                                            <div class="ratings-number"></div>&nbspout of 5
-                                        </div>
-                                    </div>
-
-                                    <div class="row">
-                                        <div class="tooltipss">
-                                            <button class="button button-borrow" onmouseover='showTooltip(this)' onmouseout='hideTooltip(this)'>BORROW</button>
-                                            <span class='tooltiptexts'>Only books from the Circulation Section can be borrowed, but you can still read this book in the library.</span>
-                                        </div>
-
-                                        <div class="tooltipss" id="tooltip-add">
-                                            <button class="button button-bookmark"><img src="../images/bookmark-white.png" alt=""></button>
-                                            <span class='tooltiptexts'>Add to favorites</span>
-                                        </div>
-
-
-                                        <div class="tooltipss" id="tooltip-remove">
-                                            <button class="button button-bookmark-red"><img src="../images/bookmark-white.png" alt=""></button>
-                                            <span class='tooltiptexts'>Remove to favorites</span>
-                                        </div>
-
-
-                                        <div class="tooltipss" id="tooltip-add-ratings">
-                                            <div class="button button-ratings" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></div>
-                                            <span class='tooltiptexts'>Add ratings</span>
-                                        </div>
-
-                                        <div class="tooltipss" id="tooltip-update-ratings">
-                                            <button class="button button-ratings-yellow" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></button>
-                                            <span class='tooltiptexts'>Update ratings</span>
-                                        </div>
-                                    </div>
-
-                                    <?php include 'modal/add_rating_modal.php'; ?>
+                                    <div class="books-name"><?= htmlspecialchars($book['title']) ?></div>
+                                    <div class="books-author"><?= htmlspecialchars($book['author']) ?></div>
                                 </div>
-                            </div>
-                        </div>
 
 
-
-
-
-
-                        <div class="row row-center">
-
-                            <div class="pagination-controls">
-                                Items per page:
-                                <select class="page-select" id="itemsPerPage">
-                                    <option value="20">20</option>
-                                    <option value="40">40</option>
-                                    <option value="60">60</option>
-                                </select>
-                            </div>
-
-                            <div class="pagination-controls">
-                                <button class="button button-page" id="prevPage">Previous</button>
-                                <span class="page-number" id="pageInfo"></span>
-                                <button class="button button-page" id="nextPage">Next</button>
-                            </div>
-
-                        </div>
-
-
-
-
-
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <div class="no-results">No books found for the selected category.</div>
+                        <?php endif; ?>
                     </div>
 
 
+                    <!-- Hidden form for borrowing books -->
+                    <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
+                        <input type="hidden" name="book_id" id="bookIdInput">
+                        <input type="hidden" name="patrons_id" id="patronIdInput">
+                        <input type="hidden" name="borrow_status" value="Pending">
+                        <input type="hidden" name="borrow_date" value="">
+                        <input type="hidden" name="return_date" value="">
+                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                    </form>
+
+
+                    <!-- Hidden form for add favorite books -->
+                    <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
+                        <input type="hidden" name="add_book_id" id="addBookIdInput">
+                        <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
+                        <input type="hidden" name="status" id="statusInput" value="Added">
+                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                    </form>
+
+                    <!-- Hidden form for remove favorite books -->
+                    <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
+                        <input type="hidden" name="remove_book_id" id="removeBookIdInput">
+                        <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
+                        <input type="hidden" name="status" id="statusInput" value="Remove">
+                        <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                    </form>
 
 
                 </div>
 
 
 
+                <div class="row-books-contents" id="book-details" style="display: none;">
+                    <div class="container-books-contents">
+
+                        <div class="books-contents-id" style="display: none;">ID</div>
+
+                        <div class="books-contents-image">Image</div>
+                        <div class="books-contents">
+                            <div class="row row-between">
+
+                                <div class="books-contents-category" style="display:none;"></div>
+                                <div class="books-contents-borrow-status" style="display:none;"></div>
+                                <div class="books-contents-favorite" style="display:none;"></div>
+
+                                <div class="books-contents-name">Book Sample</div>
+                                <div class="button button-close">&times;</div>
+                            </div>
+                            <div class="books-contents-author">Book Author</div>
+
+                            <div class="books-contents-ratings" style="display:none"></div>
+                            <div class="books-contents-user-ratings" style="display: none;"></div>
+
+                            <div class="row">
+                                <div class="star-rating">
+                                    <span class="star" data-value="1">&#9733;</span>
+                                    <span class="star" data-value="2">&#9733;</span>
+                                    <span class="star" data-value="3">&#9733;</span>
+                                    <span class="star" data-value="4">&#9733;</span>
+                                    <span class="star" data-value="5">&#9733;</span>
+                                </div>
+                                <div class="ratings-description">
+                                    <div class="ratings-number"></div>&nbspout of 5
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="tooltipss">
+                                    <button class="button button-borrow" onmouseover='showTooltip(this)' onmouseout='hideTooltip(this)'>BORROW</button>
+                                    <span class='tooltiptexts'>Only books from the Circulation Section can be borrowed, but you can still read this book in the library.</span>
+                                </div>
+
+                                <div class="tooltipss" id="tooltip-add">
+                                    <button class="button button-bookmark"><img src="../images/bookmark-white.png" alt=""></button>
+                                    <span class='tooltiptexts'>Add to favorites</span>
+                                </div>
+
+
+                                <div class="tooltipss" id="tooltip-remove">
+                                    <button class="button button-bookmark-red"><img src="../images/bookmark-white.png" alt=""></button>
+                                    <span class='tooltiptexts'>Remove to favorites</span>
+                                </div>
+
+
+                                <div class="tooltipss" id="tooltip-add-ratings">
+                                    <div class="button button-ratings" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></div>
+                                    <span class='tooltiptexts'>Add ratings</span>
+                                </div>
+
+                                <div class="tooltipss" id="tooltip-update-ratings">
+                                    <button class="button button-ratings-yellow" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></button>
+                                    <span class='tooltiptexts'>Update ratings</span>
+                                </div>
+                            </div>
+
+                            <?php include 'modal/add_rating_modal.php'; ?>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="row row-center">
+
+                    <div class="pagination-controls">
+                        Items per page:
+                        <select class="page-select" id="itemsPerPage">
+                            <option value="20">20</option>
+                            <option value="40">40</option>
+                            <option value="60">60</option>
+                        </select>
+                    </div>
+
+                    <div class="pagination-controls">
+                        <button class="button button-page" id="prevPage">Previous</button>
+                        <span class="page-number" id="pageInfo"></span>
+                        <button class="button button-page" id="nextPage">Next</button>
+                    </div>
+
+                </div>
 
             </div>
 
 
-
-
-
-
-
-
         </div>
-
-
-
 
 
         <div class="container-footer">
