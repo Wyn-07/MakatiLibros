@@ -44,25 +44,25 @@ foreach ($result as $row) {
 }
 
 // Function to remove duplicates based on 'title'
-function removeDuplicates($array)
-{
-    $unique = [];
-    $titles = [];
+// function removeDuplicates($array)
+// {
+//     $unique = [];
+//     $titles = [];
 
-    foreach ($array as $item) {
-        if (!in_array($item['title'], $titles)) {
-            $unique[] = $item;
-            $titles[] = $item['title'];
-        }
-    }
+//     foreach ($array as $item) {
+//         if (!in_array($item['title'], $titles)) {
+//             $unique[] = $item;
+//             $titles[] = $item['title'];
+//         }
+//     }
 
-    return $unique;
-}
+//     return $unique;
+// }
 
 // Remove duplicate titles within each category_id
-foreach ($books as $category_id => $bookDetails) {
-    $books[$category_id] = removeDuplicates($bookDetails);
-}
+// foreach ($books as $category_id => $bookDetails) {
+//     $books[$category_id] = removeDuplicates($bookDetails);
+// }
 
 // Remove category_id with no books
 $books = array_filter($books, function ($bookDetails) {

@@ -1,28 +1,12 @@
-import mysql.connector
-import pandas as pd
-from sklearn.decomposition import TruncatedSVD
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-from scipy.sparse import csr_matrix
-import numpy as np
-import json
-import sys
+from utils import *
+
 
 patrons_id = int(sys.argv[1])  
 
+conn = create_connection()
 
-# Establish a connection to the MySQL database
-conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='',
-    database='librodb'
-)
+cursor = conn.cursor(prepared=True)
 
-# Create a cursor object to interact with the database
-cursor = conn.cursor()
-
-# SQL query to fetch all necessary data for collaborative filtering
 query_ratings = """
 SELECT 
     r.rating_id,
@@ -44,19 +28,17 @@ WHERE
 """
 
 
-# Execute the query
 cursor.execute(query_ratings)
 
-# Fetch all results
 results = cursor.fetchall()
 
 # Convert results to a DataFrame for better visualization
 column_ratings = ['Rating ID', 'Book ID', 'Patrons ID', 'Date', 'Ratings', 'Title']
 df = pd.DataFrame(results, columns=column_ratings)
 
-# Close the cursor and connection
 cursor.close()
 conn.close()
+
 
 # Pivot the DataFrame to create a User-Item matrix (Patrons as rows, Books as columns)
 user_item_matrix = df.pivot_table(index='Patrons ID', columns='Book ID', values='Ratings').fillna(0)
@@ -117,13 +99,10 @@ collab_recommended_books = get_collaborative_filtering_recommendations(patrons_i
 
 if __name__ == "__main__":
     try:
-        # Create a response list with only book IDs
         response = [book_id for book_id, title, score in collab_recommended_books]
         
-        # Ensure the response is properly formatted as JSON
         json_response = json.dumps(response, ensure_ascii=True)
 
-        # Print the response to be captured by PHP
         print(json_response)
 
     except Exception as e:

@@ -15,7 +15,6 @@ conn = mysql.connector.connect(
     database='librodb'      
 )
 
-# Create a cursor object to interact with the database
 cursor = conn.cursor()
 
 # SQL query to fetch all necessary data for content-based filtering
@@ -73,7 +72,7 @@ def get_latest_rated_book_info(patrons_id):
     return result if result else (None, None)  # Return book ID and title or (None, None) if not found
 
 # Fetch the latest rated book ID and title for a specific patron
-patrons_id = 2
+patrons_id = 1
 
 latest_book_id, latest_book_title = get_latest_rated_book_info(patrons_id)
 print(f"Latest rated book ID for patron {patrons_id}: {latest_book_id}, Title: {latest_book_title}")

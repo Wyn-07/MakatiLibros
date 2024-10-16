@@ -1,22 +1,9 @@
-import mysql.connector
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import linear_kernel
-import json
-import sys
+from utils import *
 
-# Establish a connection to the MySQL database
-conn = mysql.connector.connect(
-    host='localhost',       
-    user='root',           
-    password='',           
-    database='librodb'      
-)
+conn = create_connection()
 
-# Create a cursor object to interact with the database
-cursor = conn.cursor()
+cursor = conn.cursor(prepared=True)
 
-# SQL query to fetch all necessary data for content-based filtering
 query_books = """
 SELECT 
     b.book_id, 
@@ -41,10 +28,8 @@ WHERE
     cd.book_id IS NULL AND ms.book_id IS NULL     
 """
 
-# Execute the query
 cursor.execute(query_books)
 
-# Fetch all results
 results = cursor.fetchall()
 
 # Convert results to a DataFrame for better visualization
@@ -107,23 +92,18 @@ def get_content_based_recommendations(book_id, top_n):
     return recommendations_list
 
 
-# Get the book ID passed from PHP as an argument
 book_id = int(sys.argv[1])  
 
-# Get content-based recommendations for the given book ID
 content_recommended_books = get_content_based_recommendations(book_id, 10)
 
 
 if __name__ == "__main__":
     try:
        
-        # Create a response list with only book IDs, converting to standard int
         response = [int(book_id) for book_id, title, score in content_recommended_books]
 
-        # Ensure the response is properly formatted as JSON
         json_response = json.dumps(response, ensure_ascii=True)
 
-        # Print the response to be captured by PHP
         print(json_response)
 
     except Exception as e:

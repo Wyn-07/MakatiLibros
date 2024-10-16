@@ -24,7 +24,10 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
 
 
+include 'functions/fetch_books_limit.php';
+
 include 'functions/fetch_books.php';
+
 ?>
 
 
@@ -119,24 +122,144 @@ include 'functions/fetch_books.php';
                 <div class="container-content">
 
 
-                    <!-- rating behaviour -->
-                    <?php include 'rating_behaviour.php'; ?>
+                <?php
+                    $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
+
+                    // Function to run Python script and return book IDs
+                    function get_book_ids_from_python($pythonScript, $patrons_id)
+                    {
+                        return json_decode(shell_exec("py $pythonScript " . $patrons_id), true);
+                    }
+
+                    // Function to fetch book details from the database based on book IDs
+                    function fetch_books_from_ids($pdo, $book_ids, $patrons_id)
+                    {
+                        if ($book_ids && count($book_ids) > 0) {
+                            $book_ids_str = implode(',', array_map('intval', $book_ids)); 
+
+                            $sql = "
+                                        SELECT 
+                                            b.book_id, 
+                                            b.title, 
+                                            a.author, 
+                                            c.category, 
+                                            b.image,
+                                            IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
+                                            br.status AS borrow_status, 
+                                            f.status AS favorite_status, 
+                                            pr.ratings AS patron_rating
+                                        FROM 
+                                            books b
+                                        LEFT JOIN 
+                                            author a ON b.author_id = a.author_id
+                                        LEFT JOIN 
+                                            category c ON b.category_id = c.category_id
+                                        LEFT JOIN 
+                                            ratings r ON b.book_id = r.book_id
+                                        LEFT JOIN 
+                                            borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
+                                        LEFT JOIN 
+                                            favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
+                                        LEFT JOIN 
+                                            ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
+                                        WHERE 
+                                            b.book_id IN ($book_ids_str)
+                                        GROUP BY 
+                                            b.book_id
+                                        ORDER BY 
+                                            FIELD(b.book_id, $book_ids_str)
+                                    ";
+
+                            $stmt = $pdo->prepare($sql);
+                            $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+                            $stmt->execute();
+
+                            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        }
+                        return [];
+                    }
+
+                    // Fetch book recommendations for Borrow-Based Collaborative Filtering (CF) 
+                    $books_borrow_cf = fetch_books_from_ids($pdo, get_book_ids_from_python('borrow_cf_svd.py', $patrons_id), $patrons_id);
+
+                    // Fetch book recommendations for Borrow-Based Content-Based Filtering (CBF)
+                    $books_borrow_cbf = fetch_books_from_ids($pdo, get_book_ids_from_python('borrow_cbf_tfidf.py', $patrons_id), $patrons_id);
+
+                    // Fetch book recommendations for Borrow-Based Collaborative Filtering (CF) 
+                    $books_rating_cf = fetch_books_from_ids($pdo, get_book_ids_from_python('ratings_cf_svd.py', $patrons_id), $patrons_id);
+
+                    // Fetch book recommendations for Borrow-Based Content-Based Filtering (CBF)
+                    $books_rating_cbf = fetch_books_from_ids($pdo, get_book_ids_from_python('ratings_cbf_tfidf.py', $patrons_id), $patrons_id);
+
+                    
+                    ?>
 
 
-                    <!-- latest rated book -->
-                    <?php include 'rate_latest.php'; ?>
+
+                    <!-- Section for Borrow-Based Collaborative Filtering (CF) -->
+                    <div class="contents-big-padding">
+                        <div class="row row-between">
+                            <div>Based on your borrowing habits</div>
+                            <div class="button button-view-more" data-category="borrow_cf">View More</div>
+                        </div>
+                        <div class="row-books-container">
+                            <?php
+                            $recommend_books = $books_borrow_cf; 
+                            include 'books_display.php';
+                            ?>
+                        </div>
+                    </div>
+
+                    <!-- Section for Borrow-Based Collaborative Filtering (CF) -->
+                    <div class="contents-big-padding">
+                        <div class="row row-between">
+                            <div>Based on your latest borrow</div>
+                            <div class="button button-view-more" data-category="borrow_cbf">View More</div>
+                        </div>
+                        <div class="row-books-container">
+                            <?php
+                            $recommend_books = $books_borrow_cbf; 
+                            include 'books_display.php';
+                            ?>
+                        </div>
+                    </div>
 
 
-                    <!-- borrowing behaviour -->
-                    <?php include 'borrowing_behaviour.php'; ?>
+                    <!-- Section for Collaborative Filtering (CF) -->
+                    <div class="contents-big-padding">
+                        <div class="row row-between">
+                            <div>Based on your rating behaviour</div>
+                            <div class="button button-view-more" data-category="cf">View More</div>
+                        </div>
+                        <div class="row-books-container">
+                            <?php
+                            $recommend_books = $books_rating_cf; 
+                            include 'books_display.php';
+                            ?>
+                        </div>
+                    </div>
 
 
-                    <!-- latest borrow book -->
-                    <?php include 'borrow_latest.php'; ?>
+                    <!-- Section for Content-Based Filtering (CBF) -->
+                    <div class="contents-big-padding">
+                        <div class="row row-between">
+                            <div>Based on your latest rated book</div>
+                            <div class="button button-view-more" data-category="cbf">View More</div>
+                        </div>
+                        <div class="row-books-container">
+                            <?php
+                            $recommend_books = $books_rating_cbf;
+                            include 'books_display.php';
+                            ?>
+                        </div>
+                    </div>
 
 
+                
+
+                    
                     <!-- categories -->
-                    <?php foreach ($books as $category => $bookDetails): ?>
+                    <?php foreach ($books_limit as $category => $bookDetails): ?>
                         <div class="contents-big-padding">
                             <div class="row row-between">
                                 <div><?php echo htmlspecialchars($bookDetails[0]['category_name']); ?></div>
@@ -422,16 +545,42 @@ include 'functions/fetch_books.php';
         form.action = 'results_recommendation.php';
 
         // Create hidden inputs for book details
-        const fields = [
-            { name: 'book_id', value: book.book_id },
-            { name: 'title', value: book.title },
-            { name: 'author', value: book.author },
-            { name: 'image', value: book.image },
-            { name: 'avg_rating', value: book.avg_rating }, // Optional: include average rating
-            { name: 'borrow_status', value: book.borrow_status }, // Optional: include borrow status
-            { name: 'favorite_status', value: book.favorite_status }, // Optional: include favorite status
-            { name: 'patron_rating', value: book.patron_rating }, // Optional: include patron rating
-            { name: 'category_name', value: book.category_name } // Include category name
+        const fields = [{
+                name: 'book_id',
+                value: book.book_id
+            },
+            {
+                name: 'title',
+                value: book.title
+            },
+            {
+                name: 'author',
+                value: book.author
+            },
+            {
+                name: 'image',
+                value: book.image
+            },
+            {
+                name: 'avg_rating',
+                value: book.avg_rating
+            }, // Optional: include average rating
+            {
+                name: 'borrow_status',
+                value: book.borrow_status
+            }, // Optional: include borrow status
+            {
+                name: 'favorite_status',
+                value: book.favorite_status
+            }, // Optional: include favorite status
+            {
+                name: 'patron_rating',
+                value: book.patron_rating
+            }, // Optional: include patron rating
+            {
+                name: 'category_name',
+                value: book.category_name
+            } // Include category name
         ];
 
         fields.forEach(field => {

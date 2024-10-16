@@ -109,7 +109,7 @@ def get_content_based_recommendations(book_id, top_n):
 
 # Get the book ID passed from PHP as an argument
 # book_id = int(sys.argv[1])  
-book_id = 1
+book_id = 2
 
 
 # SQL query to fetch the title for the specific book ID

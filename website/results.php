@@ -28,12 +28,9 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
 <body>
     <div class="wrapper">
 
-
         <div class="container-top">
             <?php include 'navbar.php'; ?>
         </div>
-
-
 
         <div id="overlay" class="overlay"></div>
 
@@ -93,7 +90,7 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
 
                     // Include the fetch_category function
                     include 'functions/fetch_category.php';
-                    // Get the category filter
+
                     $categoryFilter = isset($_GET['category']) ? $_GET['category'] : '';
 
                     // Prepare the SQL query with a JOIN to the category table
@@ -104,26 +101,26 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
                                 b.image, 
                                 b.book_id, 
                                 b.author_id, 
-                                a.author, -- Fetch the author's name
+                                a.author,
                                 IFNULL(ROUND(AVG(r.ratings), 2), 0) as avg_rating,
-                                br.status AS borrow_status, -- Fetch the borrow status specific to the patron
+                                br.status AS borrow_status, 
                                 f.status AS favorite_status,
-                                pr.ratings AS patron_rating -- Fetch the logged-in patron's rating
+                                pr.ratings AS patron_rating 
                             FROM books b
-                            LEFT JOIN author a ON b.author_id = a.author_id -- Join to get the author's name
-                            LEFT JOIN category c ON b.category_id = c.category_id -- Join to get the category name
+                            LEFT JOIN author a ON b.author_id = a.author_id 
+                            LEFT JOIN category c ON b.category_id = c.category_id 
                             LEFT JOIN ratings r ON b.book_id = r.book_id
-                            LEFT JOIN borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id -- Join to get the borrow status specific to the patron
-                            LEFT JOIN favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id -- Join to get the favorite status specific to the patron
-                            LEFT JOIN ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id -- Join to get the patron's rating
-                            LEFT JOIN condemned cd ON b.book_id = cd.book_id -- Left join with condemned table
-                            LEFT JOIN missing ms ON b.book_id = ms.book_id -- Left join with missing table
+                            LEFT JOIN borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id 
+                            LEFT JOIN favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id 
+                            LEFT JOIN ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id 
+                            LEFT JOIN condemned cd ON b.book_id = cd.book_id 
+                            LEFT JOIN missing ms ON b.book_id = ms.book_id 
                             WHERE 
                                 cd.book_id IS NULL AND ms.book_id IS NULL";
 
                     // Add the category filter to the query if it exists
                     if ($categoryFilter) {
-                        $query .= " AND c.category LIKE :categoryFilter"; // Changed to AND to keep the original WHERE intact
+                        $query .= " AND c.category LIKE :categoryFilter"; 
                     }
 
                     // Add GROUP BY clause
@@ -141,16 +138,12 @@ $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
                     if ($patrons_id !== null) {
                         $stmt->bindValue(':patrons_id', $patrons_id, PDO::PARAM_INT);
                     } else {
-                        // Handle the case where patron ID is not set
-                        // Optionally, you can redirect or show an error message here
                         echo "Patron ID is not set. Please log in.";
-                        exit; // Stop further execution if patron ID is not set
+                        exit; 
                     }
 
-                    // Execute the statement
                     $stmt->execute();
 
-                    // Fetch books
                     $books = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
                     ?>

@@ -1,24 +1,9 @@
-import mysql.connector
-import pandas as pd
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics.pairwise import linear_kernel
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-import numpy as np
-import json
-import sys
+from utils import *
 
-# Establish a connection to the MySQL database
-conn = mysql.connector.connect(
-    host='localhost',       
-    user='root',           
-    password='',           
-    database='librodb'      
-)
+conn = create_connection()
 
-# Create a cursor object to interact with the database
-cursor = conn.cursor()
+cursor = conn.cursor(prepared=True)
 
-# SQL query to fetch all necessary data for content-based filtering
 query_books = """
 SELECT 
     b.book_id, 
@@ -43,19 +28,14 @@ WHERE
     cd.book_id IS NULL AND ms.book_id IS NULL     
 """
 
-
-# Execute the query
 cursor.execute(query_books)
 
-# Fetch all results
 results = cursor.fetchall()
 
-# Convert results to a DataFrame for better visualization
 column_books = ['Book ID', 'Acc Number', 'Class Number', 'Title', 'Copyright', 'Image', 'Author Name', 'Category Name']
 df = pd.DataFrame(results, columns=column_books)
 
 
-# Function to fetch the latest rated book ID and title for a user
 def get_latest_rated_book_info(patrons_id):
     query = """
     SELECT b.book_id, b.title 
@@ -129,20 +109,16 @@ def get_content_based_recommendations(book_id, top_n):
     return recommendations_list
 
 
-# Example call to get content-based recommendations
 content_recommended_books = get_content_based_recommendations(latest_book_id, 10)
 
 
 
 if __name__ == "__main__":
     try:
-        # Create a response list with only book IDs, converting to standard int
         response = [int(book_id) for book_id, title, score in content_recommended_books]
         
-        # Ensure the response is properly formatted as JSON
         json_response = json.dumps(response, ensure_ascii=True)
 
-        # Print the response to be captured by PHP
         print(json_response)
 
     except Exception as e:

@@ -1,28 +1,11 @@
-import mysql.connector
-import pandas as pd
-from sklearn.decomposition import TruncatedSVD
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, mean_squared_error, root_mean_squared_error
-import numpy as np
-from scipy.sparse import csr_matrix
-from sklearn.preprocessing import normalize
-import json
-import sys
+from utils import *
 
 patrons_id = int(sys.argv[1])  
 
-# Establish a connection to the MySQL database
-conn = mysql.connector.connect(
-    host='localhost',
-    user='root',
-    password='',
-    database='librodb'
-)
+conn = create_connection()
 
-# Create a cursor object to interact with the database
-cursor = conn.cursor()
+cursor = conn.cursor(prepared=True)
 
-# SQL query to fetch all necessary data for collaborative filtering based on borrowings
 query_borrow = """
 SELECT 
     b.borrow_id,
@@ -42,10 +25,8 @@ WHERE
     b.status = 'Returned' AND cd.book_id IS NULL AND ms.book_id IS NULL  
 """
 
-# Execute the query
 cursor.execute(query_borrow)
 
-# Fetch all results
 results = cursor.fetchall()
 
 # Convert results to a DataFrame for better visualization
@@ -59,7 +40,6 @@ borrow_count = df.groupby(['Patrons ID', 'Book ID']).size().reset_index(name='Bo
 df = pd.merge(df, borrow_count, on=['Patrons ID', 'Book ID'], how='left')
 
 
-# Close the cursor and connection
 cursor.close()
 conn.close()
 
@@ -110,19 +90,15 @@ def get_collaborative_filtering_recommendations(patrons_id, top_n):
     return list(zip(recommended_books, recommended_titles, recommended_scores))
 
 
-# Example call to get collaborative filtering recommendations
 collab_recommended_books = get_collaborative_filtering_recommendations(int(patrons_id), 10)
 
 
 if __name__ == "__main__":
     try:
-        # Create a response list with only book IDs
         response = [book_id for book_id, title, score in collab_recommended_books]
 
-        # Ensure the response is properly formatted as JSON
         json_response = json.dumps(response, ensure_ascii=True)
 
-        # Print the response to be captured by PHP
         print(json_response)
 
     except Exception as e:
