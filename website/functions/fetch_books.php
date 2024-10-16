@@ -1,6 +1,4 @@
 <?php
-
-// Query to fetch book category names, titles, images, author names, book_id, average ratings, borrow status, favorite status, and the patron's rating
 $sql = "SELECT b.category_id, c.category AS category_name, b.title, b.image, b.book_id, b.author_id, 
                a.author, -- Fetch the author's name
                IFNULL(ROUND(AVG(r.ratings), 2), 0) as avg_rating,
@@ -38,7 +36,7 @@ foreach ($result as $row) {
             'category_id' => $row['category_id'],
             'category_name' => $row['category_name'], 
             'avg_rating' => number_format($row['avg_rating'], 1),
-            'borrow_status' => $row['borrow_status'], // Changed from 'status' to 'borrow_status'
+            'borrow_status' => $row['borrow_status'], 
             'favorite_status' => $row['favorite_status'],
             'patron_rating' => $row['patron_rating'] 
         ];

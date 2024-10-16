@@ -24,7 +24,7 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 $message = isset($_GET['message']) ? htmlspecialchars($_GET['message']) : '';
 
 
-include 'functions/fetch_books_limit.php';
+include 'functions/fetch_books.php';
 ?>
 
 
@@ -93,11 +93,11 @@ include 'functions/fetch_books_limit.php';
 
 
                     <form action="results_search.php" method="GET" class="container-search row">
-                        <input type="text" class="search" id="search" name="query" placeholder="Search by title">
+                        <input type="text" class="search" id="search" name="query" autocomplete="off" placeholder="Search by title">
 
                         <div class="container-search-image">
                             <div class="search-image">
-                                <img src="../images/search-black.png" class="image" onclick="document.querySelector('form').submit();" >
+                                <img src="../images/search-black.png" class="image" onclick="document.querySelector('form').submit();">
                             </div>
                         </div>
                     </form>
@@ -203,6 +203,7 @@ include 'functions/fetch_books_limit.php';
                             </div>
                         </div>
                     <?php endforeach; ?>
+
 
 
                 </div>
@@ -335,4 +336,111 @@ include 'functions/fetch_books_limit.php';
             });
         });
     });
+</script>
+
+
+
+<script>
+    const bookList = <?php echo json_encode($books); ?>; // JSON-encoded array of books
+
+    const searchInput = document.getElementById('search');
+
+    searchInput.addEventListener('input', function() {
+        const input = this.value.trim().toLowerCase();
+        let suggestions = [];
+
+        // Iterate through each category and filter matching books
+        Object.values(bookList).forEach(bookCategory => {
+            bookCategory.forEach(book => {
+                if (book.title.toLowerCase().includes(input)) {
+                    suggestions.push(book); // Push the entire book object for later use
+                }
+            });
+        });
+
+        // Limit to top 10 suggestions
+        suggestions = suggestions.slice(0, 10);
+
+        // Clear previous suggestions
+        let datalist = document.getElementById('datalist-search');
+        if (datalist) {
+            datalist.remove();
+        }
+
+        // Create new datalist for suggestions
+        datalist = document.createElement('datalist');
+        datalist.id = 'datalist-search';
+
+        suggestions.forEach(book => {
+            const option = document.createElement('option');
+            option.value = book.title; // Display the book title
+            option.dataset.bookId = book.book_id; // Attach book_id as data attribute
+            option.dataset.author = book.author; // Attach author as data attribute
+            option.dataset.image = book.image; // Attach image as data attribute
+            option.dataset.avgRating = book.avg_rating; // Attach average rating
+            option.dataset.borrowStatus = book.borrow_status; // Attach borrow status
+            option.dataset.favoriteStatus = book.favorite_status; // Attach favorite status
+            option.dataset.patronRating = book.patron_rating; // Attach patron rating
+            option.dataset.categoryName = book.category_name; // Attach category name as data attribute
+            datalist.appendChild(option);
+        });
+
+        document.body.appendChild(datalist);
+        searchInput.setAttribute('list', 'datalist-search');
+    });
+
+    // Event listener for when the user selects a suggestion
+    searchInput.addEventListener('change', function() {
+        const selectedTitle = this.value.trim();
+        const selectedBook = findBookByTitle(selectedTitle);
+
+        // If a valid book is selected, redirect to results_recommendation.php
+        if (selectedBook) {
+            submitBookDetails(selectedBook);
+        }
+    });
+
+    // Function to find a book by title
+    function findBookByTitle(title) {
+        for (const bookCategory of Object.values(bookList)) {
+            for (const book of bookCategory) {
+                if (book.title === title) {
+                    return book; // Return the matching book object
+                }
+            }
+        }
+        return null; // Return null if no matching book is found
+    }
+
+    // Function to submit the selected book details
+    function submitBookDetails(book) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = 'results_recommendation.php';
+
+        // Create hidden inputs for book details
+        const fields = [
+            { name: 'book_id', value: book.book_id },
+            { name: 'title', value: book.title },
+            { name: 'author', value: book.author },
+            { name: 'image', value: book.image },
+            { name: 'avg_rating', value: book.avg_rating }, // Optional: include average rating
+            { name: 'borrow_status', value: book.borrow_status }, // Optional: include borrow status
+            { name: 'favorite_status', value: book.favorite_status }, // Optional: include favorite status
+            { name: 'patron_rating', value: book.patron_rating }, // Optional: include patron rating
+            { name: 'category_name', value: book.category_name } // Include category name
+        ];
+
+        fields.forEach(field => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = field.name;
+            input.value = field.value;
+            form.appendChild(input);
+        });
+
+        // Submit the form
+        document.body.appendChild(form);
+        form.submit();
+    }
 </script>

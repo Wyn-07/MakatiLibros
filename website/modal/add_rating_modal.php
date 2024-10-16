@@ -66,7 +66,7 @@
                     }
                 } else {
                     // Handle the case when no rating is found
-                    console.log(data.message); // For debugging
+                    console.log(data.message); 
                 }
             })
             .catch(error => console.error('Error:', error));
