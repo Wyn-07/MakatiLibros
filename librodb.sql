@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 16, 2024 at 04:56 PM
+-- Generation Time: Oct 16, 2024 at 10:59 PM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -27654,7 +27654,7 @@ INSERT INTO `favorites` (`favorite_id`, `book_id`, `patrons_id`, `date`, `status
 (89, 42, 1, 'September 17, 2024', 'Remove'),
 (90, 3, 1, 'September 18, 2024', 'Added'),
 (91, 2, 1, 'October 15, 2024', 'Remove'),
-(92, 1, 1, 'October 15, 2024', 'Remove'),
+(92, 1, 1, 'October 16, 2024', 'Added'),
 (93, 4, 1, 'September 18, 2024', 'Added'),
 (94, 5, 1, 'September 18, 2024', 'Added'),
 (95, 2281, 1, 'October 07, 2024', 'Added'),
