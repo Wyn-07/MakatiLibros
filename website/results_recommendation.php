@@ -100,10 +100,10 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
                             <div class="books-contents-author"><?php echo htmlspecialchars($author); ?></div>
                             <div class="books-contents-ratings" style="display:none"><?php echo htmlspecialchars($avg_rating); ?></div>
 
-                            <div class="books-contents-category"><?php echo htmlspecialchars($category_name); ?></div>
-                            <div class="books-contents-borrow-status"><?php echo htmlspecialchars($borrow_status); ?></div>
-                            <div class="books-contents-favorite"><?php echo htmlspecialchars($favorite_status); ?></div>
-                            <div class="books-contents-user-ratings"><?php echo htmlspecialchars($patron_rating); ?></div>
+                            <div class="books-contents-category" style="display:none"><?php echo htmlspecialchars($category_name); ?></div>
+                            <div class="books-contents-borrow-status" style="display:none"><?php echo htmlspecialchars($borrow_status); ?></div>
+                            <div class="books-contents-favorite" style="display:none"><?php echo htmlspecialchars($favorite_status); ?></div>
+                            <div class="books-contents-user-ratings" style="display:none"><?php echo htmlspecialchars($patron_rating); ?></div>
 
                             <div class="row">
                                 <div class="star-rating">
@@ -121,9 +121,7 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
                             <div class="row">
                                 <div class="tooltipss">
-                                    <button class="button button-borrow" onmouseover='showTooltip(this)' onmouseout='hideTooltip(this)'>
-                                        BORROW
-                                    </button>
+                                    <button class="button button-borrow" onmouseover='showTooltip(this)' onmouseout='hideTooltip(this)'>BORROW</button>
                                     <span class='tooltiptexts'></span>
                                 </div>
 
@@ -180,11 +178,10 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
                                         if (bookBorrowStatus.toLowerCase() === 'pending') {
                                             borrowButton.disabled = true;
                                             tooltip.textContent = 'You have already requested to borrow this book. You can now claim it at the library.';
-                                        } else if (bookBorrowStatus.toLowerCase() === 'borrowed') {
+                                        } else if (bookBorrowStatus.toLowerCase() === 'borrowing') {
                                             borrowButton.disabled = true;
                                             tooltip.textContent = 'You are still borrowing the book. Please return it on time.';
                                         } else {
-                                            borrowButton.textContent = 'Borrow';
                                             tooltip.style.display = 'none';
                                         }
                                     }
@@ -258,21 +255,202 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
 
 
+                <!-- Book Similar -->
+                <div class="container-content">
+
+                    <div class="result-contents">
+
+                        <div class="contents-title">
+                            Similar Books
+                        </div>
+
+
+                        <?php
+                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                            $book_id = $_POST['book_id'] ?? '';
+                        }
+
+                        // Define the path to your Python script
+                        $pythonScript = 'search_cbf_tfidf.py';
+
+                        // Execute the Python script with the book_id argument and capture the output
+                        $book_cbf_id_json = shell_exec("py $pythonScript " . escapeshellarg($book_id));
+
+                        // Decode the JSON output from the Python script
+                        $book_cbf_id = json_decode($book_cbf_id_json, true);
+
+                        // Initialize an empty array to store book results
+                        $books_search_cbf = [];
+
+                        if ($book_cbf_id && count($book_cbf_id) > 0) {
+                            // Create named placeholders for each book ID in the array
+                            $placeholders = [];
+                            foreach ($book_cbf_id as $index => $id) {
+                                $placeholders[] = ":book_id_{$index}";
+                            }
+                            $placeholders_str = implode(',', $placeholders);
+
+                            // Prepare the SQL query using named placeholders for book IDs
+                            $sql = "
+                                    SELECT 
+                                        b.book_id, 
+                                        b.title, 
+                                        a.author, 
+                                        c.category, 
+                                        b.image,
+                                        IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
+                                        br.status AS borrow_status, 
+                                        f.status AS favorite_status, 
+                                        pr.ratings AS patron_rating
+                                    FROM 
+                                        books b
+                                    LEFT JOIN 
+                                        author a ON b.author_id = a.author_id
+                                    LEFT JOIN 
+                                        category c ON b.category_id = c.category_id
+                                    LEFT JOIN 
+                                        ratings r ON b.book_id = r.book_id
+                                    LEFT JOIN 
+                                        borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
+                                    LEFT JOIN 
+                                        favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
+                                    LEFT JOIN 
+                                        ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
+                                    WHERE 
+                                        b.book_id IN ($placeholders_str)
+                                    GROUP BY 
+                                        b.book_id
+                                    ORDER BY 
+                                        FIELD(b.book_id, $placeholders_str)
+                                ";
+
+                            // Prepare the SQL statement
+                            $stmt = $pdo->prepare($sql);
+
+                            // Bind the patron's ID to the query
+                            $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+
+                            // Bind the book IDs dynamically using the named placeholders
+                            foreach ($book_cbf_id as $index => $book_id) {
+                                $stmt->bindValue(":book_id_{$index}", $book_id, PDO::PARAM_INT);
+                            }
+
+                            // Execute the statement
+                            $stmt->execute();
+
+                            // Fetch the result as an associative array
+                            $books_search_cbf = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        }
+                        ?>
 
 
 
 
+                        <div>
+
+                            <div class="row-contents-center" id="bookContainer">
+                                <?php if (!empty($books_search_cbf)): ?>
+                                    <?php foreach ($books_search_cbf as $row): ?>
+                                        <div class="container-books-2" id="book-<?php echo htmlspecialchars($row['book_id']); ?>">
+                                            <div class="books-image-2">
+                                                <img src="../book_images/<?= htmlspecialchars($row['image']) ?>" class="image">
+                                            </div>
+                                            <div class="books-name-2">
+                                                <?php echo htmlspecialchars($row['title']); ?>
+                                            </div>
+                                            <div class="books-author" style="display:none">
+                                                <?php echo htmlspecialchars($row['author']); ?>
+                                            </div>
+                                            <div class="books-categories" style="display:none">
+                                                <?php echo htmlspecialchars($row['category']); ?>
+                                            </div>
+                                            <div class="books-copyright" style="display:none">
+                                                <?php echo htmlspecialchars($row['copyright']); ?>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <p>No recommended books found.</p>
+                                <?php endif; ?>
+                            </div>
 
 
+                            <div id="not-found-message" class="container-unavailable" style="display: none;">
+                                <div class="unavailable-image">
+                                    <img src="../images/no-books.png" class="image">
+                                </div>
+                                <div class="unavailable-text">Not Found</div>
+                            </div>
 
 
+                            <div class="row-books-contents" id="book-details" style="display: none;">
+                                <div class="container-books-contents">
+                                    <div class="books-contents-image">Image</div>
+                                    <div class="books-contents">
+
+                                        <div class="row row-between">
+                                            <div class="books-contents-name">Book Sample</div>
+                                            <div class="button button-close">&times;</div>
+                                        </div>
+
+                                        <div class="books-contents-author">Book Author</div>
+                                        <div class="books-contents-ratings" style="display:none"></div>
+
+                                        <div class="row">
+                                            <div class="star-rating">
+                                                <span class="star" data-value="1">&#9733;</span>
+                                                <span class="star" data-value="2">&#9733;</span>
+                                                <span class="star" data-value="3">&#9733;</span>
+                                                <span class="star" data-value="4">&#9733;</span>
+                                                <span class="star" data-value="5">&#9733;</span>
+                                            </div>
+
+                                            <div class="ratings-description">
+                                                <div class="ratings-number"> </div>&nbspout of 5
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="button button-borrow">BORROW</div>
+                                            <div class="button button-bookmark"><img src="../images/bookmark-white.png" alt=""></div>
+                                            <div class="button button-ratings" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></div>
+                                        </div>
+
+                                        <?php include 'modal/add_rating_modal.php'; ?>
+
+                                    </div>
+                                </div>
+
+                                <script src="js/book-details-toggle-2.js"></script>
+
+                            </div>
+
+                            <div class="row row-center">
+
+                                <div class="pagination-controls">
+                                    Items per page:
+                                    <select class="page-select" id="itemsPerPage">
+                                        <option value="20">20</option>
+                                        <option value="40">40</option>
+                                        <option value="60">60</option>
+                                    </select>
+                                </div>
+
+                                <div class="pagination-controls">
+                                    <button class="button button-page" id="prevPage">Previous</button>
+                                    <span class="page-number" id="pageInfo"></span>
+                                    <button class="button button-page" id="nextPage">Next</button>
+                                </div>
+
+                            </div>
+
+                        </div>
 
 
+                    </div>
 
 
-
-
-
+                </div>
 
 
             </div>

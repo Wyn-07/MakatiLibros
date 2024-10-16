@@ -131,6 +131,9 @@ include 'functions/fetch_books.php';
                     <?php include 'borrowing_behaviour.php'; ?>
 
 
+                    <!-- latest borrow book -->
+                    <?php include 'borrow_latest.php'; ?>
+
 
                     <!-- categories -->
                     <?php foreach ($books as $category => $bookDetails): ?>

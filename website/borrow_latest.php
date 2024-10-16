@@ -2,7 +2,7 @@
 
 $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
-$pythonScript = 'ratings_cbf_tfidf.py';
+$pythonScript = 'borrow_cbf_tfidf.py';
 
 // Get the book IDs for content-based filtering (CBF)
 $book_cbf_id_json = shell_exec("py $pythonScript " . $patrons_id);
@@ -11,7 +11,7 @@ $book_cbf_id_json = shell_exec("py $pythonScript " . $patrons_id);
 $book_cbf_id = json_decode($book_cbf_id_json, true);
 
 // Initialize an empty array for books
-$books_rating_cbf = [];
+$books_borrow_cbf = [];
 
 if ($book_cbf_id && count($book_cbf_id) > 0) {
     // Create a comma-separated string from the book IDs
@@ -55,14 +55,14 @@ if ($book_cbf_id && count($book_cbf_id) > 0) {
 
     $stmt->execute();
 
-    $books_rating_cbf = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $books_borrow_cbf = $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 ?>
 
 
 <div class="contents-big-padding">
     <div class="row row-between">
-        <div>Based on your latest rated book</div>
+        <div>Based on your latest borrow book</div>
         <div class="button button-view-more" data-category="Category 1">View More</div>
     </div>
     <div class="row-books-container">
@@ -72,25 +72,25 @@ if ($book_cbf_id && count($book_cbf_id) > 0) {
             </div>
         </div>
         <div class="row-books">
-            <?php if ($books_rating_cbf && count($books_rating_cbf) > 0): ?>
-                <?php foreach ($books_rating_cbf as $book_rating): ?>
+            <?php if ($books_borrow_cbf && count($books_borrow_cbf) > 0): ?>
+                <?php foreach ($books_borrow_cbf as $book_borrow): ?>
                     <div class="container-books">
                         <div class="books-id" style="display: none;">
-                            <?php echo htmlspecialchars($book_rating['book_id']); ?>
+                            <?php echo htmlspecialchars($book_borrow['book_id']); ?>
                         </div>
 
                         <div class="books-image">
-                            <img src="../book_images/<?php echo htmlspecialchars($book_rating['image']); ?>" class="image" alt="Book Image" loading="lazy">
+                            <img src="../book_images/<?php echo htmlspecialchars($book_borrow['image']); ?>" class="image" alt="Book Image" loading="lazy">
                         </div>
 
-                        <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book_rating['category']); ?></div>
-                        <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book_rating['borrow_status']); ?></div>
-                        <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book_rating['favorite_status']); ?></div>
-                        <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book_rating['avg_rating']); ?></div>
-                        <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book_rating['patron_rating']); ?></div>
+                        <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book_borrow['category']); ?></div>
+                        <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book_borrow['borrow_status']); ?></div>
+                        <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book_borrow['favorite_status']); ?></div>
+                        <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book_borrow['avg_rating']); ?></div>
+                        <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book_borrow['patron_rating']); ?></div>
 
-                        <div class="books-name"><?php echo htmlspecialchars($book_rating['title']); ?></div>
-                        <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book_rating['author']); ?></div>
+                        <div class="books-name"><?php echo htmlspecialchars($book_borrow['title']); ?></div>
+                        <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book_borrow['author']); ?></div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
