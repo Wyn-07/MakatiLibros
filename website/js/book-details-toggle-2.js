@@ -11,8 +11,9 @@ books.forEach(book => {
 
         // Get book details
         const bookId = book.querySelector('.books-id').textContent;
-        const bookCategory = book.querySelector('.books-categories').textContent;
         const bookStatus = book.querySelector('.books-status').textContent;
+        const bookCategory = book.querySelector('.books-categories').textContent;
+        const bookBorrowStatus = book.querySelector('.books-borrow-status').textContent;
         const bookFavorite = book.querySelector('.books-favorite').textContent;
 
         const bookTitle = book.querySelector('.books-name-2').textContent;
@@ -26,7 +27,7 @@ books.forEach(book => {
         const bookDetailsContainer = document.getElementById('book-details');
         bookDetailsContainer.querySelector('.books-contents-id').textContent = bookId;
         bookDetailsContainer.querySelector('.books-contents-category').textContent = bookCategory;
-        bookDetailsContainer.querySelector('.books-contents-status').textContent = bookStatus;
+        bookDetailsContainer.querySelector('.books-contents-borrow-status').textContent = bookBorrowStatus;
         bookDetailsContainer.querySelector('.books-contents-favorite').textContent = bookFavorite;
 
         bookDetailsContainer.querySelector('.books-contents-name').textContent = bookTitle;
@@ -50,55 +51,66 @@ books.forEach(book => {
 
 
 
-        // Check if bookCategory is not equal to 'Circulation Section'
-        if (bookCategory.toLowerCase() !== 'circulation section'.toLowerCase()) {
-            const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
-            const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
 
-            if (borrowButton) {
-                borrowButton.disabled = true;
-            }
 
-            if (tooltip) {
-                tooltip.style.display = 'flex';
-            }
-        } else {
-            const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
-            const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
+        
 
-            if (bookStatus.toLowerCase() === 'pending') {
-                if (borrowButton) {
-                    borrowButton.disabled = true;
-                    tooltip.textContent = 'You have already requested to borrow this book. You can now claim it at the library';
-                }
+         // Check if bookCategory is not equal to 'Circulation Section'
+         const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
+         const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
+ 
+ 
+         // Check if the book status is "Unavailable" and book category is not 'Circulation'
+         if (bookStatus === 'Unavailable' && bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === '') {
+             if (borrowButton) {
+                 borrowButton.disabled = true; // Disable the borrow button
+                 tooltip.textContent = 'Unavailable to borrow because it has been borrowed by someone else.'; // Set tooltip message
+             }
+             if (tooltip) {
+                 tooltip.style.display = 'flex'; // Show the tooltip
+             }
+         } else if (bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === 'pending') {
+             if (borrowButton) {
+                 borrowButton.disabled = true;
+                 tooltip.textContent = 'You have already requested to borrow this book. You can now claim it at the library';
+             }
+ 
+             if (tooltip) {
+                 tooltip.style.display = 'flex';
+             }
+         } else if (bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === 'borrowing') {
+             if (borrowButton) {
+                 borrowButton.disabled = true;
+                 tooltip.textContent = 'You are still borrowing the book. Please return it on time.';
+             }
+ 
+             if (tooltip) {
+                 tooltip.style.display = 'flex';
+             }
+         } else if (bookStatus === 'Available' && bookCategory.toLowerCase() !== 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === '') {
+             const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
+             const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
+ 
+             if (borrowButton) {
+                 borrowButton.disabled = true;
+                 tooltip.textContent = 'Only books from the Circulation Section can be borrowed, but you can still read this book in the library.';
+             }
+ 
+ 
+             if (tooltip) {
+                 tooltip.style.display = 'flex';
+             }
+         } else {
+             if (borrowButton) {
+                 borrowButton.disabled = false; // Disable the borrow button
+             }
+             if (tooltip) {
+                 tooltip.style.display = 'none'; // Show the tooltip
+             }
+         }
 
-                if (tooltip) {
-                    tooltip.style.display = 'flex';
-                }
+         
 
-            } else if (bookStatus.toLowerCase() === 'borrowed') {
-                if (borrowButton) {
-                    borrowButton.disabled = true;
-                    tooltip.textContent = 'You are still borrowing the book. Please return it on time.';
-
-                }
-
-                if (tooltip) {
-                    tooltip.style.display = 'flex';
-                }
-
-            } else {
-                if (borrowButton) {
-                    borrowButton.disabled = false;
-                    borrowButton.textContent = 'Borrow';
-                }
-
-                if (tooltip) {
-                    tooltip.style.display = 'none';
-                }
-            }
-
-        }
 
 
 

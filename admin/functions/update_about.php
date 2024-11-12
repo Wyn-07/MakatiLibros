@@ -182,10 +182,10 @@ if (isset($_POST['submit'])) {
 
         // Execute the update
         if ($stmt->execute()) {
-            $_SESSION['success_message'] = 'Mission and vision information updated successfully.';
+            $_SESSION['success_message'] = 'Information updated successfully.';
             $_SESSION['success_display'] = 'flex';
         } else {
-            $_SESSION['error_message'] = 'Failed to update mission and vision information.';
+            $_SESSION['error_message'] = 'Failed to update information.';
             $_SESSION['error_display'] = 'flex';
         }
     } catch (PDOException $e) {

@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -36,6 +36,12 @@ if (isset($_POST['login'])) {
         if (password_verify($password, $storedPassword) || $storedPassword === $password) {
             $_SESSION['email'] = $emailadd;
             $_SESSION['patrons_id'] = $patron['patrons_id'];
+
+            //  // Set cookies to remember the user for 30 days
+            //  setcookie('email', $emailadd, time() + (30 * 24 * 60 * 60), '/');  // 30 days
+            //  setcookie('patrons_id', $patron['patrons_id'], time() + (30 * 24 * 60 * 60), '/');
+
+             
             header("Location: userpage.php");
             exit();
         } else {
@@ -63,15 +69,18 @@ if (isset($_GET['message'])) {
 <body>
     <div class="wrapper">
 
+
+
         <div class="container-top">
             <div class="row row-between-top">
 
                 <div class="row-auto">
                     <div class="container-round logo">
-                        <img src="../images/makati-logo.png" class="image">
+                        <img src="../images/library-logo.png" class="image">
                     </div>
                     Makati City Hall Library
                 </div>
+
 
 
                 <div class="container-navigation">
@@ -85,20 +94,95 @@ if (isset($_GET['message'])) {
 
                 </div>
 
+                <style>
+                    .menu-hidden {
+                        display:none;
+                    }
+                    .container-round.menu {
+                        position: relative;
+                        /* Allows the dropdown to be positioned relative to this button */
+                        cursor: pointer;
+                    }
+
+                    /* Dropdown menu styling */
+                    .menu-content {
+                        display: none;
+                        /* Hidden by default */
+                        position: absolute;
+                        top: 100%;
+                        /* Positions dropdown right below the menu button */
+                        right: 0;
+                        /* Aligns the dropdown with the right side of the button */
+                        background-color: white;
+                        box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                        padding: 10px;
+                        z-index: 1;
+                    }
+
+                    .menu-content a {
+                        color: black;
+                        padding: 8px 16px;
+                        text-decoration: none;
+                        display: block;
+                    }
+
+                    .menu-content a:hover {
+                        background-color: #ddd;
+                    }
+
+                    /* Show the menu when the 'menu-show' class is applied */
+                    .menu-show {
+                        display: block;
+                    }
+                </style>
+
+                <div class="container-round menu-hidden" id="menuButton">
+                    <img src="../images/expand-arrow-white.png" class="image">
+                </div>
+
+                <div id="dropdownMenu" class="menu-content">
+                    <a href="homepage.php">HOME</a>
+                    <a href="login.php">LOG IN</a>
+                    <a href="signup.php">SIGN UP</a>
+                </div>
+
+
+                <script>
+                    document.getElementById('menuButton').onclick = function() {
+                        document.getElementById('dropdownMenu').classList.toggle('menu-show');
+                    };
+                </script>
+
+
+
+                <script>
+                    function toggleMenu() {
+                        const dropdownMenu = document.getElementById('dropdownMenu');
+                        dropdownMenu.classList.toggle('menu-show');
+                    }
+                </script>
+
             </div>
         </div>
+
+
+        <!-- loading animation -->
+        <div id="loading-overlay">
+            <div class="spinner"></div>
+        </div>
+
 
 
         <div class="row-body">
 
             <div class="container-content row-center">
 
-                <div class="container-login row">
+                <div class="container-login row form-row">
 
                     <div class="container-login-left">
 
                         <div class="container-left-image">
-                            <img src="../images/makati-logo.png" class="image">
+                            <img src="../images/library-logo.png" class="image">
                         </div>
 
                         <div class="left-description">
@@ -128,7 +212,7 @@ if (isset($_GET['message'])) {
                                 </div>
 
 
-                                <div class="container-success" id="container-success"  style="display: <?php echo isset($_SESSION['signupStatus']) ? 'flex' : 'none'; ?>;">
+                                <div class="container-success" id="container-success" style="display: <?php echo isset($_SESSION['signupStatus']) ? 'flex' : 'none'; ?>;">
                                     <div class="container-success-description">
                                         <?php
                                         if (isset($_SESSION['signupStatus'])) {
@@ -205,4 +289,4 @@ if (isset($_GET['message'])) {
 
 
 <script src="js/close-status.js"></script>
-
+<script src="js/loading-animation.js"></script>

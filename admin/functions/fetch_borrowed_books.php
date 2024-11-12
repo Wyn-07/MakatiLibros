@@ -4,6 +4,9 @@ function getBorrowedBooks($pdo) {
    $query = "SELECT 
               b.borrow_id,         
               b.borrow_date,
+              b.borrow_time,
+              b.return_date,
+              b.return_time,
               b.status, 
               u.patrons_id,        
               u.firstname, 
@@ -20,6 +23,8 @@ function getBorrowedBooks($pdo) {
               patrons u ON b.patrons_id = u.patrons_id 
           JOIN 
               books bk ON b.book_id = bk.book_id
+          WHERE 
+              b.status = 'Borrowing'
           ORDER BY 
               b.borrow_date DESC"; 
 
@@ -35,11 +40,14 @@ function getBorrowedBooks($pdo) {
         $patronsName = trim($row['firstname'] . ' ' . $row['middlename'] . ' ' . $row['lastname'] . ' ' . $row['suffix']);
         
         $borrowedBooks[] = [
-            'borrow_id' => $row['borrow_id'],  // Include borrow_id in the result
+            'borrow_id' => $row['borrow_id'],  
             'borrow_date' => $row['borrow_date'],
-            'patrons_id' => $row['patrons_id'], // Include patrons_id
-            'patrons_name' => $patronsName,     // Set patrons_name
-            'book_id' => $row['book_id'],       // Include book_id
+            'borrow_time' => $row['borrow_time'],
+            'return_date' => $row['return_date'],
+            'return_time' => $row['return_time'],
+            'patrons_id' => $row['patrons_id'],
+            'patrons_name' => $patronsName,   
+            'book_id' => $row['book_id'],      
             'title' => $row['title'],
             'acc_number' => $row['acc_number'],     
             'class_number' => $row['class_number'], 

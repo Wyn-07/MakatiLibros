@@ -114,6 +114,12 @@
 }
 
 
+.row-filter {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
 .column {
     display: flex;
     flex-direction: column;
@@ -247,6 +253,20 @@ a {
 .sidebar-items:hover #sidebar-content-image {
     content: url(../images/content-black.png);
 }
+
+.sidebar-items:hover #sidebar-delinquent-image {
+    content: url(../images/ban-black.png);
+}
+
+.sidebar-items:hover #sidebar-librarian-image {
+    content: url(../images/librarian-black.png);
+}
+
+
+.sidebar-items:hover #sidebar-reports-image {
+    content: url(../images/reports-black.png);
+}
+
 
 .sidebar-items:hover #sidebar-expand-arrow-transaction,
 .sidebar-items:hover #sidebar-expand-arrow-books,
@@ -403,6 +423,13 @@ a {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
+.container-bar.full-width {
+    background-color: #393E46;
+    border-radius: 20px;
+    width: 100%;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
 
 .container-pie {
     background-color: #6A737E;
@@ -547,6 +574,50 @@ button:disabled {
     height: 16px;
 }
 
+.container-search {
+    border-radius: 10px;
+    border: 1px solid;
+    display: flex;
+    flex-direction: row;
+    width: auto;
+    height: 100%;
+    overflow: hidden;
+    margin: 0 5px;
+    padding: 0 10px;
+}
+
+.container-image-clear {
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: none;
+}
+
+.container-search-icon {
+    padding: 10px;
+    align-items: center;
+    justify-content: center;
+    background-color: #5F656F;
+    border-radius: 10px;
+    border: solid 1px black;
+    transition: transform 0.2s;
+}
+
+.container-search-icon:hover{
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.container-image-search {
+    width: 20px;
+    height: 20px;
+    
+}
+
+.table-search {
+    width: 300px;
+}
+
 .table-search,
 .table-select {
     border-radius: 10px;
@@ -555,10 +626,12 @@ button:disabled {
     border: 1px solid;
 }
 
+
 .table-search:hover,
 .table-select:hover {
     border: 1px solid #5F656F;
 }
+
 
 .table-select:hover {
     cursor: pointer;
@@ -738,19 +811,18 @@ button {
 
 .button-delete {
     background-color: #dc3545;
-    color: white;
+    width: 40px;
+    height: 40px;
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
     transition: transform 0.2s;
-    padding: 5px 20px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
 }
 
 .button-delete:hover {
     background-color: #c82333;
     cursor: pointer;
     transform: scale(1.1);
-    color: white;
 }
 
 
@@ -808,7 +880,26 @@ button {
 }
 
 
+.button-filter {
+    transition: transform 0.2s;
+}
 
+.button-filter:hover {
+    background-color: black;
+    color: white; 
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+.button-filter.selected-filter {
+    background-color: black;
+    color: white; 
+}
+
+.button-filter.active {
+    background-color: black;
+    color: white; 
+}
 
 
 /* Style the modal */
@@ -1894,3 +1985,35 @@ input[readonly] {
 
 
 
+
+
+/* Loading overlay styling */
+#loading-overlay {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+}
+
+/* Spinner styling */
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #ccc;
+    border-top-color: #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+/* Spinner animation */
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

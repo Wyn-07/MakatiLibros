@@ -8,30 +8,15 @@
 </a>
 
 
-<div>
-    <div class="sidebar-items" id="transaction">
-        <div class="row row-between">
-            <div class="row">
-                <div class="sidebar-image">
-                    <img src="../images/transaction-white.png" class="image"
-                        id="sidebar-transaction-image">
-                </div>
-                Transaction
-            </div>
-            <div class="sidebar-dropdown-image">
-                <img src="../images/expand-arrow-white.png" class="image"
-                    id="sidebar-expand-arrow-transaction">
-                <img src="../images/collapse-arrow-white.png" class="image"
-                    id="sidebar-collapse-arrow-transaction" style="display: none;">
-            </div>
+<a href="transactions.php">
+    <div class="sidebar-items">
+        <div class="sidebar-image">
+            <img src="../images/transaction-white.png" class="image" id="sidebar-transaction-image">
         </div>
+        Transactions
     </div>
+</a>
 
-    <div class="sidebar-dropdown-content transaction">
-        <a href="borrow.php">Borrow</a>
-        <a href="return.php">Return</a>
-    </div>
-</div>
 
 <div>
     <div class="sidebar-items" id="books">
@@ -70,14 +55,6 @@
     </div>
 </a>
 
-<a href="guarantors.php">
-    <div class="sidebar-items">
-        <div class="sidebar-image">
-            <img src="../images/guarantors-white.png" class="image" id="sidebar-guarantors-image">
-        </div>
-        Guarantors
-    </div>
-</a>
 
 <a href="library_id.php">
     <div class="sidebar-items">
@@ -89,57 +66,84 @@
 </a>
 
 
-<div>
-    <div class="sidebar-items" id="logs">
-        <div class="row row-between">
-            <div class="row">
-                <div class="sidebar-image">
-                    <img src="../images/logs-white.png" class="image" id="sidebar-logs-image">
+<a href="delinquent.php">
+    <div class="sidebar-items">
+        <div class="sidebar-image">
+            <img src="../images/ban-white.png" class="image" id="sidebar-delinquent-image">
+        </div>
+        Delinquent
+    </div>
+</a>
+
+
+<?php
+// Assuming $isAdmin is already set as per previous code
+if ($isAdmin): ?>
+    <a href="librarian.php">
+        <div class="sidebar-items">
+            <div class="sidebar-image">
+                <img src="../images/librarian-white.png" class="image" id="sidebar-librarian-image">
+            </div>
+            Librarians
+        </div>
+    </a>
+<?php endif; ?>
+
+
+<?php if ($isAdmin): ?>
+
+    <div>
+        <div class="sidebar-items" id="content">
+            <div class="row row-between">
+                <div class="row">
+                    <div class="sidebar-image">
+                        <img src="../images/content-white.png" class="image" id="sidebar-content-image">
+                    </div>
+                    Content
                 </div>
-                Logs
+                <div class="sidebar-dropdown-image">
+                    <img src="../images/expand-arrow-white.png" class="image"
+                        id="sidebar-expand-arrow-content">
+                    <img src="../images/collapse-arrow-white.png" class="image"
+                        id="sidebar-collapse-arrow-content" style="display: none;">
+                </div>
             </div>
-            <div class="sidebar-dropdown-image">
-                <img src="../images/expand-arrow-white.png" class="image"
-                    id="sidebar-expand-arrow-logs">
-                <img src="../images/collapse-arrow-white.png" class="image"
-                    id="sidebar-collapse-arrow-logs" style="display: none;">
-            </div>
+        </div>
+
+        <div class="sidebar-dropdown-content content">
+            <a href="about.php">About</a>
+            <a href="news.php">News</a>
+            <a href="contact.php">Contact</a>
         </div>
     </div>
 
-    <div class="sidebar-dropdown-content logs">
-        <a href="patron_logs.php">Patron Logs</a>
-        <a href="borrow_logs.php">Borrow Logs</a>
-    </div>
-</div>
 
 
-<div>
-    <div class="sidebar-items" id="content">
-        <div class="row row-between">
-            <div class="row">
-                <div class="sidebar-image">
-                    <img src="../images/content-white.png" class="image" id="sidebar-content-image">
-                </div>
-                Content
+
+    <a href="logs.php">
+        <div class="sidebar-items">
+            <div class="sidebar-image">
+                <img src="../images/logs-white.png" class="image" id="sidebar-logs-image">
             </div>
-            <div class="sidebar-dropdown-image">
-                <img src="../images/expand-arrow-white.png" class="image"
-                    id="sidebar-expand-arrow-content">
-                <img src="../images/collapse-arrow-white.png" class="image"
-                    id="sidebar-collapse-arrow-content" style="display: none;">
-            </div>
+            Logs
         </div>
-    </div>
-
-    <div class="sidebar-dropdown-content content">
-        <a href="about.php">About</a>
-        <a href="news.php">News</a>
-        <a href="contact.php">Contact</a>
-    </div>
-</div>
+    </a>
 
 
+
+
+    <a href="reports.php">
+        <div class="sidebar-items">
+            <div class="sidebar-image">
+                <img src="../images/reports-white.png" class="image" id="sidebar-reports-image">
+            </div>
+            Reports
+        </div>
+    </a>
+
+<?php endif; ?>
+
+<br>
 
 <a href="logout.php" class="sidebar-items-bottom">
     <div class="row">

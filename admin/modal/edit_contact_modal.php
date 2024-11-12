@@ -127,3 +127,23 @@
         return isValid; 
     }
 </script>
+
+
+<script>
+    const textAreas = [
+        document.getElementById("editDescription")
+    ];
+
+    textAreas.forEach(textBox => {
+        textBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                event.preventDefault();
+                const cursorPosition = textBox.selectionStart;
+                const text = textBox.value;
+                const newText =
+                    text.slice(0, cursorPosition) + "<br>\n" + text.slice(cursorPosition);
+                textBox.value = newText;
+            }
+        });
+    });
+</script>

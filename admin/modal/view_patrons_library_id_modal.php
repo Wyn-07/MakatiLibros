@@ -27,7 +27,7 @@
                     <div class="font-size-14">J.P. Rizal St., Poblacion, Makati City, Tel. No. 8899-9071</div>
                 </div>
                 <div class="id-logo-image">
-                    <img src="../images/makaticity-logo.png" alt="" class="image">
+                    <img src="../images/library-logo.png" alt="" class="image">
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
 
                 <div class="container-right-id">
                     <div class="id-picture-image">
-                        <img src="../images/users/CUERDO.jpg" alt="" class="image" id="patronImage">
+                        <img src="../patron_images/default_image.png" alt="" class="image" id="patronImage">
                     </div>
                     <div class="row-center font-size-10" style="font-weight: bold" id="validUntil"> Valid Until: </div>
                 </div>
@@ -129,7 +129,16 @@
 
 
 <script>
-    function openViewModal(patronId, fullName, address, companyName, validUntil, image) {
+    function openViewModal(element) {
+        // Retrieve and decode values from data attributes
+        const patronId = decodeURIComponent(element.getAttribute('data-patron-id'));
+        const fullName = decodeURIComponent(element.getAttribute('data-name'));
+        const address = decodeURIComponent(element.getAttribute('data-patron-address'));
+        const companyName = decodeURIComponent(element.getAttribute('data-patron-company-name'));
+        const validUntil = decodeURIComponent(element.getAttribute('data-valid-until'));
+        const cardId = decodeURIComponent(element.getAttribute('data-card-id'));
+
+
         // Show the modal
         document.getElementById('viewModal').classList.add('show');
 
@@ -140,7 +149,7 @@
         const companyTd = document.querySelector('.td-id-bottom.company');
 
         if (patronId) {
-            idTd.innerHTML = `I.D. No.: MCL-2024-${patronId}`;
+            idTd.innerHTML = `I.D. No.: ${cardId}`;
         } else {
             idTd.innerHTML = 'No ID provided';
         }
@@ -169,9 +178,6 @@
         var validUntilElement = document.getElementById("validUntil");
         validUntilElement.innerHTML = "Valid Until: " + validUntil;
 
-
-        var imageElement = document.getElementById("patronImage");
-        imageElement.src = '../patron_images/' + image;
     }
 
 

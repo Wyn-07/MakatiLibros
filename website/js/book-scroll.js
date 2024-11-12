@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const rowBooks = container.querySelector('.row-books');
         const arrowLeft = container.querySelector('.arrow-left');
         const arrowRight = container.querySelector('.arrow-right');
-        const viewMore = container.closest('.contents, .contents-big-padding').querySelector('.button-view-more');
+        const viewMore = container.closest('.contents, .contents-big-padding').querySelector('.button-view-more, .button-view-more-recommendation');
 
         function checkOverflow() {
             if (rowBooks.scrollWidth > rowBooks.clientWidth) {

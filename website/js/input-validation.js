@@ -28,7 +28,7 @@ middleNameInput.addEventListener("input", allowHypen);
 lastNameInput.addEventListener("input", allowHypen);
 suffixInput.addEventListener("input", allowPeriod);
 
-var addressInput = document.getElementById("address");
+
 
 function preventSpecialChars(event) {
     var inputValue = event.target.value;
@@ -38,7 +38,6 @@ function preventSpecialChars(event) {
 }
 
 
-addressInput.addEventListener("input", preventSpecialChars);
 
 function capitalize(input) {
     var inputValue = input.value;
@@ -123,7 +122,7 @@ function validateForm() {
     var isValid = true;
 
     // Array of required field IDs
-    var requiredFields = ["fname", "lname", "contact", "address", "birthdate", "age", "gender", "contact", "company_name", "company_contact", "company_address"];
+    var requiredFields = ["fname", "lname", "contact", "birthdate", "age", "gender", "contact", "company_name", "company_contact", "company_address"];
     var contactInput = document.getElementById("contact");
 
     // Validate required fields (no message, just border)

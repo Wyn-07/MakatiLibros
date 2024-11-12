@@ -1,34 +1,64 @@
 <?php
 session_start();
 
+// Include the database connection
+include '../../connection.php';
+
+$bookId = $_POST['book_id'];
+$userId = $_POST['patrons_id'];
+$status = $_POST['borrow_status'];
+
 try {
-    // Database connection
-    $pdo = new PDO('mysql:host=localhost;dbname=librodb', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Check if the user has 5 or more pending borrows
+    $checkPendingStmt = $pdo->prepare('SELECT COUNT(*) FROM borrow WHERE patrons_id = :patrons_id AND status = "Pending"');
+    $checkPendingStmt->bindParam(':patrons_id', $userId, PDO::PARAM_INT);
+    $checkPendingStmt->execute();
+    $pendingCount = $checkPendingStmt->fetchColumn();
 
-    $bookId = $_POST['book_id'];
-    $userId = $_POST['patrons_id'];
-    $status = $_POST['borrow_status'];
-    $borrowDate = date('m/d/Y');;
-    $returnDate = $_POST['return_date'];
+    if ($pendingCount >= 5) {
+        // Set error message if user has 5 or more pending borrows
+        $_SESSION['error_message'] = 'You have already reached the maximum limit of 5 pending borrows. Please return some items before borrowing more.';
+        $_SESSION['error_display'] = 'flex';
+    } else {
+        // Check if the user has 5 or more active borrows with status "Borrowing"
+        $checkBorrowingStmt = $pdo->prepare('SELECT COUNT(*) FROM borrow WHERE patrons_id = :patrons_id AND status = "Borrowing"');
+        $checkBorrowingStmt->bindParam(':patrons_id', $userId, PDO::PARAM_INT);
+        $checkBorrowingStmt->execute();
+        $borrowingCount = $checkBorrowingStmt->fetchColumn();
 
-    // Prepare SQL statement
-    $stmt = $pdo->prepare('INSERT INTO borrow (book_id, patrons_id, status, borrow_date, return_date) VALUES (:book_id, :patrons_id, :status, :borrow_date, :return_date)');
+        if ($borrowingCount >= 5) {
+            // Set error message if user has 5 or more active borrows with "Borrowing" status
+            $_SESSION['error_message'] = 'You have reached the maximum borrowing limit of 5 active books. Please return some books before borrowing more.';
+            $_SESSION['error_display'] = 'flex';
+        } else {
+            // Check if the user is marked as delinquent
+            $delinquentCheckStmt = $pdo->prepare('SELECT COUNT(*) FROM delinquent WHERE borrow_id IN (SELECT borrow_id FROM borrow WHERE patrons_id = :patrons_id)');
+            $delinquentCheckStmt->bindParam(':patrons_id', $userId, PDO::PARAM_INT);
+            $delinquentCheckStmt->execute();
+            $isDelinquent = $delinquentCheckStmt->fetchColumn();
 
-    // Bind parameters
-    $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
-    $stmt->bindParam(':patrons_id', $userId, PDO::PARAM_INT);
-    $stmt->bindParam(':status', $status, PDO::PARAM_STR);
-    $stmt->bindParam(':borrow_date', $borrowDate, PDO::PARAM_STR);
-    $stmt->bindParam(':return_date', $returnDate, PDO::PARAM_STR);
+            if ($isDelinquent > 0) {
+                // Set error message if the user is marked as delinquent
+                $_SESSION['error_message'] = 'You are unable to borrow books from the library because you have been marked as delinquent for not returning borrowed books. Resolve it by returning the book.';
+                $_SESSION['error_display'] = 'flex';
+            } else {
+                // Prepare SQL statement with borrow_date, borrow_time, return_date, and return_time set to 'Pending'
+                $stmt = $pdo->prepare('INSERT INTO borrow (book_id, patrons_id, status, borrow_date, borrow_time, return_date, return_time) VALUES (:book_id, :patrons_id, :status, "Pending", "Pending", "Pending", "Pending")');
 
-    $stmt->execute();
+                // Bind parameters
+                $stmt->bindParam(':book_id', $bookId, PDO::PARAM_INT);
+                $stmt->bindParam(':patrons_id', $userId, PDO::PARAM_INT);
+                $stmt->bindParam(':status', $status, PDO::PARAM_STR);
 
-    // Set success message
-    $_SESSION['success_message'] = 'Submitted successfully. Please proceed to the library to collect the book.';
-    $_SESSION['success_display'] = 'flex';
-    $_SESSION['success_info'] = 'flex';
+                $stmt->execute();
 
+                // Set success message
+                $_SESSION['success_message'] = 'Submitted successfully. Please proceed to the library to collect the book.';
+                $_SESSION['success_display'] = 'flex';
+                $_SESSION['success_info'] = 'flex';
+            }
+        }
+    }
 } catch (PDOException $e) {
     // Handle any errors
     $_SESSION['error_message'] = 'Failed to borrow the book. Error: ' . $e->getMessage();
@@ -38,4 +68,3 @@ try {
 $referer = isset($_POST['referer']) ? $_POST['referer'] : '../userpage.php';
 header('Location: ' . $referer);
 exit;
-?>

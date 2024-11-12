@@ -87,3 +87,15 @@
         Library ID
     </div>
 </a>
+
+<br>
+<br>
+
+<a href="logout.php">
+    <div class="sidebar-items logout">
+        <div class="sidebar-image">
+            <img src="../images/logout-white.png" class="image" id="sidebar-logout-image">
+        </div>
+        Log out
+    </div>
+</a>

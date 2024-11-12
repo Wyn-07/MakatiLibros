@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -87,11 +87,38 @@ include 'functions/fetch_favorites.php';
                 </div>
 
 
-                <div class="row row-between">
+
+
+                 <!-- error message -->
+                 <div class="contents-big-padding" id="container-error" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
+                                                                                        unset($_SESSION['error_display']); ?>;">
+                    <div class="container-error">
+                        <div class="container-error-description">
+                            <?php if (isset($_SESSION['error_message'])) {
+                                echo $_SESSION['error_message'];
+                                unset($_SESSION['error_message']);
+                            } ?>
+                        </div>
+                        <button type="button" class="button-success-close" onclick="closeErrorStatus()">&times;</button>
+                    </div>
+
+                </div>
+
+
+
+
+
+                <div class="row row-between title-search">
 
                     <div class="contents-title">
                         Favorites
                     </div>
+
+                    <!-- loading animation -->
+                    <div id="loading-overlay">
+                        <div class="spinner"></div>
+                    </div>
+
 
                     <div class="container-search row">
                         <input type="text" id="search" class="search" placeholder="Search by title or author">
@@ -106,7 +133,7 @@ include 'functions/fetch_favorites.php';
                 </div>
 
 
-                <div class="row">
+                <div class="row media-column">
 
                     <div class="container-filter">
 
@@ -121,6 +148,7 @@ include 'functions/fetch_favorites.php';
 
                         <form id="filter-form">
                             <div class="filter-content">
+
                                 <div class="filter-container-item">
                                     <div class="filter-title">By Category</div>
                                     <?php foreach ($category as $categories): ?>
@@ -155,8 +183,11 @@ include 'functions/fetch_favorites.php';
                                         <div class="books-image-2">
                                             <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
                                         </div>
+
+                                        <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['book_status']); ?></div>
+
                                         <div class="books-categories" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
-                                        <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
+                                        <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
                                         <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
                                         <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
                                         <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['user_rating']); ?></div>
@@ -221,7 +252,7 @@ include 'functions/fetch_favorites.php';
 
                                     <div class="row row-between">
                                         <div class="books-contents-category" style="display:none;"></div>
-                                        <div class="books-contents-status" style="display:none;"></div>
+                                        <div class="books-contents-borrow-status" style="display:none;"></div>
                                         <div class="books-contents-favorite" style="display:none;"></div>
 
                                         <div class="books-contents-name">Book Sample</div>
@@ -289,7 +320,7 @@ include 'functions/fetch_favorites.php';
 
 
 
-                        <div class="row row-center">
+                        <div class="row row-center page">
                             <div class="pagination-controls">
                                 Items per page:
                                 <select class="page-select" id="itemsPerPage">
@@ -351,7 +382,7 @@ include 'functions/fetch_favorites.php';
 <script src="js/borrow-submit.js"></script>
 <script src="js/add-favorites-submit.js"></script>
 <script src="js/remove-favorites-submit.js"></script>
-
+<script src="js/loading-animation.js"></script>
 
 
 

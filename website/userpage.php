@@ -7,7 +7,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -18,6 +18,9 @@
 <?php
 
 session_start();
+
+// Include database connection
+include '../connection.php';
 
 $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
@@ -31,9 +34,12 @@ include 'functions/fetch_books.php';
 ?>
 
 
-
 <body>
+
+
     <div class="wrapper">
+
+
 
         <div class="container-top">
             <?php include 'navbar.php'; ?>
@@ -50,6 +56,8 @@ include 'functions/fetch_books.php';
 
 
             <div class="container-content">
+
+
 
                 <div class="contents-big-padding" id="container-success" style="display: <?php echo isset($_SESSION['success_display']) ? $_SESSION['success_display'] : 'none';
                                                                                             unset($_SESSION['success_display']); ?>;">
@@ -85,14 +93,39 @@ include 'functions/fetch_books.php';
                         </div>
 
                     </div>
+
                 </div>
 
 
-                <div class="row row-between">
+                <!-- error message -->
+                <div class="contents-big-padding" id="container-error" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
+                                                                                        unset($_SESSION['error_display']); ?>;">
+                    <div class="container-error">
+                        <div class="container-error-description">
+                            <?php if (isset($_SESSION['error_message'])) {
+                                echo $_SESSION['error_message'];
+                                unset($_SESSION['error_message']);
+                            } ?>
+                        </div>
+                        <button type="button" class="button-success-close" onclick="closeErrorStatus()">&times;</button>
+                    </div>
+
+                </div>
+
+
+                <div class="row row-between title-search">
 
                     <div class="contents-title">
                         Homepage
                     </div>
+
+
+
+                    <!-- loading animation -->
+                    <div id="loading-overlay">
+                        <div class="spinner"></div>
+                    </div>
+
 
 
                     <form action="results_search.php" method="GET" class="container-search row">
@@ -119,56 +152,66 @@ include 'functions/fetch_books.php';
 
                 </div>
 
+
+
+
                 <div class="container-content">
 
-
-                <?php
+                    <?php
                     $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
+                    $number = 10;
+
                     // Function to run Python script and return book IDs
-                    function get_book_ids_from_python($pythonScript, $patrons_id)
+                    function get_book_ids_from_python($pythonScript, $patrons_id, $number)
                     {
-                        return json_decode(shell_exec("py $pythonScript " . $patrons_id), true);
+                        return json_decode(shell_exec("py ../python_algorithm/$pythonScript $patrons_id $number"), true);
                     }
+
 
                     // Function to fetch book details from the database based on book IDs
                     function fetch_books_from_ids($pdo, $book_ids, $patrons_id)
                     {
                         if ($book_ids && count($book_ids) > 0) {
-                            $book_ids_str = implode(',', array_map('intval', $book_ids)); 
+                            $book_ids_str = implode(',', array_map('intval', $book_ids));
 
-                            $sql = "
-                                        SELECT 
-                                            b.book_id, 
-                                            b.title, 
-                                            a.author, 
-                                            c.category, 
-                                            b.image,
-                                            IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
-                                            br.status AS borrow_status, 
-                                            f.status AS favorite_status, 
-                                            pr.ratings AS patron_rating
-                                        FROM 
-                                            books b
-                                        LEFT JOIN 
-                                            author a ON b.author_id = a.author_id
-                                        LEFT JOIN 
-                                            category c ON b.category_id = c.category_id
-                                        LEFT JOIN 
-                                            ratings r ON b.book_id = r.book_id
-                                        LEFT JOIN 
-                                            borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
-                                        LEFT JOIN 
-                                            favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
-                                        LEFT JOIN 
-                                            ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
-                                        WHERE 
-                                            b.book_id IN ($book_ids_str)
-                                        GROUP BY 
-                                            b.book_id
-                                        ORDER BY 
-                                            FIELD(b.book_id, $book_ids_str)
-                                    ";
+                            $sql = "SELECT 
+                                        b.book_id, 
+                                        b.title, 
+                                        a.author, 
+                                        c.category, 
+                                        b.image,
+                                        IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating, 
+                                        br.status AS borrow_status, 
+                                        f.status AS favorite_status, 
+                                        pr.ratings AS patron_rating,  
+                                        CASE 
+                                            WHEN br2.borrow_id IS NOT NULL AND br2.status != 'Returned' THEN 'Unavailable' 
+                                            ELSE 'Available' 
+                                        END AS book_status
+                                    FROM 
+                                        books b
+                                    LEFT JOIN 
+                                        author a ON b.author_id = a.author_id
+                                    LEFT JOIN 
+                                        category c ON b.category_id = c.category_id
+                                    LEFT JOIN 
+                                        ratings r ON b.book_id = r.book_id
+                                    LEFT JOIN 
+                                        borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id
+                                    LEFT JOIN 
+                                        favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id
+                                    LEFT JOIN 
+                                        ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
+                                    LEFT JOIN 
+                                        borrow br2 ON b.book_id = br2.book_id  -- Check for any borrow entry
+                                    WHERE 
+                                        b.book_id IN ($book_ids_str)
+                                    GROUP BY 
+                                        b.book_id
+                                    ORDER BY 
+                                        FIELD(b.book_id, $book_ids_str)";
+
 
                             $stmt = $pdo->prepare($sql);
                             $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
@@ -179,85 +222,213 @@ include 'functions/fetch_books.php';
                         return [];
                     }
 
-                    // Fetch book recommendations for Borrow-Based Collaborative Filtering (CF) 
-                    $books_borrow_cf = fetch_books_from_ids($pdo, get_book_ids_from_python('borrow_cf_svd.py', $patrons_id), $patrons_id);
 
-                    // Fetch book recommendations for Borrow-Based Content-Based Filtering (CBF)
-                    $books_borrow_cbf = fetch_books_from_ids($pdo, get_book_ids_from_python('borrow_cbf_tfidf.py', $patrons_id), $patrons_id);
+                    // Check if the user has borrowed any books
+                    $borrowQuery = "SELECT COUNT(*) AS borrow_count FROM borrow WHERE patrons_id = :patrons_id AND status = 'Returned'";
+                    $stmt = $pdo->prepare($borrowQuery);
+                    $stmt->execute(['patrons_id' => $patrons_id]);
+                    $borrowResult = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    // Fetch book recommendations for Borrow-Based Collaborative Filtering (CF) 
-                    $books_rating_cf = fetch_books_from_ids($pdo, get_book_ids_from_python('ratings_cf_svd.py', $patrons_id), $patrons_id);
+                    // Check if the user has rated any books
+                    $ratingQuery = "SELECT COUNT(*) AS rating_count FROM ratings WHERE patrons_id = :patrons_id";
+                    $stmt = $pdo->prepare($ratingQuery);
+                    $stmt->execute(['patrons_id' => $patrons_id]);
+                    $ratingResult = $stmt->fetch(PDO::FETCH_ASSOC);
 
-                    // Fetch book recommendations for Borrow-Based Content-Based Filtering (CBF)
-                    $books_rating_cbf = fetch_books_from_ids($pdo, get_book_ids_from_python('ratings_cbf_tfidf.py', $patrons_id), $patrons_id);
+                    // Check if the user has either borrowed or rated any books
+                    $hasBorrowedBooks = $borrowResult['borrow_count'] > 0;
+                    $hasRatedBooks = $ratingResult['rating_count'] > 0;
 
+
+                    $recommendations = get_book_ids_from_python('borrow_ratings_cbf_tfidf.py', $patrons_id, $number);
+
+
+                    // 
+                    if ($hasBorrowedBooks) {
+                        // Fetch book recommendations for Borrow-Based Collaborative Filtering (CF)
+                        $books_borrow_cf = fetch_books_from_ids($pdo, get_book_ids_from_python('borrow_cf_als.py', $patrons_id, $number), $patrons_id);
+
+                        // Fetch book recommendations for Borrow-Based Content Filtering (CBF)
+                        $books_borrow_cbf = fetch_books_from_ids($pdo, $recommendations['borrow_cbf'], $patrons_id);
                     
+                    } else {
+                        include 'functions/fetch_most_borrowed.php';
+                    }
+
+
+
+                    if ($hasRatedBooks) {
+                        // Fetch book recommendations for Rating-Based Collaborative Filtering (CF)
+                        $books_rating_cf = fetch_books_from_ids($pdo, get_book_ids_from_python('ratings_cf_als.py', $patrons_id, $number), $patrons_id);
+
+                        // Fetch book recommendations for Rating-Based Content Filtering (CBF)
+                        $books_rating_cbf = fetch_books_from_ids($pdo, $recommendations['rating_cbf'], $patrons_id);
+                    
+                    } else {
+
+                        include 'functions/fetch_most_rated.php';
+
+                        include 'functions/fetch_top_rated.php';
+
+                        include 'functions/fetch_most_rated_user_interest.php';
+                    }
+
+
                     ?>
 
 
 
                     <!-- Section for Borrow-Based Collaborative Filtering (CF) -->
-                    <div class="contents-big-padding">
-                        <div class="row row-between">
-                            <div>Based on your borrowing habits</div>
-                            <div class="button button-view-more" data-category="borrow_cf">View More</div>
+                    <?php if ($hasBorrowedBooks && !empty($books_borrow_cf)): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Based on your borrowing habits</div>
+                                <div class="button button-view-more-recommendation" data-category="Based on your borrowing habits">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_borrow_cf;
+                                include 'books_display.php';
+                                ?>
+                            </div>
                         </div>
-                        <div class="row-books-container">
-                            <?php
-                            $recommend_books = $books_borrow_cf; 
-                            include 'books_display.php';
-                            ?>
-                        </div>
-                    </div>
+                    <?php endif; ?>
 
-                    <!-- Section for Borrow-Based Collaborative Filtering (CF) -->
-                    <div class="contents-big-padding">
-                        <div class="row row-between">
-                            <div>Based on your latest borrow</div>
-                            <div class="button button-view-more" data-category="borrow_cbf">View More</div>
+
+
+
+                    <!-- Section for Borrow-Based Content based Filtering (CBF) -->
+                    <?php if ($hasBorrowedBooks && !empty($books_borrow_cbf)): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Based on your latest borrow</div>
+                                <div class="button button-view-more-recommendation" data-category="Based on your latest borrow">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_borrow_cbf;
+                                include 'books_display.php';
+                                ?>
+                            </div>
                         </div>
-                        <div class="row-books-container">
-                            <?php
-                            $recommend_books = $books_borrow_cbf; 
-                            include 'books_display.php';
-                            ?>
+                    <?php endif; ?>
+
+
+
+                    <!-- Section for Most Borrowed Books -->
+                    <?php if (!$hasBorrowedBooks): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Most borrowed book</div>
+                                <div class="button button-view-more-recommendation" data-category="Most borrowed book">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_most_borrowed;
+                                include 'books_display.php';
+                                ?>
+                            </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
+
 
 
                     <!-- Section for Collaborative Filtering (CF) -->
-                    <div class="contents-big-padding">
-                        <div class="row row-between">
-                            <div>Based on your rating behaviour</div>
-                            <div class="button button-view-more" data-category="cf">View More</div>
+                    <?php if ($hasRatedBooks && !empty($books_rating_cf)): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Based on your rating behaviour</div>
+                                <div class="button button-view-more-recommendation" data-category="Based on your rating behaviour">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_rating_cf;
+                                include 'books_display.php';
+                                ?>
+                            </div>
                         </div>
-                        <div class="row-books-container">
-                            <?php
-                            $recommend_books = $books_rating_cf; 
-                            include 'books_display.php';
-                            ?>
-                        </div>
-                    </div>
+                    <?php endif; ?>
+
+
 
 
                     <!-- Section for Content-Based Filtering (CBF) -->
-                    <div class="contents-big-padding">
-                        <div class="row row-between">
-                            <div>Based on your latest rated book</div>
-                            <div class="button button-view-more" data-category="cbf">View More</div>
+                    <?php if ($hasRatedBooks && !empty($books_rating_cbf)): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Based on your latest rated book</div>
+                                <div class="button button-view-more-recommendation" data-category="Based on your latest rated book">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_rating_cbf;
+                                include 'books_display.php';
+                                ?>
+                            </div>
                         </div>
-                        <div class="row-books-container">
-                            <?php
-                            $recommend_books = $books_rating_cbf;
-                            include 'books_display.php';
-                            ?>
+                    <?php endif; ?>
+
+
+
+
+                    <!-- Section for Most Rated Books -->
+                    <?php if (!$hasRatedBooks): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Most rated book</div>
+                                <div class="button button-view-more-recommendation" data-category="Most rated book">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_most_rated;
+                                include 'books_display.php';
+                                ?>
+                            </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
 
 
-                
 
-                    
+
+                    <!-- Section for Top Rated Books -->
+                    <?php if (!$hasRatedBooks): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Top rated book</div>
+                                <div class="button button-view-more-recommendation" data-category="Top rated book">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_top_rated;
+                                include 'books_display.php';
+                                ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+
+
+                    <!-- Section for Interest Content-Based Filtering (CBF) -->
+                    <?php if (!$hasRatedBooks): ?>
+                        <div class="contents-big-padding">
+                            <div class="row row-between">
+                                <div>Most rated books according to your interests</div>
+                                <div class="button button-view-more-recommendation" data-category="Most rated books according to your interests">View More</div>
+                            </div>
+                            <div class="row-books-container">
+                                <?php
+                                $recommend_books = $books_most_rated_user_interest;
+                                include 'books_display.php';
+                                ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+
+
+
+
+
                     <!-- categories -->
                     <?php foreach ($books_limit as $category => $bookDetails): ?>
                         <div class="contents-big-padding">
@@ -279,6 +450,8 @@ include 'functions/fetch_books.php';
                                             <div class="books-image">
                                                 <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image" loading="lazy">
                                             </div>
+
+                                            <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['book_status']); ?></div>
 
                                             <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
                                             <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
@@ -334,6 +507,11 @@ include 'functions/fetch_books.php';
 
                 </div>
 
+
+
+
+                
+
             </div>
 
 
@@ -346,6 +524,8 @@ include 'functions/fetch_books.php';
                     <div class="books-contents-image">Image</div>
                     <div class="books-contents">
 
+
+
                         <div class="row row-between">
 
                             <div class="books-contents-category" style="display:none;"></div>
@@ -353,11 +533,14 @@ include 'functions/fetch_books.php';
                             <div class="books-contents-favorite" style="display:none;"></div>
 
                             <div class="books-contents-name">Book Sample</div>
+
                             <div class="button button-close">&times;</div>
 
                         </div>
 
                         <div class="books-contents-author">Book Author</div>
+
+
 
                         <div class="books-contents-ratings" style="display: none;"></div>
                         <div class="books-contents-user-ratings" style="display: none;"></div>
@@ -407,6 +590,7 @@ include 'functions/fetch_books.php';
                         </div>
 
 
+
                         <?php include 'modal/add_rating_modal.php'; ?>
 
 
@@ -436,6 +620,10 @@ include 'functions/fetch_books.php';
 
 
 
+
+
+
+
 <script src="js/sidebar.js"></script>
 <script src="js/book-scroll.js"></script>
 <script src="js/close-status.js"></script>
@@ -450,6 +638,7 @@ include 'functions/fetch_books.php';
 <script src="js/borrow-submit.js"></script>
 <script src="js/add-favorites-submit.js"></script>
 <script src="js/remove-favorites-submit.js"></script>
+<script src="js/loading-animation.js"></script>
 
 
 <script>
@@ -458,13 +647,23 @@ include 'functions/fetch_books.php';
             button.addEventListener('click', function() {
                 var category = this.getAttribute('data-category');
                 var encodedCategory = encodeURIComponent(category);
-                window.location.href = 'results.php?category=' + encodedCategory;
+                window.location.href = 'results_more.php?category=' + encodedCategory;
             });
         });
     });
 </script>
 
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.button-view-more-recommendation').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var category = this.getAttribute('data-category');
+                var encodedCategory = encodeURIComponent(category);
+                window.location.href = 'results_recommendation_more.php?more=' + encodedCategory;
+            });
+        });
+    });
+</script>
 
 <script>
     const bookList = <?php echo json_encode($books); ?>; // JSON-encoded array of books

@@ -167,15 +167,24 @@ function sortTable(columnIndex) {
         document.getElementById(`sort-icon-${columnIndex}`).src = "../images/sort.png";
     } else {
         rows.sort((a, b) => {
-            const cellA = a.getElementsByTagName('td')[columnIndex].textContent;
-            const cellB = b.getElementsByTagName('td')[columnIndex].textContent;
+            let cellA = a.getElementsByTagName('td')[columnIndex].textContent.trim();
+            let cellB = b.getElementsByTagName('td')[columnIndex].textContent.trim();
+
+            // Determine if the column is a date or number column
+            if (isDateColumn(columnIndex)) {
+                cellA = parseDate(cellA);
+                cellB = parseDate(cellB);
+            } else if (isNumericColumn(columnIndex)) {
+                cellA = parseInt(cellA, 10);
+                cellB = parseInt(cellB, 10);
+            }
 
             if (sortDirections[columnIndex] === 1) {
                 document.getElementById(`sort-icon-${columnIndex}`).src = "../images/asc.png";
-                return cellA.localeCompare(cellB);
+                return cellA > cellB ? 1 : -1;
             } else {
                 document.getElementById(`sort-icon-${columnIndex}`).src = "../images/dsc.png";
-                return cellB.localeCompare(cellA);
+                return cellA < cellB ? 1 : -1;
             }
         });
     }
@@ -183,11 +192,29 @@ function sortTable(columnIndex) {
     if (sortDirections[columnIndex] === 0) {
         rows = originalRows.slice(); // Reset to original order
     }
-    
+
     filteredRows = rows;
     rows.forEach(row => table.appendChild(row));
     displayTable();
 }
+
+// Helper function to check if a column contains dates
+function isDateColumn(columnIndex) {
+    return columnIndex === 0; // Adjust this index to match your date column
+}
+
+// Helper function to check if a column contains numbers
+function isNumericColumn(columnIndex) {
+    return columnIndex === 1; // Adjust this index to match your numeric column
+}
+
+// Helper function to parse a date string in MM/DD/YYYY format to a Date object
+function parseDate(dateString) {
+    const [month, day, year] = dateString.split('/').map(Number);
+    return new Date(year, month - 1, day); // month is 0-based in Date constructor
+}
+
+
 
 window.onload = displayTable;
 

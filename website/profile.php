@@ -8,14 +8,14 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 
-<?php session_start()?>
+<?php session_start() ?>
 
 <body>
     <div class="wrapper">
@@ -50,6 +50,12 @@
                     </div>
                 </div>
 
+
+
+                <!-- loading animation -->
+                <div id="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
 
 
 
@@ -261,6 +267,8 @@
 <script src="js/banner.js"></script>
 <script src="js/sidebar.js"></script>
 <script src="js/close-status.js"></script>
+<script src="js/loading-animation.js"></script>
+
 
 <script>
     function previewProfileImage(event) {
@@ -398,7 +406,7 @@
             var filePath = fileInput.value;
 
             if (!filePath) {
-                return; 
+                return;
             }
 
             if (!allowedExtensions.exec(filePath)) {

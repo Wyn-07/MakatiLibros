@@ -30,11 +30,19 @@
 
 
 <script>
-    function openEditModal(authorId, authorName) {
-        document.getElementById('editModal').classList.add('show');
-        document.getElementById('editAuthorId').value = authorId;
-        document.getElementById('editName').value = authorName;
-    }
+    function openEditModal(element) {
+    const authorId = element.getAttribute("data-author-id");
+    const encodedAuthorName = element.getAttribute("data-author-name");
+    
+    // Decode the URI encoded author name
+    const authorName = decodeURIComponent(encodedAuthorName);
+
+    // Open modal and populate fields
+    document.getElementById('editModal').classList.add('show');
+    document.getElementById('editAuthorId').value = authorId;
+    document.getElementById('editName').value = authorName;
+}
+
 
 
     function closeEditModal() {

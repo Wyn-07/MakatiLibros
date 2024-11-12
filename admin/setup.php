@@ -8,7 +8,7 @@
 
     <title>Setup</title>
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -92,7 +92,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     <div class="row-center">
                         <div class="container-round login">
-                            <img src="../images/makati-logo.png" alt="" class="image">
+                            <img src="../images/library-logo.png" alt="" class="image">
                         </div>
                         <div>
                             <div class="title-26px">

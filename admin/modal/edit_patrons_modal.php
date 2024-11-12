@@ -15,8 +15,10 @@
         </div>
 
         <form action="functions/update_patrons.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateEditForm(['edit_image'], 'editContact')">
-            <input type="hidden" id="editPatronId" name="patrons_id">
 
+            <input type="hidden" id="editPatronId" name="patrons_id">
+            <input type="hidden" id="editGuarantorId" name="guarantors_id">
+            
             <div class="container-form">
 
                 <div class="container-input">
@@ -168,7 +170,96 @@
                         <input type="password" id="editPassword" name="password" class="input-text" autocomplete="off" required>
                     </div>
 
+                    <div class="container-input-100"></div>
+
+                    <div class="title-26px container-input-100">
+                        Guarantor Information
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="editGuarantorFirstname">Guarantor First Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorFirstname" name="firstname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <label for="editGuarantorMiddlename">Guarantor Middle Name</label>
+                        <input type="text" id="editGuarantorMiddlename" name="middlename" class="input-text" oninput="capitalize(this)" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="editGuarantorLastname">Guarantor Last Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorLastname" name="lastname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <label for="editGuarantorSuffix">Guarantor Suffix</label>
+                        <input type="text" id="editGuarantorSuffix" name="suffix" class="input-text" oninput="capitalize(this)" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="editGuarantorContact">Guarantor Contact:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorContact" name="contact" class="input-text" oninput="handleInput(this)" placeholder="+63xxxxxxxxxx" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="editGuarantorAddress">Guarantor Address:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorAddress" name="address" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="editGuarantorCompanyName">GuarantorCompany Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorCompanyName" name="company_name" class="input-text" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="editCompanyContact">Guarantor Company Contact:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorCompanyContact" name="company_contact" class="input-text" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-100">
+                        <div class="row row-between">
+                            <label for="editGuarantorCompanyAddress">Guarantor Company Address:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="editGuarantorCompanyAddress" name="company_address" class="input-text" autocomplete="off">
+                    </div>
+
+
+
                 </div>
+
 
                 <div class="row row-right">
                     <button type="submit" name="submit" class="button-submit">Update</button>
@@ -182,8 +273,41 @@
 
 
 <script>
-    function openEditModal(patronId, firstname, middlename, lastname, suffix, birthdate, age, gender, contact, address, companyName, companyContact, companyAddress, email, password, image) {
+    function openEditModal(element) {
+        // Retrieve data attributes from the clicked element
+        const patronId = decodeURIComponent(element.getAttribute('data-patrons-id'));
+        const firstname = decodeURIComponent(element.getAttribute('data-firstname'));
+        const middlename = decodeURIComponent(element.getAttribute('data-middlename'));
+        const lastname = decodeURIComponent(element.getAttribute('data-lastname'));
+        const suffix = decodeURIComponent(element.getAttribute('data-suffix'));
+        const birthdate = decodeURIComponent(element.getAttribute('data-birthdate'));
+        const age = decodeURIComponent(element.getAttribute('data-age'));
+        const gender = decodeURIComponent(element.getAttribute('data-gender'));
+        const contact = decodeURIComponent(element.getAttribute('data-contact'));
+        const address = decodeURIComponent(element.getAttribute('data-address'));
+        const companyName = decodeURIComponent(element.getAttribute('data-company-name'));
+        const companyContact = decodeURIComponent(element.getAttribute('data-company-contact'));
+        const companyAddress = decodeURIComponent(element.getAttribute('data-company-address'));
+        const email = decodeURIComponent(element.getAttribute('data-email'));
+        const image = decodeURIComponent(element.getAttribute('data-image'));
+        const guarantorId = decodeURIComponent(element.getAttribute('data-guarantor-id'));
+        const guarantorFirstname = decodeURIComponent(element.getAttribute('data-guarantor-firstname'));
+        const guarantorMiddlename = decodeURIComponent(element.getAttribute('data-guarantor-middlename'));
+        const guarantorLastname = decodeURIComponent(element.getAttribute('data-guarantor-lastname'));
+        const guarantorSuffix = decodeURIComponent(element.getAttribute('data-guarantor-suffix'));
+        const guarantorContact = decodeURIComponent(element.getAttribute('data-guarantor-contact'));
+        const guarantorAddress = decodeURIComponent(element.getAttribute('data-guarantor-address'));
+        const guarantorCompanyName = decodeURIComponent(element.getAttribute('data-guarantor-company-name'));
+        const guarantorCompanyContact = decodeURIComponent(element.getAttribute('data-guarantor-company-contact'));
+        const guarantorCompanyAddress = decodeURIComponent(element.getAttribute('data-guarantor-company-address'));
+        const cardId = decodeURIComponent(element.getAttribute('data-card-id'));
+        const dateIssued = decodeURIComponent(element.getAttribute('data-date-issued'));
+        const validUntil = decodeURIComponent(element.getAttribute('data-valid-until'));
+
+        // Show the modal
         document.getElementById('editModal').classList.add('show');
+
+        // Populate the modal fields with the decoded values
         document.getElementById('editPatronId').value = patronId;
         document.getElementById('editFirstname').value = firstname;
         document.getElementById('editMiddlename').value = middlename;
@@ -198,13 +322,26 @@
         document.getElementById('editCompanyContact').value = companyContact;
         document.getElementById('editCompanyAddress').value = companyAddress;
         document.getElementById('editEmail').value = email;
-        document.getElementById('editPassword').value = password;
+        document.getElementById('editGuarantorId').value = guarantorId;
+        document.getElementById('editGuarantorFirstname').value = guarantorFirstname;
+        document.getElementById('editGuarantorMiddlename').value = guarantorMiddlename;
+        document.getElementById('editGuarantorLastname').value = guarantorLastname;
+        document.getElementById('editGuarantorSuffix').value = guarantorSuffix;
+        document.getElementById('editGuarantorContact').value = guarantorContact;
+        document.getElementById('editGuarantorAddress').value = guarantorAddress;
+        document.getElementById('editGuarantorCompanyName').value = guarantorCompanyName;
+        document.getElementById('editGuarantorCompanyContact').value = guarantorCompanyContact;
+        document.getElementById('editGuarantorCompanyAddress').value = guarantorCompanyAddress;
 
-        document.getElementById('imageEditPatronsPreview').src = '../patron_images/' + image;;
+
+        // Set the image preview
+        document.getElementById('imageEditPatronsPreview').src = '../patron_images/' + image;
 
         // Clear the file input to allow a new selection
         document.getElementById('edit_image').value = '';
     }
+
+
 
     function closeEditModal() {
         document.getElementById('editModal').classList.remove('show');
@@ -221,7 +358,6 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
-
 </script>
 
 <script src="js/input-validation-editpatrons.js"></script>

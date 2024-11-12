@@ -62,7 +62,7 @@
                         <label for="book_image">Book Image</label>
                         <div class="container-form-book">
                             <div class="form-book">
-                                <img src="" class="image" id="imageEditBookPreview">
+                                <img src="../book_images/no_image.png" class="image" id="imageEditBookPreview">
                             </div>
                         </div>
                         <div class="row-center">
@@ -87,28 +87,38 @@
 </div>
 
 <script>
-    function openEditModal(bookId, accNum, classNum, title, author, authorId, category, categoryId, copyright, image) {
-        // Show the edit modal
-        document.getElementById('editModal').classList.add('show');
+function openEditModal(element) {
+    const bookId = decodeURIComponent(element.getAttribute("data-book-id"));
+    const accNumber = decodeURIComponent(element.getAttribute("data-acc-number"));
+    const classNumber = decodeURIComponent(element.getAttribute("data-class-number"));
+    const title = decodeURIComponent(element.getAttribute("data-title"));
+    const authorName = decodeURIComponent(element.getAttribute("data-author-name"));
+    const authorId = decodeURIComponent(element.getAttribute("data-author-id"));
+    const categoryName = decodeURIComponent(element.getAttribute("data-category-name"));
+    const categoryId = decodeURIComponent(element.getAttribute("data-category-id"));
+    const copyright = decodeURIComponent(element.getAttribute("data-copyright"));
+    const image = decodeURIComponent(element.getAttribute("data-image"));
 
-        // Populate input fields
-        document.getElementById('edit_book_id').value = bookId;
-        document.getElementById('edit_acc_num').value = accNum;
-        document.getElementById('edit_class_num').value = classNum;
-        document.getElementById('edit_title').value = title;
-        document.getElementById('edit_author').value = author;
-        document.getElementById('edit_author_id').value = authorId;
-        document.getElementById('edit_category').value = category;
-        document.getElementById('edit_category_id').value = categoryId;
-        document.getElementById('edit_copyright').value = copyright;
+    // Show the edit modal
+    document.getElementById('editModal').classList.add('show');
 
-        document.getElementById('imageEditBookPreview').src = '../book_images/' + image;
+    // Populate input fields with decoded values
+    document.getElementById('edit_book_id').value = bookId;
+    document.getElementById('edit_acc_num').value = accNumber;
+    document.getElementById('edit_class_num').value = classNumber;
+    document.getElementById('edit_title').value = title;
+    document.getElementById('edit_author').value = title;
+    document.getElementById('edit_author_id').value = authorId;
+    document.getElementById('edit_category').value = categoryName;
+    document.getElementById('edit_category_id').value = categoryId;
+    document.getElementById('edit_copyright').value = copyright;
 
-        // Clear the file input to allow a new selection
-        document.getElementById('edit_book_image').value = '';
-    }
+    // Set the image preview (make sure to handle file paths correctly)
+    document.getElementById('imageEditBookPreview').src = '../book_images/' + image;
 
-
+    // Clear the file input to allow a new selection
+    document.getElementById('edit_book_image').value = '';
+}
 
 
     function closeEditModal() {

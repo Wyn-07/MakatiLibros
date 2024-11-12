@@ -58,7 +58,7 @@
                         <label for="book_image">Book Image</label>
                         <div class="container-form-book">
                             <div class="form-book">
-                                <img src="../book_images/no-image.png" class="image" id="imageBookPreview">
+                                <img src="../book_images/no_image.png" class="image" id="imageBookPreview">
                             </div>
                         </div>
                         <input type="hidden" id="image" name="image">

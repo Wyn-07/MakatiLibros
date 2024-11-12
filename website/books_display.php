@@ -11,6 +11,7 @@
                 <div class="books-image">
                     <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image" alt="Book Image" loading="lazy">
                 </div>
+                <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['book_status']); ?></div>
                 <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category']); ?></div>
                 <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
                 <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>

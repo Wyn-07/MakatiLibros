@@ -30,7 +30,10 @@
 
 
 <script>
-    function openEditModal(categoryId, categoryName) {
+    function openEditModal(element) {
+        const categoryId = decodeURIComponent(element.getAttribute("data-category-id"));
+        const categoryName = decodeURIComponent(element.getAttribute("data-category-name"));
+
         document.getElementById('editModal').classList.add('show');
         document.getElementById('editcategoryId').value = categoryId;
         document.getElementById('editName').value = categoryName;

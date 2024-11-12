@@ -52,6 +52,9 @@ if (isset($_POST['submit'])) {
             header('Location: ../book-list.php');
             exit();
         }
+    } else {
+        // No image uploaded; use default image
+        $imageName = 'no_image.png'; 
     }
 
     // Validate required fields

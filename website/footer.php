@@ -5,7 +5,7 @@
         <div class="container-footer-left">
 
             <div class="container-footer-left-image">
-                <img src="../images/makati-logo.png" class="image">
+                <img src="../images/library-logo.png" class="image">
             </div>
 
             <div class="footer-image-description">

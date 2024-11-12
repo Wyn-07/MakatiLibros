@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -23,7 +23,7 @@
 
                 <div class="row-auto">
                     <div class="container-round logo">
-                        <img src="../images/makati-logo.png" class="image">
+                        <img src="../images/library-logo.png" class="image">
                     </div>
                     Makati City Hall Library
                 </div>
@@ -54,6 +54,12 @@
                 <button class="prev" onclick="prevSlide()">&#10094;</button>
                 <button class="next" onclick="nextSlide()">&#10095;</button>
             </div>
+        </div>
+
+
+        <!-- loading animation -->
+        <div id="loading-overlay">
+            <div class="spinner"></div>
         </div>
 
 
@@ -187,6 +193,7 @@
 
 <script src="js/banner.js"></script>
 <script src="js/book-scroll.js"></script>
+<script src="js/loading-animation.js"></script>
 
 <script>
     function goToLogin() {

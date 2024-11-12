@@ -75,16 +75,28 @@
 </div>
 
 <script>
-    function openViewModal(bookId, accNum, classNum, title, author, authorId, category, categoryId, copyright, image) {
+    function openViewModal(element) {
+
+        const condemnedId = decodeURIComponent(element.getAttribute("data-condemned-id"));
+        const accNumber = decodeURIComponent(element.getAttribute("data-acc-number"));
+        const classNumber = decodeURIComponent(element.getAttribute("data-class-number"));
+        const title = decodeURIComponent(element.getAttribute("data-title"));
+        const authorName = decodeURIComponent(element.getAttribute("data-author-name"));
+        const authorId = decodeURIComponent(element.getAttribute("data-author-id"));
+        const categoryName = decodeURIComponent(element.getAttribute("data-category-name"));
+        const categoryId = decodeURIComponent(element.getAttribute("data-category-id"));
+        const copyright = decodeURIComponent(element.getAttribute("data-copyright"));
+        const image = decodeURIComponent(element.getAttribute("data-image"));
+
         document.getElementById('viewModal').classList.add('show');
 
-        document.getElementById('view_condemned_id').value = bookId;
-        document.getElementById('view_acc_num').value = accNum;
-        document.getElementById('view_class_num').value = classNum;
+        document.getElementById('view_condemned_id').value = condemnedId;
+        document.getElementById('view_acc_num').value = accNumber;
+        document.getElementById('view_class_num').value = classNumber;
         document.getElementById('view_title').value = title;
-        document.getElementById('view_author').value = author;
+        document.getElementById('view_author').value = authorName;
         document.getElementById('view_author_id').value = authorId;
-        document.getElementById('view_category').value = category;
+        document.getElementById('view_category').value = categoryName;
         document.getElementById('view_category_id').value = categoryId;
         document.getElementById('view_copyright').value = copyright;
 

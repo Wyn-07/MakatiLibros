@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -18,7 +18,10 @@ session_start();
 ?>
 <?php include '../connection.php'; ?>
 
+
+
 <body>
+
     <div class="wrapper">
 
         <div class="container-top">
@@ -38,6 +41,7 @@ session_start();
 
 
             <div class="container-content">
+
 
                 <div class="contents-big-padding" id="container-success" style="display: <?php echo isset($_SESSION['success_display']) ? $_SESSION['success_display'] : 'none';
                                                                                             unset($_SESSION['success_display']); ?>;">
@@ -75,7 +79,29 @@ session_start();
                     </div>
                 </div>
 
-                <div class="row row-between">
+
+
+
+
+                <!-- error message -->
+                <div class="contents-big-padding" id="container-error" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
+                                                                                        unset($_SESSION['error_display']); ?>;">
+                    <div class="container-error">
+                        <div class="container-error-description">
+                            <?php if (isset($_SESSION['error_message'])) {
+                                echo $_SESSION['error_message'];
+                                unset($_SESSION['error_message']);
+                            } ?>
+                        </div>
+                        <button type="button" class="button-success-close" onclick="closeErrorStatus()">&times;</button>
+                    </div>
+
+                </div>
+
+
+
+
+                <div class="row row-between title-search">
 
                     <div class="contents-title">
                         Borrowed Books
@@ -94,6 +120,15 @@ session_start();
 
                 </div>
 
+
+
+                <!-- loading animation -->
+                <div id="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+
+
+
                 <div class="container-content">
                     <div id="search-results" style="padding: 40px 0">
 
@@ -105,8 +140,7 @@ session_start();
                         $patrons_id = $_SESSION['patrons_id'];
 
                         try {
-                            $sql = "
-                                    SELECT 
+                            $sql = "SELECT 
                                         b.book_id,
                                         b.title,
                                         b.image,
@@ -116,7 +150,11 @@ session_start();
                                         IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating,
                                         MAX(CASE WHEN r.patrons_id = ? THEN r.ratings ELSE NULL END) AS user_rating,
                                         br.status AS borrow_status,
-                                        f.status AS favorite_status
+                                        f.status AS favorite_status,
+                                        CASE 
+                                            WHEN br2.borrow_id IS NOT NULL AND br2.status != 'Returned' THEN 'Unavailable' 
+                                            ELSE 'Available' 
+                                        END AS book_status
                                     FROM 
                                         borrow br
                                     JOIN 
@@ -129,6 +167,8 @@ session_start();
                                         ratings r ON b.book_id = r.book_id
                                     LEFT JOIN 
                                         favorites f ON b.book_id = f.book_id AND f.patrons_id = ?
+                                    LEFT JOIN 
+                                        borrow br2 ON b.book_id = br2.book_id  -- Check for any borrow entry
                                     WHERE 
                                         br.patrons_id = ? AND br.status != 'Pending'
                                     GROUP BY 
@@ -190,6 +230,7 @@ session_start();
 
                                 <div class="row-books">
                                     <?php foreach ($books as $book): ?>
+                                        
                                         <div class="container-books">
                                             <div class="books-id" style="display: none;"><?php echo htmlspecialchars($book['book_id']); ?></div>
 
@@ -198,8 +239,10 @@ session_start();
                                                 <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
                                             </div>
 
-                                            <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
-                                            <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
+                                            <div class="books-status" style="display: ;"><?php echo htmlspecialchars($book['book_status']); ?></div>
+
+                                            <div class="books-category" style="display: ;"><?php echo htmlspecialchars($book['category_name']); ?></div>
+                                            <div class="books-borrow-status" style="display: ;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
                                             <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
                                             <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
                                             <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['user_rating']); ?></div>
@@ -350,6 +393,8 @@ session_start();
         </div>
 
     </div>
+
+
 </body>
 
 
@@ -357,11 +402,13 @@ session_start();
 </html>
 
 
+
 <script src="js/sidebar.js"></script>
 <script src="js/book-with-date-filter.js"></script>
 
 <script src="js/close-status.js"></script>
 <script src="js/tooltips.js"></script>
+<script src="js/loading-animation.js"></script>
 
 
 <script>

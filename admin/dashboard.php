@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -29,7 +29,7 @@ include 'functions/count_status.php';
     <div class="wrapper">
 
         <div class="container-top">
-            
+
             <?php include 'container-top.php'; ?>
 
         </div>
@@ -156,7 +156,9 @@ include 'functions/count_status.php';
 
                 <div class="row-padding-20px">
 
-                    <div class="container-bar">
+                    <?php $containerClass = $isAdmin ? 'container-bar' : 'container-bar full-width'; ?>
+
+                    <div class="<?php echo $containerClass; ?>">
                         <div class="row row-between">
                             <div class="chart-title">Monthly Transaction Report</div>
                             <div class="chart-title">
@@ -171,10 +173,14 @@ include 'functions/count_status.php';
                         <canvas id="barChart"></canvas>
                     </div>
 
-                    <div class="container-pie">
-                        <div class="chart-title">Patrons Age Category</div>
-                        <canvas id="pieChart"></canvas>
-                    </div>
+                    <?php if ($isAdmin): ?>
+
+                        <div class="container-pie">
+                            <div class="chart-title">Patrons Age Category</div>
+                            <canvas id="pieChart"></canvas>
+                        </div>
+
+                    <?php endif; ?>
 
                 </div>
 

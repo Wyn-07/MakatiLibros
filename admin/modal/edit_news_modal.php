@@ -16,7 +16,7 @@
         <form action="functions/update_news.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateNewsForm(['edit_image_news'])">
             <div class="container-form-official">
 
-                <input type="text" name="editNewsId" id="editNewsId" class="input-text" autocomplete="off" required>
+                <input type="hidden" name="editNewsId" id="editNewsId" class="input-text" autocomplete="off" required>
 
 
                 <div class="container-officials-image-modal">

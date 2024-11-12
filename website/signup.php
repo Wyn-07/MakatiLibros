@@ -8,12 +8,15 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
 <?php
+
+session_start();
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Retrieve and sanitize input values
     $email = $_POST['email'];
@@ -34,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                 <div class="row-auto">
                     <div class="container-round logo">
-                        <img src="../images/makati-logo.png" class="image">
+                        <img src="../images/library-logo.png" class="image">
                     </div>
                     Makati City Hall Library
                 </div>
@@ -55,18 +58,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
 
-        
+
 
         <div class="row-body">
 
             <div class="container-content row-center">
 
-                <div class="container-login row">
+                <div class="container-login row form-row">
 
                     <div class="container-login-left">
 
                         <div class="container-left-image">
-                            <img src="../images/makati-logo.png" class="image">
+                            <img src="../images/library-logo.png" class="image">
                         </div>
 
                         <div class="left-description">
@@ -89,41 +92,108 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <button type="button" class="button-error-close" onclick="closePasswordStatus()">&times;</button>
                                 </div>
 
+
+                                <div class="container-success" id="container-success" style="display: <?php echo isset($_SESSION['success_display']) ? $_SESSION['success_display'] : 'none';
+                                                                                                        unset($_SESSION['success_display']); ?>">
+                                    <div class="container-success-description" id="success-message">
+                                        <?php
+                                        if (isset($_SESSION['success_message'])) {
+                                            echo $_SESSION['success_message'];
+                                            unset($_SESSION['success_message']);
+                                        }
+                                        ?>
+                                    </div>
+                                    <button type="button" class="button-success-close" onclick="closeSuccessStatus()">&times;</button>
+                                </div>
+
+                                <div class="container-error" id="container-error" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
+                                                                                                    unset($_SESSION['error_display']); ?>">
+                                    <div class="container-error-description" id="error-message">
+                                        <?php
+                                        if (isset($_SESSION['error_message'])) {
+                                            echo $_SESSION['error_message'];
+                                            unset($_SESSION['error_message']);
+                                        }
+                                        ?>
+                                    </div>
+                                    <button type="button" class="button-error-close" onclick="closeErrorStatus()">&times;</button>
+                                </div>
+
+
+
                                 <div class="login-title">
                                     Sign up
                                 </div>
 
-                                <div class="container-input-100">
-                                    <label for="email">Email</label>
-                                    <input type="text" name="email" class="input-text" autocomplete="off" required>
-                                </div>
 
-                                <div class="container-input-100">
-                                    <label for="inputpassword">Password</label>
-                                    <input type="password" id="inputpassword" name="inputpassword" class="input-text" autocomplete="off" required>
-                                </div>
-
-                                <div class="container-input-100">
-                                    <label for="confirmpassword">Confirm Password</label>
-                                    <input type="password" id="confirmpassword" name="confirmpassword" class="input-text" autocomplete="off" required>
-                                </div>
-
-                                <div id="passwordRequirements" class="container-password-requirements">
-                                    <div class="font-size-16">Password must contain:</div>
-                                    <div class="font-size-14" id="letter">At least 1 letter</div>
-                                    <div class="font-size-14" id="number">At least 1 number (0-9)</div>
-                                    <div class="font-size-14" id="length">At least 8 character length</div>
-                                    <div class="font-size-14" id="lowercase">At least 1 lowercase (a...z)</div>
-                                    <div class="font-size-14" id="uppercase">At least 1 uppercase (A...Z)</div>
+                                <!-- loading animation -->
+                                <div id="loading-overlay">
+                                    <div class="spinner"></div>
                                 </div>
 
 
-                                <div class="row row-right">
-                                    <button type="submit" name="submit" class="button button-submit">Sign up</button>
+                                <div id="emailCont" style="margin-bottom: 50px">
+                                    <div class="container-input-100">
+                                        <label for="email">Email</label>
+                                        <input type="text" name="email" class="input-text" autocomplete="off" required>
+                                    </div>
+
+                                    <div class="row row-right">
+                                        <button type="button" name="send" id="sendBtn" onclick="sendVerification()" class="button button-submit">Send Verification</button>
+                                        <div id="timerDisplay" style="display: none; padding: 15px;">1:00</div>
+                                        <button type="button" name="resend" id="resendBtn" onclick="resendVerification()" class="button button-submit" style="display: none;">Resend Verification</button>
+                                    </div>
+
+
+                                    <div id="randomInput" style="color: white"></div>
+
+                                    <div class="container-input-100">
+                                        <label for="code">Verification Code</label>
+                                        <input type="text" id="verificationCode" name="code" class="input-text" autocomplete="off" required>
+                                    </div>
+
+                                    <div class="row row-right">
+                                        <button type="button" onclick="verifyCode()" name="verify" class="button button-submit">Verify</button>
+                                    </div>
+
                                 </div>
+
+
+
+                                <div id="passwordCont" style="display:none">
+                                    <div class="container-input-100">
+                                        <label for="inputpassword">Password</label>
+                                        <input type="password" id="inputpassword" name="inputpassword" class="input-text" autocomplete="off" required>
+                                    </div>
+
+                                    <div class="container-input-100">
+                                        <label for="confirmpassword">Confirm Password</label>
+                                        <input type="password" id="confirmpassword" name="confirmpassword" class="input-text" autocomplete="off" required>
+                                    </div>
+
+                                    <div id="passwordRequirements" class="container-password-requirements">
+                                        <div class="font-size-16">Password must contain:</div>
+                                        <div class="font-size-14" id="letter">At least 1 letter</div>
+                                        <div class="font-size-14" id="number">At least 1 number (0-9)</div>
+                                        <div class="font-size-14" id="length">At least 8 character length</div>
+                                        <div class="font-size-14" id="lowercase">At least 1 lowercase (a...z)</div>
+                                        <div class="font-size-14" id="uppercase">At least 1 uppercase (A...Z)</div>
+                                    </div>
+
+
+                                    <div class="row row-right">
+                                        <button type="submit" name="submit" class="button button-submit">Sign up</button>
+                                    </div>
+                                </div>
+
+
+
+
+
+
 
                                 <div class="row-center">
-                                    <a href="signup.php" class="link link-16px">
+                                    <a href="login.php" class="link link-16px">
                                         Already have an account?
                                     </a>
                                 </div>
@@ -162,6 +232,188 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 </html>
+
+
+<script src="js/loading-animation.js"></script>
+
+
+
+<script>
+    // Generate 4 random numbers
+    let randomNumbers = [];
+    for (let i = 0; i < 4; i++) {
+        randomNumbers.push(Math.floor(Math.random() * 10)); // Generates a number between 0 and 9
+    }
+
+    // Join numbers as a single string and display in the div
+    document.getElementById('randomInput').innerHTML = randomNumbers.join('');
+</script>
+
+
+<script>
+    let countdownTimer;
+    let timerDuration = 60; // 1 minute in seconds
+
+    // Function to start the timer
+    function startTimer() {
+        const timerDisplay = document.getElementById('timerDisplay');
+        const sendButton = document.getElementById('sendBtn');
+        const resendButton = document.getElementById('resendBtn');
+
+        // Hide the "Send Verification" button and show the "Resend Verification" button
+        sendButton.style.display = 'none'; // Hide send button
+        resendButton.style.display = 'inline-block'; // Show resend button
+        resendButton.disabled = true; // Disable resend button initially
+
+        // Show the timer
+        timerDisplay.style.display = 'inline-block';
+
+        // Start the countdown from the initial value
+        countdownTimer = setInterval(function() {
+            const minutes = Math.floor(timerDuration / 60);
+            const seconds = timerDuration % 60;
+
+            // Update the timer display
+            timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+            // When the timer reaches 0, stop the countdown and enable the resend button
+            if (timerDuration <= 0) {
+                clearInterval(countdownTimer); // Stop the timer
+                resendButton.disabled = false; // Enable the resend button
+                timerDisplay.style.display = 'none'; // Hide the timer when done
+            } else {
+                timerDuration--;
+            }
+        }, 1000); // Update every second
+    }
+
+    // Function to handle the resend functionality
+    function resendVerification() {
+        const resendButton = document.getElementById('resendBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+
+        // Reset the timer back to 1 minute (60 seconds)
+        timerDuration = 60;
+
+        // Show the timer again
+        timerDisplay.style.display = 'inline-block';
+
+        // Disable the resend button and start the countdown
+        resendButton.disabled = true;
+
+        // Start the countdown timer
+        startTimer();
+    }
+
+    // Function to send verification
+    function sendVerification() {
+        const emailField = document.querySelector('input[name="email"]'); // Get the email input field
+        const email = emailField.value;
+        const verificationCode = document.getElementById('randomInput').innerText;
+        const errorMessageContainer = document.getElementById('error-message'); // Get the error message container
+
+        // Clear any previous error message
+        errorMessageContainer.innerHTML = '';
+
+        // Reset email field border color
+        emailField.style.borderColor = '';
+
+        // Check if email or verification code is missing
+        if (!email || !verificationCode) {
+            // Display the error message inside the error container if email is missing
+            errorMessageContainer.innerHTML = 'Please fill in the email field.';
+            document.getElementById('container-error').style.display = 'flex'; // Show the error message container
+            document.getElementById('container-success').style.display = 'none'; // Hide the success container
+            emailField.style.borderColor = 'red'; // Set the email field border color to red
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('email', email);
+        formData.append('verificationCode', verificationCode);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', 'send_verification.php', true);
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+
+                if (response.status === 'success') {
+                    document.getElementById('container-success').style.display = 'flex';
+                    document.getElementById('success-message').innerHTML = response.message;
+                    document.getElementById('container-error').style.display = 'none';
+                    emailField.style.borderColor = ''; // Remove the red border if successful
+                    startTimer(); // Start the timer once the verification is sent
+                } else if (response.status === 'error') {
+                    document.getElementById('container-error').style.display = 'flex';
+                    document.getElementById('error-message').innerHTML = response.message;
+                    document.getElementById('container-success').style.display = 'none';
+                }
+            }
+        };
+        xhr.send(formData);
+    }
+
+
+
+
+
+
+
+
+
+    function closeSuccessStatus() {
+        document.getElementById('container-success').style.display = 'none';
+    }
+
+    function closeErrorStatus() {
+        document.getElementById('container-error').style.display = 'none';
+    }
+</script>
+
+
+
+<script>
+    // Function to verify the verification code
+    function verifyCode() {
+        const userCode = document.getElementById('verificationCode').value; // Get the value from the input field
+        const randomCode = document.getElementById('randomInput').innerText; // Get the verification code from randomInput
+        const errorMessageContainer = document.getElementById('error-message'); // Get the error message container
+
+        // Clear previous error message
+        errorMessageContainer.innerHTML = '';
+
+        // Check if the user input is blank
+        if (!userCode) {
+            errorMessageContainer.innerHTML = 'Please enter the verification code.';
+            document.getElementById('container-error').style.display = 'flex'; // Show the error message container
+            document.getElementById('container-success').style.display = 'none'; // Hide the success container
+            document.getElementById('verificationCode').style.borderColor = 'red'; // Set border color to red
+            return;
+        }
+
+        // Check if the entered code matches the generated code
+        if (userCode !== randomCode) {
+            errorMessageContainer.innerHTML = 'Incorrect verification code. Please try again.';
+            document.getElementById('container-error').style.display = 'flex'; // Show the error message container
+            document.getElementById('container-success').style.display = 'none'; // Hide the success container
+            document.getElementById('verificationCode').style.borderColor = 'red'; // Set border color to red
+        } else {
+            // If the code matches, show the success message
+            document.getElementById('container-success').style.display = 'flex';
+            document.getElementById('success-message').innerHTML = 'Verification successful!';
+            document.getElementById('container-error').style.display = 'none'; // Hide the error message container
+            document.getElementById('verificationCode').style.borderColor = ''; // Remove red border color
+
+            // Hide emailCont and show passwordCont
+            document.getElementById('emailCont').style.display = 'none';
+            document.getElementById('passwordCont').style.display = 'block';
+        }
+    }
+</script>
+
+
+
 
 
 

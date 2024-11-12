@@ -10,9 +10,13 @@
             <img src="../images/menu-white.png" class="image">
         </div>
         <div class="container-round logo">
-            <img src="../images/makati-logo.png" class="image">
+            <img src="../images/library-logo.png" class="image">
         </div>
-        Makati City Hall Library
+
+        <div class="container-top-title">
+            Makati City Hall Library
+        </div>
+        
     </div>
 
     <div class="row-auto">

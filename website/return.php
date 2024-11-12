@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -75,9 +75,31 @@ session_start();
                     </div>
                 </div>
 
-                <div class="row row-between">
 
-                    <div class="contents-title">
+
+
+                <!-- error message -->
+                <div class="contents-big-padding" id="container-error" style="display: <?php echo isset($_SESSION['error_display']) ? $_SESSION['error_display'] : 'none';
+                                                                                        unset($_SESSION['error_display']); ?>;">
+                    <div class="container-error">
+                        <div class="container-error-description">
+                            <?php if (isset($_SESSION['error_message'])) {
+                                echo $_SESSION['error_message'];
+                                unset($_SESSION['error_message']);
+                            } ?>
+                        </div>
+                        <button type="button" class="button-success-close" onclick="closeErrorStatus()">&times;</button>
+                    </div>
+
+                </div>
+
+
+
+
+
+                <div class="row row-between title-search">
+
+                    <div class="contents-title" >
                         Returned Books
                     </div>
 
@@ -95,6 +117,15 @@ session_start();
                 </div>
 
 
+
+                <!-- loading animation -->
+                <div id="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+
+
+
+
                 <div class="container-content">
                     <div id="search-results" style="padding: 40px 0">
 
@@ -109,37 +140,42 @@ session_start();
 
                         try {
                             // Prepare and execute the SQL query using PDO
-                            $sql = "
-                            SELECT 
-                                b.book_id,
-                                b.title,
-                                b.image,
-                                a.author AS author_name,         -- Get author name
-                                c.category AS category_name,     -- Get category name
-                                br.borrow_date,
-                                br.return_date,                  -- Include return_date
-                                IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating,
-                                MAX(CASE WHEN r.patrons_id = ? THEN r.ratings ELSE NULL END) AS user_rating,
-                                br.status AS borrow_status,
-                                f.status AS favorite_status
-                            FROM 
-                                borrow br
-                            JOIN 
-                                books b ON br.book_id = b.book_id
-                            JOIN 
-                                author a ON b.author_id = a.author_id      -- Join with author table
-                            JOIN 
-                                category c ON b.category_id = c.category_id  -- Join with category table
-                            LEFT JOIN 
-                                ratings r ON b.book_id = r.book_id
-                            LEFT JOIN 
-                                favorites f ON b.book_id = f.book_id AND f.patrons_id = ?
-                            WHERE 
-                                br.patrons_id = ? AND br.status = 'Returned'  -- Filter where status is 'Returned'
-                            GROUP BY 
-                                b.book_id, br.borrow_date, br.return_date, br.status, f.status, a.author, c.category
-                            ORDER BY 
-                                br.return_date DESC
+                            $sql = "SELECT 
+                                        b.book_id,
+                                        b.title,
+                                        b.image,
+                                        a.author AS author_name,         -- Get author name
+                                        c.category AS category_name,     -- Get category name
+                                        br.borrow_date,
+                                        br.return_date,                  -- Include return_date
+                                        IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating,
+                                        MAX(CASE WHEN r.patrons_id = ? THEN r.ratings ELSE NULL END) AS user_rating,
+                                        br.status AS borrow_status,
+                                        f.status AS favorite_status,
+                                        CASE 
+                                            WHEN br2.borrow_id IS NOT NULL AND br2.status != 'Returned' THEN 'Unavailable' 
+                                            ELSE 'Available' 
+                                        END AS book_status
+                                    FROM 
+                                        borrow br
+                                    JOIN 
+                                        books b ON br.book_id = b.book_id
+                                    JOIN 
+                                        author a ON b.author_id = a.author_id      -- Join with author table
+                                    JOIN 
+                                        category c ON b.category_id = c.category_id  -- Join with category table
+                                    LEFT JOIN 
+                                        ratings r ON b.book_id = r.book_id
+                                    LEFT JOIN 
+                                        favorites f ON b.book_id = f.book_id AND f.patrons_id = ?
+                                    LEFT JOIN 
+                                        borrow br2 ON b.book_id = br2.book_id  -- Check for any borrow entry
+                                    WHERE 
+                                        br.patrons_id = ? AND br.status = 'Returned'  -- Filter where status is 'Returned'
+                                    GROUP BY 
+                                        b.book_id, br.borrow_date, br.return_date, br.status, f.status, a.author, c.category
+                                    ORDER BY 
+                                        br.return_date DESC
                         ";
 
                             // Prepare the statement
@@ -200,6 +236,8 @@ session_start();
                                             <div class="books-image">
                                                 <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
                                             </div>
+
+                                            <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['book_status']); ?></div>
 
                                             <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
                                             <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
@@ -369,7 +407,7 @@ session_start();
 
 <script src="js/close-status.js"></script>
 <script src="js/tooltips.js"></script>
-
+<script src="js/loading-animation.js"></script>
 
 
 

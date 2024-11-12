@@ -13,8 +13,21 @@
 
                 <div class="container-input">
 
-                <input type="hidden" name="book_id" class="input-text" id="book_id" autocomplete="off" required>
-                <input type="hidden" name="status" class="input-text" id="status" autocomplete="off" value="Borrowing" required>
+                    <input type="hidden" name="book_id" class="input-text" id="book_id" autocomplete="off" required>
+                    <input type="hidden" name="status" class="input-text" id="status" autocomplete="off" value="Borrowing" required>
+
+
+                    <!-- <label for="borrow_type">Borrow Type</label> <br>
+                    <div class="row row-between">
+                        <label>
+                            <input type="radio" name="borrowType" value="circulation" required onclick="loadScript(this.value)">
+                            Circulation
+                        </label>
+                        <label>
+                            <input type="radio" name="borrowType" value="non-circulation" onclick="loadScript(this.value)">
+                            Non-Circulation
+                        </label>
+                    </div> -->
 
 
                     <div class="container-input-100">
@@ -44,7 +57,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="text" name="title" class="input-text" id="titleInput" autocomplete="off" required>
+                        <input type="text" name="title" class="input-text" id="titleInput" autocomplete="off" required disabled>
                     </div>
 
 

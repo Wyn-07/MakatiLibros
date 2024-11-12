@@ -1,18 +1,18 @@
 <?php
 session_start(); // Ensure session is started
 
-try {
-    // Database connection
-    $pdo = new PDO('mysql:host=localhost;dbname=librodb', 'root', '');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
+date_default_timezone_set('Asia/Manila');
+
+include '../../connection.php'; 
+
+try {
     // Get data from POST request (from the form)
     $bookId = $_POST['add_book_id'];
     $patronId = $_POST['add_patrons_id'];
     $status = $_POST['status'];
 
-    // Get today's date in the desired format
-    $date = date('F d, Y'); // Example: September 04, 2024
+    $date = date('m/d/Y'); // Example: 09/19/2024
 
     // Prepare SQL statement for updating the existing record
     $stmt = $pdo->prepare('UPDATE favorites SET date = :date, status = :status WHERE book_id = :book_id AND patrons_id = :patrons_id');

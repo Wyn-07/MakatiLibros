@@ -10,12 +10,12 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
 
-<?php session_start();?>
+<?php session_start(); ?>
 
 <?php include '../connection.php'; ?>
 <?php include 'functions/fetch_category.php'; ?>
@@ -41,26 +41,57 @@
 
             </div>
 
-
             <?php
             if (isset($_GET['query'])) {
-                $original_query = $_GET['query']; 
-                $query = '%' . $_GET['query'] . '%'; // Add wildcard for LIKE
+                $original_query = $_GET['query'];
+                $query = '%' . $original_query . '%'; // Add wildcard for LIKE
 
-                // Prepare the SQL statement with placeholders
-                $sql = "SELECT b.book_id, b.title, b.author_id, b.image, b.category_id, b.copyright
-                FROM books b
-                LEFT JOIN condemned cd ON b.book_id = cd.book_id 
-                LEFT JOIN missing ms ON b.book_id = ms.book_id   
-                WHERE (b.title LIKE :query OR b.author_id LIKE :query)
-                AND cd.book_id IS NULL 
-                AND ms.book_id IS NULL"; 
-        
+                // Assume that you have a way to get the logged-in patron's ID
+                $patrons_id = $_SESSION['patrons_id']; // Example: Getting patron ID from session
+
+                $sql = 
+                "SELECT 
+                    b.category_id, 
+                    c.category AS category_name, 
+                    b.title, 
+                    b.image, 
+                    b.book_id, 
+                    b.copyright, 
+                    b.author_id, 
+                    a.author, -- Fetch the author's name
+                    IFNULL(ROUND(AVG(r.ratings), 2), 0) as avg_rating,
+                    br.status AS borrow_status, -- Fetch the borrow status specific to the patron
+                    f.status AS favorite_status,
+                    pr.ratings AS patron_rating -- Fetch the logged-in patron's rating
+                FROM 
+                    books b
+                LEFT JOIN 
+                    author a ON b.author_id = a.author_id -- Join to get the author's name
+                LEFT JOIN 
+                    category c ON b.category_id = c.category_id -- Join to get the category name
+                LEFT JOIN 
+                    ratings r ON b.book_id = r.book_id
+                LEFT JOIN 
+                    borrow br ON b.book_id = br.book_id AND br.patrons_id = :patrons_id -- Join to get the borrow status specific to the patron
+                LEFT JOIN 
+                    favorites f ON b.book_id = f.book_id AND f.patrons_id = :patrons_id -- Join to get the favorite status specific to the patron
+                LEFT JOIN 
+                    ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id -- Join to get the patron's rating
+                LEFT JOIN 
+                    condemned cd ON b.book_id = cd.book_id -- Left join with condemned table
+                LEFT JOIN 
+                    missing ms ON b.book_id = ms.book_id -- Left join with missing table
+                WHERE   
+                    cd.book_id IS NULL AND ms.book_id IS NULL AND (b.title LIKE :query OR a.author LIKE :query)
+                GROUP BY 
+                    b.book_id, b.category_id, c.category, b.title, b.image, b.author_id, a.author, br.status, f.status, pr.ratings";
+
                 // Prepare the statement
                 $stmt = $pdo->prepare($sql);
 
                 // Bind the parameters
                 $stmt->bindParam(':query', $query, PDO::PARAM_STR);
+                $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT); // Bind patrons_id
 
                 // Execute the statement
                 $stmt->execute();
@@ -71,12 +102,19 @@
             ?>
 
 
+
             <div class="container-content">
 
-                <div class="row row-between">
+                <div class="row row-between title-search">
 
                     <div class="contents-title">
                         Results for "<?php echo htmlspecialchars($original_query); ?>"
+                    </div>
+
+
+                    <!-- loading animation -->
+                    <div id="loading-overlay">
+                        <div class="spinner"></div>
                     </div>
 
 
@@ -94,7 +132,7 @@
                 </div>
 
 
-                <div class="row">
+                <div class="row media-column">
 
                     <div class="container-filter">
 
@@ -110,10 +148,12 @@
                             <div class="filter-content">
                                 <div class="filter-container-item">
                                     <div class="filter-title">By Category</div>
-                                    <?php foreach ($category as $categories): ?>
+                                    <?php foreach ($category as $categories):
+                                        $category_slug = strtolower(str_replace(' ', '-', $categories)); // Create a slug for the category
+                                    ?>
                                         <div class="filter-item">
-                                            <input type="checkbox" name="category[]" value="<?= strtolower(str_replace(' ', '-', $categories)) ?>">
-                                            <label for="<?= strtolower(str_replace(' ', '-', $categories)) ?>"> <?= htmlspecialchars($categories) ?> </label>
+                                            <input type="checkbox" id="<?= $category_slug ?>" name="category[]" value="<?= $category_slug ?>">
+                                            <label for="<?= $category_slug ?>"> <?= htmlspecialchars($categories) ?> </label>
                                         </div>
                                     <?php endforeach; ?>
                                 </div>
@@ -134,20 +174,54 @@
 
                         <div class="row-contents-center" id="bookContainer">
                             <?php if (!empty($result)): ?>
-                                <?php foreach ($result as $row): ?>
-                                    <div class="container-books-2" id="book-<?php echo htmlspecialchars($row['book_id']); ?>">
+                                <?php foreach ($result as $book): ?>
+
+                                    <div class="container-books-2">
+                                        <div class="books-id" style="display: none;"><?php echo htmlspecialchars($book['book_id']); ?></div>
+
                                         <div class="books-image-2">
-                                            <img src="../book_images/<?= htmlspecialchars($row['image']) ?>" class="image">
+                                            <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image">
                                         </div>
-                                        <div class="books-name-2">
-                                            <?php echo htmlspecialchars($row['title']); ?>
-                                        </div>
-                                        <div class="books-author" style="display:none"><?php echo htmlspecialchars($row['authors']); ?></div>
-                                        <div class="books-categories" style="display:none"><?php echo htmlspecialchars($row['categories']); ?></div>
-                                        <div class="books-copyright" style="display:none"><?php echo htmlspecialchars($row['copyright']); ?></div>
-                                    
-                                    
+                                        <div class="books-categories" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
+                                        <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
+                                        <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
+                                        <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
+                                        <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['patron_rating']); ?></div>
+
+                                        <div class="books-name-2"><?php echo htmlspecialchars($book['title']); ?></div>
+                                        <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['author']); ?></div>
+                                        <div class="books-copyright" style="display: none"><?php echo htmlspecialchars($book['copyright']); ?></div>
+
+                                        <!-- Hidden form for borrowing books -->
+                                        <form id="borrowForm" action="functions/borrow_books.php" method="POST" style="display: none;">
+                                            <input type="hidden" name="book_id" id="bookIdInput">
+                                            <input type="hidden" name="patrons_id" id="patronIdInput">
+                                            <input type="hidden" name="status" value="Pending">
+                                            <input type="hidden" name="borrow_date" value="">
+                                            <input type="hidden" name="return_date" value="">
+                                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                                        </form>
+
+
+                                        <!-- Hidden form for add favorite books -->
+                                        <form id="addFavoriteForm" action="functions/add_favorite.php" method="POST" style="display: none;">
+                                            <input type="hidden" name="add_book_id" id="addBookIdInput">
+                                            <input type="hidden" name="add_patrons_id" id="addPatronIdInput">
+                                            <input type="hidden" name="status" id="statusInput" value="Added">
+                                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                                        </form>
+
+                                        <!-- Hidden form for remove favorite books -->
+                                        <form id="removeFavoriteForm" action="functions/remove_favorite.php" method="POST" style="display: none;">
+                                            <input type="hidden" name="remove_book_id" id="removeBookIdInput">
+                                            <input type="hidden" name="remove_patrons_id" id="removePatronIdInput">
+                                            <input type="hidden" name="status" id="statusInput" value="Remove">
+                                            <input type="hidden" name="referer" value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
+                                        </form>
+
+
                                     </div>
+
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <p>No results found.</p>
@@ -166,16 +240,25 @@
 
                         <div class="row-books-contents" id="book-details" style="display: none;">
                             <div class="container-books-contents">
+
+                                <div class="books-contents-id" style="display: none;">ID</div>
+
                                 <div class="books-contents-image">Image</div>
                                 <div class="books-contents">
 
                                     <div class="row row-between">
+                                        <div class="books-contents-category" style="display:none;"></div>
+                                        <div class="books-contents-status" style="display:none;"></div>
+                                        <div class="books-contents-favorite" style="display:none;"></div>
+
                                         <div class="books-contents-name">Book Sample</div>
                                         <div class="button button-close">&times;</div>
                                     </div>
 
                                     <div class="books-contents-author">Book Author</div>
-                                    <div class="books-contents-ratings" style="display:none"></div>
+
+                                    <div class="books-contents-ratings" style="display: none;"></div>
+                                    <div class="books-contents-user-ratings" style="display: none;"></div>
 
                                     <div class="row">
                                         <div class="star-rating">
@@ -193,9 +276,32 @@
 
 
                                     <div class="row">
-                                        <div class="button button-borrow">BORROW</div>
-                                        <div class="button button-bookmark"><img src="../images/bookmark-white.png" alt=""></div>
-                                        <div class="button button-ratings" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></div>
+                                        <div class="tooltipss">
+                                            <button class="button button-borrow" onmouseover='showTooltip(this)' onmouseout='hideTooltip(this)'>BORROW</button>
+                                            <span class='tooltiptexts'>Only books from the Circulation Section can be borrowed, but you can still read this book in the library.</span>
+                                        </div>
+
+                                        <div class="tooltipss" id="tooltip-add">
+                                            <button class="button button-bookmark"><img src="../images/bookmark-white.png" alt=""></button>
+                                            <span class='tooltiptexts'>Add to favorites</span>
+                                        </div>
+
+
+                                        <div class="tooltipss" id="tooltip-remove">
+                                            <button class="button button-bookmark-red"><img src="../images/bookmark-white.png" alt=""></button>
+                                            <span class='tooltiptexts'>Remove to favorites</span>
+                                        </div>
+
+
+                                        <div class="tooltipss" id="tooltip-add-ratings">
+                                            <div class="button button-ratings" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></div>
+                                            <span class='tooltiptexts'>Add ratings</span>
+                                        </div>
+
+                                        <div class="tooltipss" id="tooltip-update-ratings">
+                                            <button class="button button-ratings-yellow" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></button>
+                                            <span class='tooltiptexts'>Update ratings</span>
+                                        </div>
                                     </div>
 
                                     <?php include 'modal/add_rating_modal.php'; ?>
@@ -204,7 +310,6 @@
                             </div>
 
                             <script src="js/book-details-toggle-2.js"></script>
-
                         </div>
 
 
@@ -249,13 +354,51 @@
 </html>
 
 <script src="js/sidebar.js"></script>
+<script src="js/loading-animation.js"></script>
+
+<script>
+    // Function to handle filter changes
+    function handleFilterChange() {
+        const selectedCategories = [];
+        const checkboxes = document.querySelectorAll('input[name="category[]"]:checked');
+
+        checkboxes.forEach(checkbox => {
+            selectedCategories.push(checkbox.value);
+        });
+
+        const selectedDate = document.querySelector('input[name="filter_date"]').value;
+
+        // Call your filtering function with the selected categories and date
+        filterBooks(selectedCategories, selectedDate);
+    }
+
+    // Add event listeners to checkboxes
+    const checkboxes = document.querySelectorAll('input[name="category[]"]');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', handleFilterChange);
+    });
+
+    // Optionally, add an event listener for the date input
+    const dateInput = document.querySelector('input[name="filter_date"]');
+    if (dateInput) {
+        dateInput.addEventListener('change', handleFilterChange);
+    }
+
+    // Placeholder function for filtering logic
+    function filterBooks(categories, date) {
+        // Your filtering logic goes here
+        console.log('Selected categories:', categories);
+        console.log('Selected date:', date);
+        // Implement the logic to filter the books based on selected categories and date
+    }
+</script>
 <!-- <script src="js/book-list-pagination.js"></script> -->
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         // Select DOM elements
         const searchInput = document.getElementById('search');
-        const categoryCheckboxes = document.querySelectorAll('input[name="categories[]"]');
+        const categoryCheckboxes = document.querySelectorAll('input[name="category[]"]');
         const dateInput = document.querySelector('input[name="filter_date"]');
         const clearFiltersButton = document.getElementById('clear-filters');
         const bookContainer = document.getElementById('bookContainer');

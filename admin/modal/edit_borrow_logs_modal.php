@@ -134,7 +134,22 @@
 
 
 <script>
-    function openEditModal(log_id, log_date, category, categoryId, book_title, bookId, firstname, middlename, lastname, suffix, age, gender, barangay, city) {
+    function openEditModal(element) {
+        // Retrieve data attributes from the clicked element
+        const log_id = decodeURIComponent(element.getAttribute('data-logs-id'));
+        const log_date = decodeURIComponent(element.getAttribute('data-logs-date'));
+        const category = decodeURIComponent(element.getAttribute('data-logs-category'));
+        const categoryId = decodeURIComponent(element.getAttribute('data-logs-categoryid'));
+        const book_title = decodeURIComponent(element.getAttribute('data-logs-booktitle'));
+        const bookId = decodeURIComponent(element.getAttribute('data-logs-bookid'));
+        const firstname = decodeURIComponent(element.getAttribute('data-logs-firstname'));
+        const middlename = decodeURIComponent(element.getAttribute('data-logs-middlename'));
+        const lastname = decodeURIComponent(element.getAttribute('data-logs-lastname'));
+        const suffix = decodeURIComponent(element.getAttribute('data-logs-suffix'));
+        const age = decodeURIComponent(element.getAttribute('data-logs-age'));
+        const gender = decodeURIComponent(element.getAttribute('data-logs-gender'));
+        const barangay = decodeURIComponent(element.getAttribute('data-logs-barangay'));
+        const city = decodeURIComponent(element.getAttribute('data-logs-city'));
 
         document.getElementById('editModal').classList.add('show');
 
