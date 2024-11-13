@@ -18,6 +18,14 @@
     </div>
 </a> -->
 
+<a href="dashboard.php">
+    <div class="sidebar-items">
+        <div class="sidebar-image">
+            <img src="../images/borrow-white.png" class="image" id="sidebar-borrow-image">
+        </div>
+        Dashboard
+    </div>
+</a>
 
 <a href="borrow.php">
     <div class="sidebar-items">

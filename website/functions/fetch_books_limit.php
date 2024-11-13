@@ -1,6 +1,13 @@
 <?php
 
-// Query to fetch the first 20 books for each category based on book_id
+// Fetch the user's interests
+$interestQuery = "SELECT interest FROM patrons WHERE patrons_id = :patrons_id";
+$interestStmt = $pdo->prepare($interestQuery);
+$interestStmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+$interestStmt->execute();
+$userInterest = $interestStmt->fetchColumn();
+
+// Modify the main query to filter books based on the user's interests
 $sql = "SELECT 
             b.category_id,
             c.category AS category_name,
@@ -35,13 +42,16 @@ $sql = "SELECT
         LEFT JOIN 
             ratings pr ON b.book_id = pr.book_id AND pr.patrons_id = :patrons_id
         LEFT JOIN 
-            borrow br2 ON b.book_id = br2.book_id  -- Check for any borrow entry
+            borrow br2 ON b.book_id = br2.book_id  
         LEFT JOIN 
             condemned cd ON b.book_id = cd.book_id
         LEFT JOIN 
             missing ms ON b.book_id = ms.book_id
         WHERE 
-            cd.book_id IS NULL AND ms.book_id IS NULL AND rn <= 10
+            cd.book_id IS NULL 
+            AND ms.book_id IS NULL 
+            AND rn <= 10 
+            AND FIND_IN_SET(c.category, :user_interest) > 0  -- Filter by user's interest
         GROUP BY 
             b.book_id, b.category_id, c.category, b.title, b.image, b.author_id, a.author, br.status, f.status, pr.ratings
         ORDER BY 
@@ -49,15 +59,15 @@ $sql = "SELECT
 
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
+$stmt->bindParam(':user_interest', $userInterest, PDO::PARAM_STR);
 $stmt->execute();
-
 
 // Fetch all results
 $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Process results as before
 $books_limit = [];
 foreach ($result as $row) {
-    // Skip rows where category_id is empty
     if (!empty($row['category_id'])) {
         $books_limit[$row['category_id']][] = [
             'book_id' => $row['book_id'],
@@ -91,12 +101,12 @@ function removeDuplicates($array)
     return $unique;
 }
 
-// Remove duplicate titles within each category_id
+// Remove duplicates and filter empty categories as before
 foreach ($books_limit as $category_id => $bookDetails) {
     $books_limit[$category_id] = removeDuplicates($bookDetails);
 }
 
-// Remove category_id with no books
 $books_limit = array_filter($books_limit, function ($bookDetails) {
     return !empty($bookDetails);
 });
+?>

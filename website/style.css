@@ -1065,10 +1065,25 @@ button {
     padding: 40px;
 }
 
+.container-books-contents-full {
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    width: 100%;
+    padding: 40px;
+}
 
 .books-contents-image {
     width: 250px;
     height: 300px;
+    border: 1px solid #6A737E;
+}
+
+
+
+.books-contents-image-profile {
+    width: 250px;
+    height: 250px;
     border: 1px solid #6A737E;
 }
 
@@ -1089,6 +1104,11 @@ button {
 }
 
 
+.books-contents-date {
+    font-size: 18px;
+    padding: 5px;
+    margin: 10px;
+}
 
 
 
@@ -2442,7 +2462,7 @@ label {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-}
+} 
 
 
 .profile-title-white {
@@ -2458,15 +2478,67 @@ label {
 }
 
 .profile-contents {
-    width: 100%;
+    width: auto;
+    min-height: 800px;
+    padding: 30px;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    background-color: #DFD7BF;
-    padding: 50px;
+    flex-direction: row;
+    background-color: #f4f4f4;
+    font-size: 18px;
 }
 
-.profile-container {
+.profile-row {
+    display: flex;
+    flex-direction: row;
+    padding: 5px;
+    gap: 10px;
+}
+
+
+.profile-row2 {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 0 20px;
+}
+
+
+.profile-row6 {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 25px 0;
+    width: 100%;
+}
+
+.container-line {
+    display: flex;
+    align-items: center;
+}
+
+.line {
+    background-color: #CCCCCC;
+    width: 1px;
+    height: 40vh;
+}
+
+
+.profile-file {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+    width: 300px;
+    box-sizing: border-box;
+}
+
+.item-status {
+    padding: 5px;
+    font-size: 18px;
+}
+
+/*.profile-container {
     width: 80%;
     background-color: white;
     border-radius: 10px;
@@ -2477,7 +2549,6 @@ label {
 }
 
 .profile-container-contents {
-
     display: flex;
     flex-direction: row;
 }
@@ -2507,6 +2578,158 @@ label {
 
 .profile-select {
     width: 300px;
+} */ 
+
+
+
+.profile-contents {
+    width: auto;
+    min-height: 800px;
+    padding: 30px;
+    display: flex;
+    flex-direction: row;
+    background-color: #f4f4f4;
+    font-size: 18px;
+}
+
+.profile-container {
+    width: 80%;
+    background-color: white;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    padding: 40px;
+    box-shadow: 0px 0px 8px 4px rgba(0, 0, 0, 0.2);
+}
+
+.profile-container-contents {
+    display: flex;
+    flex-direction: row;
+}
+
+
+
+.profile-container-left {
+    width: 25%;
+    padding: 30px;
+}
+
+.profile-container-left-contents {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+}
+
+.container-profile-image {
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    overflow: hidden;
+}
+
+
+.container-profile-image2 {
+    width: 300px;
+    height: 300px;
+    margin: 10px 0;
+    border-radius: 5%;
+    overflow: hidden;
+}
+
+.profile-container-right {
+    width: 75%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background-color: white;
+    padding: 40px;
+}
+
+.profile-container-white-filter {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+    background-color: white;
+    padding: 20px 40px;
+    margin-bottom: 10px;
+}
+
+
+.profile-container-white-filter-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    background-color: white;
+    margin-bottom: 15px;
+    padding: 20px;
+}
+
+.container-column {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.container-column4 {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-between;
+    gap: 15px;
+    height: 100%;
+}
+
+
+.container-column6 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+}
+
+
+.container-profile-font-small {
+    font-size: 16px;
+    color: #999;
+}
+
+.profile-nav-items {
+    font-size: 16px;
+}
+
+.profile-nav-items:hover {
+    background-color: #eee;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+}
+
+
+.padding-left {
+    padding-left: 25px;
+}
+
+
+
+.right-contents-left {
+    width: 60%;
+    padding: 10px;
+}
+
+.right-contents-right {
+    margin-top: 50px;
+    width: 40%;
+    display: flex;
+    justify-content: center;
+}
+
+
+.icon-profile {
+    width: 20px;
+    height: 20px;
 }
 
 

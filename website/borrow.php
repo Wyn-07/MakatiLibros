@@ -306,6 +306,7 @@ session_start();
             </div>
 
             <div class="row-books-contents" id="book-details" style="display: none;">
+                
                 <div class="container-books-contents">
 
                     <div class="books-contents-id" style="display: none;">ID</div>
