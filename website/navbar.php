@@ -1,4 +1,3 @@
-
 <?php include '../connection.php'; ?>
 <?php include 'functions/fetch_profile.php'; ?>
 
@@ -16,12 +15,32 @@
         <div class="container-top-title">
             Makati City Hall Library
         </div>
-        
+
     </div>
 
     <div class="row-auto">
 
-        <a href="logout.php" class="link-logout">Log out</a>
+        <a href="notification.php" class="profile-row notif-hover">
+
+            <div class="icon-profile">
+                <img src="../images/notification-white.png" class="image" alt="">
+            </div>
+
+            <div class="container-column">
+                <div class="font-size-16">Notification</div>
+            </div>
+
+        </a>
+
+
+
+
+
+
+
+
+
+        <!-- <a href="logout.php" class="link-logout">Log out</a> -->
 
         <a href="profile.php">
             <div class="container-round profile">

@@ -199,7 +199,20 @@
 
                         <div id="myTransaction" style="width: 100%;">
 
-                            <div class="profile-container-search">
+
+                            <div class="profile-container-white-filter-content">
+
+                                <div class="row row-right">
+                                   
+                                     <button type="submit" id="mark" name="mark" value="mark" class="button button-mark">Mark all as read</button>
+
+                                </div>
+                                
+                           </div>
+
+
+
+                           <div class="profile-container-search">
                                 <div class="profile-container-search-image">
                                     <div class="search-image">
                                         <img src="../images/search-black.png" class="image">
@@ -207,21 +220,54 @@
                                 </div>
                                 <input type="text" id="search" class="search" placeholder="Search here..." autocomplete="off">
                             </div>
+                            
                         
-                           <div class="profile-container-white-filter-content">
+                           <div class="notif-container-white-opacity">
 
                                 <div class="row">
                                    <div class="container-notif-image">
-                                      <img src="" class="images" alt="">
+                                      <img src="../book_images/9lp_PocketComputerDictionaryoftheEnglishLanguage_10142024.jpg" class="image" alt="">
                                    </div>
                                    <div>
                                         <div class="notification-title">You have successfully borrowed the book</div>
-                                        <div class="notification-description"></div>
+                                        <div class="notification-description">You have successfully borrowed the book Malupiton. Please remember to return it by the due date, May 25, 2024. Enjoy your reading!</div>
+                                        <div class="notification-date">May 11, 2024 11:00 PM</div>
                                    </div>
-            
                                 </div>
-                                
+
                            </div>
+
+
+                           <div class="notif-container-white">
+
+                                <div class="row">
+                                    <div class="container-notif-image">
+                                        <img src="../book_images/9lp_PocketComputerDictionaryoftheEnglishLanguage_10142024.jpg" class="image" alt="">
+                                    </div>
+                                    <div>
+                                        <div class="notification-title">Reminder: Return Book in Two Days</div>
+                                        <div class="notification-description">This is a reminder that you need to return the book Malupiton by May 13, 2024. Please ensure you return it on time to avoid any late fees. Thank you!</div>
+                                        <div class="notification-date">May 11, 2024 11:00 PM</div>
+                                    </div>
+                                </div>
+
+                           </div>
+
+
+
+                            <div class="notif-container-white">
+                                <div class="row">
+                                    <div class="container-notif-image">
+                                        <img src="../book_images/9lp_PocketComputerDictionaryoftheEnglishLanguage_10142024.jpg" class="image" alt="">
+                                    </div>
+                                    <div>
+                                        <div class="notification-title">Notice: Temporary Ban on Borrowing Privileges</div>
+                                        <div class="notification-description">You have been temporarily banned from borrowing books due to not returning the book "Malupiton" by the due date. Please return the book to regain borrowing privileges. Thank you for your cooperation.</div>
+                                        <div class="notification-date">May 11, 2024 11:00 PM</div>
+                                    </div>
+                                </div>
+                            </div>
+
 
 
                             <div id="no-results-container" style="display: none; min-height: 300px; justify-content: center; align-items: center; flex-direction: column; width: 100%; background-color: white; padding: 20px 40px; margin-bottom: 10px;">

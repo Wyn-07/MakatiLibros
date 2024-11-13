@@ -100,7 +100,6 @@ a {
 .link-logout:hover {
     transform: scale(1.1);
     color: #f4b8b0;
-    ;
 
 }
 
@@ -357,6 +356,10 @@ body.no-scroll {
     overflow-y: auto;
     box-sizing: border-box;
     left: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 
@@ -454,7 +457,7 @@ body.no-scroll {
 
 
 .logout {
-    display: none;
+    display: flex;
 }
 
 
@@ -884,6 +887,21 @@ button {
     transform: scale(1.1);
 }
 
+.button-mark {
+    border: 1px solid #ccc;
+    color: black;
+    transition: transform 0.2s;
+    padding: 10px 20px;
+    border-radius: 10px;
+    background-color: inherit;
+}
+
+.button-mark:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+}
+
+
 /*////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 .container-search {
@@ -1059,17 +1077,21 @@ button {
 
 
 .row-books-contents-modal-parent {
-    display: none; 
-    position: fixed; 
+    display: none;
+    position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     display: flex;
-    align-items: center; /* Centers vertically */
-    justify-content: center; /* Centers horizontally */
-    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
-    z-index: 1000; /* Ensures it's on top of other elements */
+    align-items: center;
+    /* Centers vertically */
+    justify-content: center;
+    /* Centers horizontally */
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background */
+    z-index: 1000;
+    /* Ensures it's on top of other elements */
 }
 
 
@@ -2496,7 +2518,7 @@ label {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-} 
+}
 
 
 .profile-title-white {
@@ -2580,7 +2602,7 @@ label {
 
 .item-status.active {
     font-weight: bold;
-    color: #007bff; 
+    color: #007bff;
     transition: transform 0.2s;
 }
 
@@ -2588,7 +2610,7 @@ label {
 
 .item-status:hover {
     transform: scale(1.1);
-   cursor: pointer;
+    cursor: pointer;
 }
 
 
@@ -2759,14 +2781,70 @@ label {
 }
 
 
-.date-font{
+.date-font {
     font-size: 14px;
 }
 
 
+.notif-container-white {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    background-color: white;
+    margin-bottom: 15px;
+    padding: 20px;
+}
+
+
+.notif-container-white-opacity {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 100%;
+    background-color: rgba(255, 255, 255, 0.5); /* Adjust opacity here */
+    margin-bottom: 15px;
+    padding: 20px;
+}
 
 
 
+.container-notif-image {
+    max-height: 150px;
+    max-width: 150px;
+    min-height: 150px;
+    min-width: 150px;
+}
+
+.notification-title {
+    font-size: 20px;
+    padding: 5px;
+}
+
+.notification-description {
+    font-size: 16px;
+    padding: 5px;
+}
+
+.notification-date {
+    font-size: 14px;
+    padding: 5px;
+}
+
+
+.notif-container-white-opacity .notification-title,
+.notif-container-white-opacity .notification-description,
+.notif-container-white-opacity .notification-date,
+.notif-container-white-opacity .container-notif-image .image  {
+    opacity: 0.5; /* Adjust opacity as desired */
+}
+
+
+
+.notif-hover:hover {
+    border: 1px solid #ccc;
+    cursor: pointer;
+}
 
 .tooltipss {
     position: relative;
