@@ -130,11 +130,11 @@
                                     </div>
 
                                     <div class="container-column">
-                                        <div id="myAccount" class="profile-nav-items" onclick="toggleSection('myProfile')">
-                                            My Account
-                                        </div>
-                                        <div class="padding-left profile-nav-items" id="myProfileButton" onclick="showProfile()">Profile</div>
-                                        <div class="padding-left profile-nav-items" id="changePassButton" onclick="showChangePassword()">Change Password</div>
+                                        <a href="profile.php">
+                                            <div id="myAccount" class="profile-nav-items">
+                                                My Account
+                                            </div>
+                                        </a>
                                     </div>
 
                                 </div>
@@ -147,9 +147,12 @@
                                         <img src="../images/transaction-black.png" class="image" alt="">
                                     </div>
 
-                                    <div class="container-column">
-                                        <div id="transaction" class="profile-nav-items" onclick="toggleSection('myTransaction')">My Book Transaction</div>
-                                    </div>
+                                    <a href="transaction.php">
+                                        <div class="container-column">
+                                            <div id="transaction" class="profile-nav-items" onclick="toggleSection('myTransaction')">My Book Transaction</div>
+                                        </div>
+                                    </a>
+
 
                                 </div>
 
@@ -161,9 +164,11 @@
                                         <img src="../images/bookmark-black.png" class="image" alt="">
                                     </div>
 
-                                    <div class="container-column">
-                                        <div id="favorites" class="profile-nav-items" onclick="toggleSection('myFavorites')">My Favorites</div>
-                                    </div>
+                                    <a href="favorites.php">
+                                        <div class="container-column">
+                                            <div id="favorites" class="profile-nav-items" onclick="toggleSection('myFavorites')">My Favorites</div>
+                                        </div>
+                                    </a>
 
                                 </div>
 
@@ -175,18 +180,23 @@
                                         <img src="../images/notification-black.png" class="image" alt="">
                                     </div>
 
-                                    <div class="container-column">
-                                        <div id="notification" class="profile-nav-items" onclick="toggleSection('myNotification')">Notification</div>
-                                    </div>
+                                    <a href="notification.php">
+                                        <div class="container-column">
+                                            <div id="notification" class="profile-nav-items" onclick="toggleSection('myNotification')">Notification</div>
+                                        </div>
+                                    </a>
+
 
                                 </div>
 
 
                             </div>
+
+
                         </div>
 
 
-                        <div class="profile-container-right" id="myProfile" style="display: none;">
+                        <div class="profile-container-right" id="myProfile" style="display: block;">
 
                             <div class="container-column">
                                 <div>
@@ -374,35 +384,7 @@
                         </div>
 
 
-
-
-
-                        <div id="myTransaction" style="display: block; width: 100%;">
-
-                            <div class="profile-container-white-filter">
-                                <div class="item-status" data-status="Pending" onclick="toggleStatus('statusPending')">Pending</div>
-                                <div class="item-status" data-status="Accepted" onclick="toggleStatus('statusAccepted')">Accepted</div>
-                                <div class="item-status" data-status="Returned" onclick="toggleStatus('statusReturned')">Returned</div>
-                            </div>
-
-                            <div style="display: block" id="statusPending">
-                                <!-- <?php include 'functions/fetch_books_pending.php'; ?> -->
-                                 Pending
-                            </div>
-
-
-                            <div style="display: none" id="statusAccepted">
-                                <!-- <?php include 'functions/fetch_books_accepted.php'; ?> -->
-                                 Accepted
-                            </div>
-
-                            <div style="display: none" id="statusReturned">
-                                <?php include 'functions/fetch_books_returned.php'; ?>
-                            </div>
-
-
-                        </div>
-
+                
 
 
                         <div class="profile-container-right" id="myNotification" style="display: none;">

@@ -1,7 +1,5 @@
 <?php
 
-// Check if status and patrons_id are set
-$status = 'Returned';
 $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
 if ($status && $patrons_id) {
@@ -11,12 +9,15 @@ if ($status && $patrons_id) {
             b.book_id,
             b.title,
             b.image,
-            a.author AS author_name,          -- Get author name
-            c.category AS category_name,      -- Get category name
+            b.copyright,
+            a.author AS author_name,          
+            c.category AS category_name,      
             br.borrow_id,
             br.patrons_id,
             br.borrow_date,
             br.borrow_time,
+            br.return_date,
+            br.return_time,
             IFNULL(ROUND(AVG(r.ratings), 2), 0) AS avg_rating,  -- Average rating
             MAX(CASE WHEN r.patrons_id = :patrons_id THEN r.ratings ELSE NULL END) AS user_rating,  -- User's specific rating
             br.status AS borrow_status,
@@ -43,19 +44,37 @@ if ($status && $patrons_id) {
     // Generate the HTML to display books
     if (count($result) > 0) {
         foreach ($result as $row) {
+            $formattedDateReturn = date("F j, Y", strtotime($row['return_date']));
+            $formattedTimeReturn = date("h:i A", strtotime($row['return_time']));
+            $dayOfWeekReturn = date("l", strtotime($row['return_date']));
+
+
             $formattedDate = date("F j, Y", strtotime($row['borrow_date']));
             $formattedTime = date("h:i A", strtotime($row['borrow_time']));
             $dayOfWeek = date("l", strtotime($row['borrow_date']));
+
+
             $avgRating = floatval($row['avg_rating']); // Get the average rating
 
 ?>
 
             <div class="profile-container-white-filter-content">
 
-                <div class="row">
-                    <div class="books-contents-date"><?= $formattedDate ?></div>
-                    <div class="books-contents-date"><?= $formattedTime ?></div>
-                    <div class="books-contents-date"><?= $dayOfWeek ?></div>
+
+                <div class="row row-between">
+                    <div>
+                        <div class="date-font">Return Date</div>
+                        <div class="profile-row">
+                            <div class="books-contents-date formatted-date-return"><?= $formattedDateReturn ?></div>
+                            <div class="books-contents-date formatted-time-return"><?= $formattedTimeReturn ?></div>
+                            <div class="books-contents-date day-of-week-return"><?= $dayOfWeekReturn ?></div>
+                        </div>
+                    </div>
+
+
+                    <div>
+                        
+                    </div>
                 </div>
 
                 <hr style="margin: 15px 0">
@@ -70,6 +89,7 @@ if ($status && $patrons_id) {
 
                         <div class="books-contents-name"><?= htmlspecialchars($row['title']) ?></div>
                         <div class="books-contents-author"><?= htmlspecialchars($row['author_name']) ?></div>
+                        <div class="books-contents-copyright"><?= htmlspecialchars($row['copyright']) ?></div>
 
                         <div class="books-category" style="display: none"><?= htmlspecialchars($row['category_name']) ?></div>
                         <div class="patrons-id" style="display: none"><?= htmlspecialchars($row['patrons_id']) ?></div>
@@ -115,12 +135,12 @@ if ($status && $patrons_id) {
                             </div>
 
                             <div class="tooltipss" id="tooltip-add-ratings">
-                                <div class="button button-ratings" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></div>
+                                <div class="button button-ratings" onclick="openRateModal(<?= htmlspecialchars($row['book_id']) ?>, <?= htmlspecialchars($row['patrons_id']) ?>, <?= htmlspecialchars($row['user_rating']) ?>)"><img src="../images/star-white.png" alt=""></div>
                                 <span class='tooltiptexts'>Add ratings</span>
                             </div>
 
                             <div class="tooltipss" id="tooltip-update-ratings">
-                                <button class="button button-ratings-yellow" onclick="openRateModal()"><img src="../images/star-white.png" alt=""></button>
+                                <button class="button button-ratings-yellow" onclick="openRateModal(<?= htmlspecialchars($row['book_id']) ?>, <?= htmlspecialchars($row['patrons_id']) ?>, <?= htmlspecialchars($row['user_rating']) ?>)"><img src="../images/star-white.png" alt=""></button>
                                 <span class='tooltiptexts'>Update ratings</span>
                             </div>
 
@@ -133,6 +153,25 @@ if ($status && $patrons_id) {
 
                 </div>
 
+
+                <hr style="margin: 15px 0">
+
+                <div class="row row-between">
+                    <div>
+                        
+                    </div>
+
+
+                    <div>
+                        <div class="date-font">Borrow Date</div>
+                        <div class="profile-row">
+                            <div class="books-contents-date formatted-date"><?= $formattedDate ?></div>
+                            <div class="books-contents-date formatted-time"><?= $formattedTime ?></div>
+                            <div class="books-contents-date day-of-week"><?= $dayOfWeek ?></div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
 
@@ -141,7 +180,12 @@ if ($status && $patrons_id) {
 <?php
         }
     } else {
-        echo "<div>No records found for this status.</div>";
+        echo '<div class="profile-container-white-filter-content" style="min-height: 300px; justify-content:center; align-items: center">
+                    <div class="unavailable-image">
+                        <img src="../images/no-books.png" class="image">
+                    </div>
+                    <div class="unavailable-text">None</div>
+                </div>';
     }
 } else {
     echo "<div>Error: Status or Patron ID not set.</div>";
@@ -199,7 +243,7 @@ if ($status && $patrons_id) {
             }
 
             // Favorite Button Logic
-            if (bookFavorite !== '' && bookFavorite !== 'Remove') {
+            if (bookFavorite === 'Added') {
                 favoriteButton.style.display = 'none';
                 favoriteButtonRed.style.display = 'flex';
                 tooltipAdd.style.display = 'none';
@@ -210,6 +254,7 @@ if ($status && $patrons_id) {
                 tooltipAdd.style.display = 'flex';
                 tooltipRemove.style.display = 'none';
             }
+
 
             // Rating Button Logic
             if (bookUserRating !== '') {
