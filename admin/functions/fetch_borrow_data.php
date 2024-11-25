@@ -7,8 +7,8 @@ if (isset($_GET['year'])) {
     // SQL query to get monthly borrow and return transactions for the selected year
     $sql = "SELECT 
                 MONTH(STR_TO_DATE(borrow_date, '%m/%d/%Y')) AS month, 
-                SUM(CASE WHEN borrow_date IS NOT NULL THEN 1 ELSE 0 END) AS borrowed,
-                SUM(CASE WHEN return_date IS NOT NULL THEN 1 ELSE 0 END) AS returned
+                SUM(CASE WHEN borrow_date != 'Pending' THEN 1 ELSE 0 END) AS borrowed,
+                SUM(CASE WHEN return_date != 'Pending' THEN 1 ELSE 0 END) AS returned
             FROM borrow 
             WHERE YEAR(STR_TO_DATE(borrow_date, '%m/%d/%Y')) = :year 
             GROUP BY MONTH(STR_TO_DATE(borrow_date, '%m/%d/%Y'))";

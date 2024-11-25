@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -41,7 +41,12 @@ $officials = getOfficials($pdo);
 ?>
 
 <body>
+
     <div class="wrapper">
+
+        <div id="loading-overlay">
+            <div class="spinner"></div>
+        </div>
 
         <div class="container-top">
 
@@ -67,6 +72,20 @@ $officials = getOfficials($pdo);
                     </div>
                 </div>
 
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+                        // Hide the loading overlay after the content is fully loaded
+                        document.getElementById("loading-overlay").style.display = "none";
+                    });
+
+                    // Show the loading overlay when the page is being reloaded or navigated
+                    window.addEventListener("beforeunload", function() {
+                        document.getElementById("loading-overlay").style.display = "flex";
+                    });
+                </script>
+
+
                 <form action="functions/update_about.php" method="POST" enctype="multipart/form-data" class="container-white-about"
                     onsubmit="return validateAboutForm(['mission_image_1'], ['mission_image_2'], ['mission_image_3'], ['vision_image_1'], ['vision_image_2'], ['vision_image_3'])">
 
@@ -85,6 +104,15 @@ $officials = getOfficials($pdo);
                     <div class="container-error" id="container-error-about" style="display: none">
                         <div class="container-error-description" id="message-about"></div>
                         <button type="button" class="button-error-close" onclick="closeErrorAboutStatus()">&times;</button>
+                    </div>
+
+                    <div style="display: none; align-items: center;">
+                        <div id="brTooltip" class="container-info">
+                            <div class="container-row">
+
+                                Please ignore the &lt;br&gt; tags you see; they were inserted for creating new lines on the website.
+                            </div>
+                        </div>
                     </div>
 
                     <div class="row row-between">
@@ -165,7 +193,7 @@ $officials = getOfficials($pdo);
                                 Our Mission
                             </div>
                             <div class="about-description">
-                                <textarea name="mission" id="mission" class="textarea-about"><?php echo $mission; ?></textarea>
+                                <textarea name="mission" id="mission_desc" class="textarea-about"><?php echo $mission; ?></textarea>
                             </div>
                         </div>
                     </div>
@@ -177,7 +205,7 @@ $officials = getOfficials($pdo);
                                 Our Vision
                             </div>
                             <div class="about-description">
-                                <textarea name="vision" id="vision" class="textarea-about"><?php echo $vision; ?></textarea>
+                                <textarea name="vision" id="vision_desc" class="textarea-about"><?php echo $vision; ?></textarea>
                             </div>
                         </div>
 
@@ -255,7 +283,7 @@ $officials = getOfficials($pdo);
                                             History of Makati City Hall Library
                                         </div>
                                         <div class="history-description">
-                                            <textarea name="history" id="history" class="textarea-history"><?php echo htmlspecialchars($history); ?></textarea>
+                                            <textarea name="history" id="history_desc" class="textarea-history"><?php echo htmlspecialchars($history); ?></textarea>
                                         </div>
                                     </div>
                                     <div class="container-scroll-right">
@@ -283,6 +311,11 @@ $officials = getOfficials($pdo);
 
                         <?php foreach ($officials as $official) : ?>
                             <form action="functions/update_official.php" method="POST" enctype="multipart/form-data" id="form_<?php echo htmlspecialchars($official['officials_id']); ?>" onsubmit="return validateFormBeforeSubmit(this);">
+                           
+                            <input type="hidden" name="oldImageName" value="<?php echo htmlspecialchars($official['image']); ?>">
+                            <input type="hidden" name="oldName" value="<?php echo htmlspecialchars($official['name']); ?>">
+                            <input type="hidden" name="oldTitle" value="<?php echo htmlspecialchars($official['title']); ?>">
+
                                 <div class="container-officials">
                                     <div class="container-officials-image" id="container-official-image_<?php echo htmlspecialchars($official['officials_id']); ?>">
                                         <img src="../official_images/<?php echo htmlspecialchars($official['image']); ?>"
@@ -305,17 +338,13 @@ $officials = getOfficials($pdo);
                                         <input type="text" name="name" class="input-text officials-name" value="<?php echo htmlspecialchars($official['name']); ?>">
                                         <input type="text" name="title" class="input-text officials-title" value="<?php echo htmlspecialchars($official['title']); ?>">
                                         <div class="row row-between">
-                                            <button type="button" class="button-delete" onclick="openDeleteModal('<?php echo htmlspecialchars($official['officials_id']); ?>')">Delete</button>
+                                            <button type="button" class="button-delete-officials" onclick="openDeleteModal('<?php echo htmlspecialchars($official['officials_id']); ?>')">Delete</button>
                                             <button type="submit" name="save" id="save" class="button-save">Save</button>
                                         </div>
                                     </div>
                                 </div>
                             </form>
                         <?php endforeach; ?>
-
-
-
-
 
 
 
@@ -663,4 +692,26 @@ $officials = getOfficials($pdo);
 
         return isValid; // Return true if all inputs are valid
     }
+</script>
+
+
+<script>
+    const textAreas = [
+        document.getElementById("history_desc"),
+        document.getElementById("mission_desc"),
+        document.getElementById("vision_desc")
+    ];
+
+    textAreas.forEach(textBox => {
+        textBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                event.preventDefault();
+                const cursorPosition = textBox.selectionStart;
+                const text = textBox.value;
+                const newText =
+                    text.slice(0, cursorPosition) + "<br>\n" + text.slice(cursorPosition);
+                textBox.value = newText;
+            }
+        });
+    });
 </script>

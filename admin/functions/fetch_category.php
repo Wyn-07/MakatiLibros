@@ -1,6 +1,6 @@
 <?php
 function getCategoryList($pdo) {
-    $query = "SELECT category_id, category FROM category ORDER BY category ASC";
+    $query = "SELECT category_id, category, description FROM category ORDER BY category ASC";
     
     // Prepare and execute the statement
     $stmt = $pdo->prepare($query);
@@ -11,7 +11,8 @@ function getCategoryList($pdo) {
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         $categoryList[] = [
             'category_id' => $row['category_id'],
-            'category' => $row['category']
+            'category' => $row['category'],
+            'description' => $row['description']
         ];
     }
     return $categoryList;

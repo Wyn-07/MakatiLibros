@@ -12,6 +12,10 @@
             <div class="container-form">
 
                 <input type="hidden" name="official_id" id="official_id">
+                <input type="hidden" name="oldImageName" value="<?php echo htmlspecialchars($official['image']); ?>">
+                <input type="hidden" name="oldName" value="<?php echo htmlspecialchars($official['name']); ?>">
+                <input type="hidden" name="oldTitle" value="<?php echo htmlspecialchars($official['title']); ?>">
+
 
                 <div style="text-align: center; margin-bottom: 10px;">
                     Are you sure you want to delete?

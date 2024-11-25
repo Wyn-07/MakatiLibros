@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
@@ -48,6 +48,13 @@
                         </div>
                     </div>
                 </div>
+
+
+                <!-- loading animation -->
+                <div id="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+
 
                 <div class="body-navbar">
                     <div class="body-navbar-contents" onclick="scrollToSection('requirements')">Requirements</div>
@@ -443,6 +450,7 @@
 
 <script src="js/banner.js"></script>
 <script src="js/sidebar.js"></script>
+<script src="js/loading-animation.js"></script>
 
 
 

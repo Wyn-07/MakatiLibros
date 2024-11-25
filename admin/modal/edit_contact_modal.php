@@ -16,6 +16,12 @@
         <form action="functions/update_contact.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateContactForm(['edit_image_contact'])">
             <div class="container-form-official">
 
+                <input type="hidden" name="oldContact" id="oldContact">
+                <input type="hidden" name="oldTitle" id="oldTitle">
+                <input type="hidden" name="oldDescription" id="oldDescription">
+                <input type="hidden" name="oldImageName" id="oldImageName">
+
+
                 <input type="hidden" name="editContactId" id="editContactId" class="input-text" autocomplete="off" required>
 
 
@@ -61,8 +67,18 @@
         document.getElementById('editContactNum').value = contactNum;
         document.getElementById('editDescription').value = description;
 
+               
+        document.getElementById('oldTitle').value = title;
+        document.getElementById('oldContact').value = contactNum;
+        document.getElementById('oldDescription').value = description;
+        document.getElementById('oldImageName').value = image;
+
+
+
         document.getElementById('imageEditContactPreview').src = '../contact_images/' + image;;
 
+
+ 
         // Clear the file input to allow a new selection
         document.getElementById('edit_image_contact').value = '';
     }
@@ -111,19 +127,39 @@
                 resultErrorContainer.style.display = "flex";
                 message.innerHTML = "Only PNG, JPG, and JPEG files are accepted.";
                 message.style.display = "block";
-                fileInput.style.border = '2px solid red'; 
+                fileInput.style.border = '2px solid red';
             } else {
-                fileInput.style.border = ''; 
+                fileInput.style.border = '';
             }
         });
 
 
         // Hide error messages if everything is valid
         if (isValid) {
-            resultErrorContainer.style.display = "none"; 
-            message.style.display = "none"; 
+            resultErrorContainer.style.display = "none";
+            message.style.display = "none";
         }
 
-        return isValid; 
+        return isValid;
     }
+</script>
+
+
+<script>
+    const textAreas = [
+        document.getElementById("editDescription")
+    ];
+
+    textAreas.forEach(textBox => {
+        textBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                event.preventDefault();
+                const cursorPosition = textBox.selectionStart;
+                const text = textBox.value;
+                const newText =
+                    text.slice(0, cursorPosition) + "<br>\n" + text.slice(cursorPosition);
+                textBox.value = newText;
+            }
+        });
+    });
 </script>

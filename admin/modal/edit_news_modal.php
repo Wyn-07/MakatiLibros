@@ -16,15 +16,20 @@
         <form action="functions/update_news.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateNewsForm(['edit_image_news'])">
             <div class="container-form-official">
 
-                <input type="text" name="editNewsId" id="editNewsId" class="input-text" autocomplete="off" required>
+                <input type="hidden" name="oldTitle" id="oldTitle">
+                <input type="hidden" name="oldDate" id="oldDate">
+                <input type="hidden" name="oldDescription" id="oldDescription">
+                <input type="hidden" name="oldImageName" id="oldImageName">
 
 
-                <div class="container-officials-image-modal">
+                <input type="hidden" name="editNewsId" id="editNewsId" class="input-text" autocomplete="off" required>
+
+
+                <div class="container-news-image-modal">
                     <img
                         alt="News Image"
                         id="imageEditNewsPreview"
-                        class="image"
-                        style="width: 100%; height: 100%; object-fit: contain;">
+                        class="image">
                 </div>
 
                 <input type="file" class="file" name="edit_image_news" id="edit_image_news" accept="image/*" onchange="previewEditNewsImage(event)">
@@ -62,6 +67,12 @@
         document.getElementById('editTitle').value = title;
         document.getElementById('editDate').value = date;
         document.getElementById('editDescription').value = description;
+
+        document.getElementById('oldTitle').value = title;
+        document.getElementById('oldDate').value = date;
+        document.getElementById('oldDescription').value = description;
+        document.getElementById('oldImageName').value = image;
+
 
         document.getElementById('imageEditNewsPreview').src = '../news_images/' + image;;
 

@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -53,7 +53,7 @@ $news = getNews($pdo);
                     </div>
                 </div>
 
-                <div  class="news-contents">
+                <div class="news-contents">
 
                     <div class="container-success" id="container-success" style="display: <?php echo isset($_SESSION['success_display']) ? $_SESSION['success_display'] : 'none';
                                                                                             unset($_SESSION['success_display']); ?>;">
@@ -79,6 +79,7 @@ $news = getNews($pdo);
                     </div>
 
 
+
                     <div class="row row-between">
                         <div>
                             <label for="search">Search: </label>
@@ -88,6 +89,12 @@ $news = getNews($pdo);
                         <button class="button-add" type="button" id="add" onclick="openAddModal()">
                             &#43; Add
                         </button>
+                    </div>
+
+
+                    <!-- Not Found Message -->
+                    <div id="not-found-message" style="display: none; text-align: center; margin-top: 20px;">
+                        <p>No matching news found.</p>
                     </div>
 
 
@@ -122,7 +129,7 @@ $news = getNews($pdo);
                     <?php include 'modal/edit_news_modal.php'; ?>
 
 
-                    </div>
+                </div>
 
 
             </div>
@@ -135,7 +142,7 @@ $news = getNews($pdo);
 
 
     <?php include 'modal/add_news_modal.php'; ?>
-    
+
 
 
 </body>
@@ -162,4 +169,62 @@ $news = getNews($pdo);
             }
         });
     });
+</script>
+
+
+
+<script>
+    const textAreas = [
+        document.getElementById("description"),
+        document.getElementById("editDescription")
+    ];
+
+    textAreas.forEach(textBox => {
+        textBox.addEventListener("keydown", function(event) {
+            if (event.key === "Enter" || event.keyCode === 13) {
+                event.preventDefault();
+                const cursorPosition = textBox.selectionStart;
+                const text = textBox.value;
+                const newText =
+                    text.slice(0, cursorPosition) + "<br>\n" + text.slice(cursorPosition);
+                textBox.value = newText;
+            }
+        });
+    });
+</script>
+
+
+
+<script>
+    function searchTable() {
+        // Get the value from the search input
+        const searchInput = document.getElementById('search').value.toLowerCase();
+
+        // Get all news box containers
+        const newsBoxes = document.querySelectorAll('.news-box-container');
+        let found = false; // Flag to track if any box is visible
+
+        // Loop through each news box
+        newsBoxes.forEach(box => {
+            // Get the title and description text
+            const title = box.querySelector('.news-title').textContent.toLowerCase();
+            const description = box.querySelector('.news-description').textContent.toLowerCase();
+
+            // Check if the title or description includes the search input
+            if (title.includes(searchInput) || description.includes(searchInput)) {
+                box.style.display = 'flex'; // Show the box
+                found = true; // Mark as found
+            } else {
+                box.style.display = 'none'; // Hide the box
+            }
+        });
+
+        // Show or hide the not found message based on search results
+        const notFoundMessage = document.getElementById('not-found-message');
+        if (!found) {
+            notFoundMessage.style.display = 'flex'; // Show not found message
+        } else {
+            notFoundMessage.style.display = 'none'; // Hide not found message
+        }
+    }
 </script>

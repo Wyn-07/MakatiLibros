@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -103,6 +103,12 @@ $categoryList = getCategoryList($pdo);
                                             <img id="sort-icon-0" src="../images/sort.png" class="sort">
                                         </div>
                                     </th>
+                                    <th onclick="sortTable(1)">
+                                        <div class="row row-between">
+                                            <div class="column-title">Category Description</div>
+                                            <img id="sort-icon-1" src="../images/sort.png" class="sort">
+                                        </div>
+                                    </th>
                                     <th>
                                         <div class="column-title">Tools</div>
                                     </th>
@@ -125,9 +131,14 @@ $categoryList = getCategoryList($pdo);
                                     <?php foreach ($categoryList as $category) { ?>
                                         <tr>
                                             <td><?php echo htmlspecialchars($category['category']); ?></td>
+                                            <td><?php echo htmlspecialchars($category['description']); ?></td>
                                             <td>
                                                 <div class="td-center">
-                                                    <div class="button-edit" onclick="openEditModal(<?php echo $category['category_id']; ?>, '<?php echo addslashes($category['category']); ?>')">
+                                                <div class="button-edit"  
+                                                    data-category-id="<?php echo htmlspecialchars($category['category_id']); ?>"
+                                                    data-category-name="<?php echo htmlspecialchars($category['category']); ?>"
+                                                    data-category-description="<?php echo htmlspecialchars($category['description']); ?>"
+                                                    onclick="openEditModal(this)">
                                                         <img src="../images/edit-white.png" class="image">
                                                     </div>
                                                 </div>

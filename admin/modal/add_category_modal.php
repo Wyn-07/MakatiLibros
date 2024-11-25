@@ -16,9 +16,15 @@
                     <input type="text" name="name" class="input-text" autocomplete="off" required>
                 </div>
 
+                <div class="container-input-100">
+                    <label for="categ_description">Category Description</label>
+                    <textarea type="text" name="categ_description" class="textarea-category" autocomplete="off" required></textarea>
+                </div>
+
                 <div class="row row-right">
                     <button type="submit" name="submit" class="button-submit">Submit</button>
                 </div>
+
             </div>
         </form>
 

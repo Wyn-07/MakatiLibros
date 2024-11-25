@@ -16,8 +16,8 @@
         <form action="functions/add_news.php" method="POST" enctype="multipart/form-data" id="form" onsubmit="return validateAddNewsForm(['image_news'])">
             <div class="container-form-official">
 
-                <div class="container-officials-image-modal">
-                    <img src="../news_images/no_image.png" alt="Official Image" id="imageNewsPreview" class="image" style="width: 100%; height: 100%; object-fit: contain;">
+                <div class="container-news-image-modal">
+                    <img src="../news_images/no_image.png" alt="Official Image" id="imageNewsPreview" class="image">
                 </div>
 
                 <input type="file" class="file" name="image_news" id="image_news" accept="image/*" onchange="previewNewsImage(event)">
@@ -33,7 +33,7 @@
                 </div>
 
                 <div class="container-input-100">
-                    <label for="date">Description</label>
+                    <label for="description">Description</label>
                     <textarea name="description" class="textarea-news" id="description"></textarea>
                 </div>
 
@@ -126,3 +126,6 @@
         return isValid; // Return true if all inputs are valid
     }
 </script>
+
+
+

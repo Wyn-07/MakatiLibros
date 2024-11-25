@@ -29,11 +29,17 @@ try {
         $age = $patron['age'];
         $gender = $patron['gender'];
         $contact = $patron['contact'];
-        $address = $patron['address'];
+        $house_num = $patron['house_num'];
+        $building = $patron['building'];
+        $streets = $patron['streets'];
+        $barangay = $patron['barangay'];
         $company_name = $patron['company_name'];
         $company_contact = $patron['company_contact'];
         $company_address = $patron['company_address'];
         $image = $patron['image'];
+        $valid_id = $patron['valid_id'];
+        $sign = $patron['sign'];
+
 
     } else {
         // Handle the case where no data is found

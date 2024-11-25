@@ -2,6 +2,23 @@ let lastClickedBook = null;
 
 // Select all books from both rows
 const books = document.querySelectorAll('.row-books .container-books');
+const modalParent = document.querySelector('.row-books-contents-modal-parent');
+const bookDetailsContainer = document.getElementById('book-details');
+
+
+// Open modal function
+function openModal() {
+    document.body.style.overflow = 'hidden';  // Disable body scroll
+    modalParent.style.display = 'flex';  // Show modal
+}
+
+// Close modal function
+function closeModal() {
+    document.body.style.overflow = 'auto';  // Enable body scroll again
+    modalParent.style.display = 'none';  // Hide modal
+}
+
+
 
 // Add click event listener to each book
 books.forEach(book => {
@@ -11,15 +28,19 @@ books.forEach(book => {
 
         // Get book details
         const bookId = book.querySelector('.books-id').textContent;
+        const bookStatus = book.querySelector('.books-status').textContent;
         const bookCategory = book.querySelector('.books-category').textContent;
         const bookBorrowStatus = book.querySelector('.books-borrow-status').textContent;
         const bookFavorite = book.querySelector('.books-favorite').textContent;
 
+
         const bookTitle = book.querySelector('.books-name').textContent;
         const bookImage = book.querySelector('.books-image img').src;
         const bookAuthor = book.querySelector('.books-author').textContent;
+        const bookCopyright = book.querySelector('.books-copyright').textContent;
         const bookRating = book.querySelector('.books-ratings') ? book.querySelector('.books-ratings').textContent : '0';
         const bookUserRating = book.querySelector('.books-user-ratings') ? book.querySelector('.books-user-ratings').textContent : '0';
+
 
         // Update the book-details container with the clicked book's information
         const bookDetailsContainer = document.getElementById('book-details');
@@ -28,89 +49,101 @@ books.forEach(book => {
         bookDetailsContainer.querySelector('.books-contents-borrow-status').textContent = bookBorrowStatus;
         bookDetailsContainer.querySelector('.books-contents-favorite').textContent = bookFavorite;
 
+
         bookDetailsContainer.querySelector('.books-contents-name').textContent = bookTitle;
         bookDetailsContainer.querySelector('.books-contents-image').innerHTML = `<img src="${bookImage}" class="image">`;
         bookDetailsContainer.querySelector('.books-contents-author').textContent = bookAuthor;
+        bookDetailsContainer.querySelector('.books-contents-copyright').textContent = bookCopyright;
         bookDetailsContainer.querySelector('.books-contents-ratings').textContent = bookRating;
         bookDetailsContainer.querySelector('.books-contents-user-ratings').textContent = bookUserRating;
 
         bookDetailsContainer.querySelector('.ratings-number').textContent = bookRating;
 
-        // Ensure the book-details container is inserted after the clicked book's container
-        const clickedContents = book.closest('.contents, .contents-big-padding');
-        clickedContents.parentNode.insertBefore(bookDetailsContainer, clickedContents.nextSibling);
 
 
         // Display the book-details container
         bookDetailsContainer.style.display = 'flex';
 
-        // Scroll into view
-        bookDetailsContainer.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
-        });
+
+        // Open the modal
+        openModal();
+
 
 
 
         // Check if bookCategory is not equal to 'Circulation Section'
-        if (bookCategory.toLowerCase() !== 'circulation'.toLowerCase()) {
-            const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
-            const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
+        const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
+        const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
 
+
+        // Check if the book status is "Unavailable" and book category is not 'Circulation'
+        if (bookStatus === 'Unavailable' && bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === '') {
+            if (borrowButton) {
+                borrowButton.disabled = true; // Disable the borrow button
+                tooltip.textContent = 'Unavailable to borrow because it has been borrowed by someone else.'; // Set tooltip message
+            }
+            if (tooltip) {
+                tooltip.style.display = 'flex'; // Show the tooltip
+            }
+        } else if (bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === 'pending') {
             if (borrowButton) {
                 borrowButton.disabled = true;
+                tooltip.textContent = 'You have already requested to borrow this book.';
             }
 
             if (tooltip) {
                 tooltip.style.display = 'flex';
             }
-        } else {
+        } else if (bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === 'accepted') {
+            if (borrowButton) {
+                borrowButton.disabled = true;
+                tooltip.textContent = 'You have already requested this book. You can now claim it at the library.';
+            }
+
+            if (tooltip) {
+                tooltip.style.display = 'flex';
+            }
+        } else if (bookCategory.toLowerCase() === 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === 'borrowed') {
+            if (borrowButton) {
+                borrowButton.disabled = true;
+                tooltip.textContent = 'You are still borrowing the book. Please return it on time.';
+            }
+
+            if (tooltip) {
+                tooltip.style.display = 'flex';
+            }
+        } else if (bookStatus === 'Available' && bookCategory.toLowerCase() !== 'circulation'.toLowerCase() && bookBorrowStatus.toLowerCase() === '') {
             const borrowButton = bookDetailsContainer.querySelector('.button-borrow');
             const tooltip = bookDetailsContainer.querySelector('.tooltiptexts');
 
-            if (bookBorrowStatus.toLowerCase() === 'pending') {
-                if (borrowButton) {
-                    borrowButton.disabled = true;
-                    tooltip.textContent = 'You have already requested to borrow this book. You can now claim it at the library';
-                }
-
-                if (tooltip) {
-                    tooltip.style.display = 'flex';
-                }
-
-            } else if (bookBorrowStatus.toLowerCase() === 'borrowed') {
-                if (borrowButton) {
-                    borrowButton.disabled = true;
-                    tooltip.textContent = 'You are still borrowing the book. Please return it on time.';
-
-                }
-
-                if (tooltip) {
-                    tooltip.style.display = 'flex';
-                }
-
-            } else {
-                if (borrowButton) {
-                    borrowButton.disabled = false;
-                    borrowButton.textContent = 'Borrow';
-                }
-
-                if (tooltip) {
-                    tooltip.style.display = 'none';
-                }
+            if (borrowButton) {
+                borrowButton.disabled = true;
+                tooltip.textContent = 'Only books from the Circulation Section can be borrowed, but you can still read this book in the library.';
             }
 
+
+            if (tooltip) {
+                tooltip.style.display = 'flex';
+            }
+        } else {
+            if (borrowButton) {
+                borrowButton.disabled = false; // Disable the borrow button
+            }
+            if (tooltip) {
+                tooltip.style.display = 'none'; // Show the tooltip
+            }
         }
 
 
 
-        
+
+
         const favoriteButton = bookDetailsContainer.querySelector('.button-bookmark');
         const favoriteButtonRed = bookDetailsContainer.querySelector('.button-bookmark-red');
 
         const tooltipAdd = bookDetailsContainer.querySelector('#tooltip-add');
         const tooltipRemove = bookDetailsContainer.querySelector('#tooltip-remove');
-        
+
 
         if (bookFavorite !== '' && bookFavorite !== 'Remove') {
             favoriteButton.style.display = 'none';
@@ -133,7 +166,7 @@ books.forEach(book => {
 
         const tooltipAddRatings = bookDetailsContainer.querySelector('#tooltip-add-ratings');
         const tooltipUpdateRatings = bookDetailsContainer.querySelector('#tooltip-update-ratings');
-        
+
 
         if (bookUserRating !== '') {
             ratingButton.style.display = 'none';
@@ -178,13 +211,6 @@ books.forEach(book => {
 // Close button functionality
 const closeButton = document.querySelector('.button-close');
 closeButton.addEventListener('click', () => {
-    document.getElementById('book-details').style.display = 'none';
-
-    // Scroll back to the last clicked book
-    if (lastClickedBook) {
-        lastClickedBook.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
-    }
+    bookDetailsContainer.style.display = 'none';  // Hide the book details container
+    closeModal();  // Call the closeModal function to close the modal and re-enable scrolling
 });

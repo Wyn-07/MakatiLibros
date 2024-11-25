@@ -83,3 +83,10 @@ function closeErrorContactStatus() {
     var errorContainer = document.getElementById('container-error-contact');
     errorContainer.style.display = 'none';
 }
+
+
+
+function closeErrorLibrarianStatus() {
+    var errorContainer = document.getElementById('container-error-librarian');
+    errorContainer.style.display = 'none';
+}

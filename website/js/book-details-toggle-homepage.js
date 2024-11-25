@@ -2,6 +2,23 @@ let lastClickedBook = null;
 
 // Select all books from both rows
 const books = document.querySelectorAll('.row-books .container-books');
+const modalParent = document.querySelector('.row-books-contents-modal-parent');
+const bookDetailsContainer = document.getElementById('book-details');
+
+
+// Open modal function
+function openModal() {
+    document.body.style.overflow = 'hidden';  // Disable body scroll
+    modalParent.style.display = 'flex';  // Show modal
+}
+
+// Close modal function
+function closeModal() {
+    document.body.style.overflow = 'auto';  // Enable body scroll again
+    modalParent.style.display = 'none';  // Hide modal
+}
+
+
 
 // Add click event listener to each book
 books.forEach(book => {
@@ -11,19 +28,27 @@ books.forEach(book => {
 
         // Get book details
         const bookId = book.querySelector('.books-id').textContent;
+        const bookStatus = book.querySelector('.books-status').textContent;
+        const bookCategory = book.querySelector('.books-category').textContent;
+
 
         const bookTitle = book.querySelector('.books-name').textContent;
         const bookImage = book.querySelector('.books-image img').src;
         const bookAuthor = book.querySelector('.books-author').textContent;
+        const bookCopyright = book.querySelector('.books-copyright').textContent;
         const bookRating = book.querySelector('.books-ratings') ? book.querySelector('.books-ratings').textContent : '0';
+
 
         // Update the book-details container with the clicked book's information
         const bookDetailsContainer = document.getElementById('book-details');
         bookDetailsContainer.querySelector('.books-contents-id').textContent = bookId;
+        bookDetailsContainer.querySelector('.books-contents-category').textContent = bookCategory;
+
 
         bookDetailsContainer.querySelector('.books-contents-name').textContent = bookTitle;
         bookDetailsContainer.querySelector('.books-contents-image').innerHTML = `<img src="${bookImage}" class="image">`;
         bookDetailsContainer.querySelector('.books-contents-author').textContent = bookAuthor;
+        bookDetailsContainer.querySelector('.books-contents-copyright').textContent = bookCopyright;
         bookDetailsContainer.querySelector('.books-contents-ratings').textContent = bookRating;
 
         bookDetailsContainer.querySelector('.ratings-number').textContent = bookRating;
@@ -36,12 +61,9 @@ books.forEach(book => {
         // Display the book-details container
         bookDetailsContainer.style.display = 'flex';
 
-        // Scroll into view
-        bookDetailsContainer.scrollIntoView({
-            behavior: 'smooth',
-            block: 'end'
-        });
 
+        // Open the modal
+        openModal();  
 
 
 
@@ -73,13 +95,6 @@ books.forEach(book => {
 // Close button functionality
 const closeButton = document.querySelector('.button-close');
 closeButton.addEventListener('click', () => {
-    document.getElementById('book-details').style.display = 'none';
-
-    // Scroll back to the last clicked book
-    if (lastClickedBook) {
-        lastClickedBook.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
-    }
+    bookDetailsContainer.style.display = 'none';  // Hide the book details container
+    closeModal();  // Call the closeModal function to close the modal and re-enable scrolling
 });

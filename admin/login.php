@@ -8,7 +8,7 @@
 
     <title>Login</title>
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -26,12 +26,21 @@ if (isset($_POST['login'])) {
     $emailadd = $_POST['email'];
     $password = $_POST['password'];
 
-    // Prepare and execute the PDO query
+    // Prepare and execute the PDO query to check in the librarians table
     $query = "SELECT * FROM librarians WHERE email = :email";
     $stmt = $pdo->prepare($query);
     $stmt->bindParam(':email', $emailadd);
     $stmt->execute();
     $librarian = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    // If not found in librarians table, check the admin table
+    if (!$librarian) {
+        $query = "SELECT * FROM admin WHERE email = :email";
+        $stmt = $pdo->prepare($query);
+        $stmt->bindParam(':email', $emailadd);
+        $stmt->execute();
+        $librarian = $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
     if ($librarian) {
         $storedPassword = $librarian['password'];
@@ -42,7 +51,8 @@ if (isset($_POST['login'])) {
             $_SESSION['success_message'] = "Logged In Successfully.";
             $_SESSION['success_display'] = "flex"; // Display the success message
             $_SESSION['email'] = $emailadd;
-            $_SESSION['librarians_id'] = $librarian['librarians_id']; // Corrected field name
+            $_SESSION['librarians_id'] = isset($librarian['librarians_id']) ? $librarian['librarians_id'] : $librarian['admin_id']; // Use appropriate ID field
+            $_SESSION['role'] = isset($librarian['librarians_id']) ? 'librarian' : 'admin'; // Add role to differentiate between librarians and admins
             header("Location: dashboard.php");
             exit();
         } else {
@@ -56,6 +66,9 @@ if (isset($_POST['login'])) {
         $_SESSION['error_display'] = "flex"; // Display the error message
     }
 }
+
+
+
 ?>
 
 
@@ -73,7 +86,7 @@ if (isset($_POST['login'])) {
 
                     <div class="row-center">
                         <div class="container-round login">
-                            <img src="../images/makati-logo.png" alt="" class="image">
+                            <img src="../images/library-logo.png" alt="" class="image">
                         </div>
                         <div>
                             <div class="title-26px">
@@ -133,7 +146,7 @@ if (isset($_POST['login'])) {
                     </form>
 
                     <div class="row-center">
-                        <a href="register.php" class="login-link font-14px">Register</a>
+                        <!-- <a href="register.php" class="login-link font-14px">Register</a> -->
                         <a href="reset.php" class="login-link  font-14px ">Reset Password</a>
                     </div>
 

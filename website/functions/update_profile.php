@@ -1,6 +1,6 @@
 <?php
 session_start();
-date_default_timezone_set('Asia/Manila');  
+date_default_timezone_set('Asia/Manila');
 
 include '../../connection.php';
 
@@ -14,7 +14,10 @@ if (isset($_POST['submit'])) {
     $age = filter_var($_POST['age'], FILTER_SANITIZE_NUMBER_INT);
     $gender = filter_var($_POST['gender'], FILTER_SANITIZE_STRING);
     $contact = filter_var($_POST['contact'], FILTER_SANITIZE_STRING);
-    $address = filter_var($_POST['address'], FILTER_SANITIZE_STRING);
+    $house_num = filter_var($_POST['house_num'], FILTER_SANITIZE_STRING);
+    $building = filter_var($_POST['building'], FILTER_SANITIZE_STRING);
+    $streets = filter_var($_POST['streets'], FILTER_SANITIZE_STRING);
+    $barangay = filter_var($_POST['barangay'], FILTER_SANITIZE_STRING);
     $company_name = filter_var($_POST['company_name'], FILTER_SANITIZE_STRING);
     $company_contact = filter_var($_POST['company_contact'], FILTER_SANITIZE_STRING);
     $company_address = filter_var($_POST['company_address'], FILTER_SANITIZE_STRING);
@@ -46,6 +49,58 @@ if (isset($_POST['submit'])) {
         }
     }
 
+    $validIdName = null;
+
+    // Process the image
+    if (isset($_FILES['valid_id']) && $_FILES['valid_id']['error'] === UPLOAD_ERR_OK) {
+        $valid_id = $_FILES['valid_id'];
+        $imageTmpName = $valid_id['tmp_name'];
+
+        // Extract current date and time
+        $currentDateTime = date('Ymd_His');
+
+        // Define the image name format: "patronid_lastname_date_time"
+        $validIdName = $patronId . '_' . $lastname . '_' . $currentDateTime . '.jpg';
+
+        // Set the target directory and file path
+        $targetDir = '../../validID_images/';
+        $targetFilePath = $targetDir . $validIdName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($imageTmpName, $targetFilePath)) {
+            $_SESSION['error_message'] = 'Failed to upload image.';
+            header('Location: ../profile.php');
+            exit();
+        }
+    }
+
+
+    $signName = null;
+
+    // Process the image
+    if (isset($_FILES['sign']) && $_FILES['sign']['error'] === UPLOAD_ERR_OK) {
+        $sign = $_FILES['sign'];
+        $imageTmpName = $sign['tmp_name'];
+
+        // Extract current date and time
+        $currentDateTime = date('Ymd_His');
+
+        // Define the image name format: "patronid_lastname_date_time"
+        $signName = $patronId . '_' . $lastname . '_' . $currentDateTime . '.jpg';
+
+        // Set the target directory and file path
+        $targetDir = '../../sign_images/';
+        $targetFilePath = $targetDir . $signName;
+
+        // Move the uploaded file to the target directory
+        if (!move_uploaded_file($imageTmpName, $targetFilePath)) {
+            $_SESSION['error_message'] = 'Failed to upload image.';
+            header('Location: ../profile.php');
+            exit();
+        }
+    }
+
+
     if (!empty($patronId) && !empty($firstname) && !empty($lastname)) {
         try {
             // Prepare the SQL update statement
@@ -58,12 +113,17 @@ if (isset($_POST['submit'])) {
                         age = :age, 
                         gender = :gender, 
                         contact = :contact, 
-                        address = :address,
+                        house_num = :house_num,
+                        building = :building,
+                        streets = :streets,
+                        barangay = :barangay,
                         company_name = :company_name,
                         company_contact = :company_contact,
-                        company_address = :company_address" . 
-                        (!empty($imageName) ? ", image = :image" : "") . 
-                    " WHERE patrons_id = :patrons_id";
+                        company_address = :company_address" .
+                (!empty($imageName) ? ", image = :image" : "") .
+                (!empty($validIdName) ? ", valid_id = :valid_id" : "") .
+                (!empty($signName) ? ", sign = :sign" : "") .
+                " WHERE patrons_id = :patrons_id";
 
             $stmt = $pdo->prepare($sql);
 
@@ -71,19 +131,30 @@ if (isset($_POST['submit'])) {
             $stmt->bindParam(':middlename', $middlename);
             $stmt->bindParam(':lastname', $lastname);
             $stmt->bindParam(':suffix', $suffix);
-            $stmt->bindParam(':birthdate', $birthdate); 
+            $stmt->bindParam(':birthdate', $birthdate);
             $stmt->bindParam(':age', $age, PDO::PARAM_INT);
             $stmt->bindParam(':gender', $gender);
             $stmt->bindParam(':contact', $contact);
-            $stmt->bindParam(':address', $address);
+            $stmt->bindParam(':house_num', $house_num);
+            $stmt->bindParam(':building', $building);
+            $stmt->bindParam(':streets', $streets);
+            $stmt->bindParam(':barangay', $barangay);
             $stmt->bindParam(':company_name', $company_name);
             $stmt->bindParam(':company_contact', $company_contact);
             $stmt->bindParam(':company_address', $company_address);
             $stmt->bindParam(':patrons_id', $patronId, PDO::PARAM_INT);
-            
+
             // Bind the image parameter only if a new image was uploaded
             if (!empty($imageName)) {
                 $stmt->bindParam(':image', $imageName);
+            }
+
+            if (!empty($validIdName)) {
+                $stmt->bindParam(':valid_id', $validIdName);
+            }
+
+            if (!empty($sign)) {
+                $stmt->bindParam(':sign', $signName);
             }
 
             // Execute the update
@@ -106,4 +177,3 @@ if (isset($_POST['submit'])) {
         exit();
     }
 }
-?>

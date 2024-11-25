@@ -30,7 +30,7 @@
                             <input type="file" class="file" name="add_image" id="add_image" accept="image/*" onchange="previewAddPatronsImage(event)">
                         </div>
                     </div>
-                    
+
                     <div class="container-input-49">
                         <div class="row row-between">
                             <label for="addFirstname">First Name:</label>
@@ -166,6 +166,91 @@
                         <input type="text" id="addPassword" name="password" class="input-text" autocomplete="off" required>
                     </div>
 
+                    <div class="container-input-100"></div>
+
+                    <div class="title-26px container-input-100">
+                        Guarantor Information
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addGuarantorFirstname">Guarantor First Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorFirstname" name="guarantor_firstname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <label for="addGuarantorMiddlename">Guarantor Middle Name</label>
+                        <input type="text" id="addGuarantorMiddlename" name="guarantor_middlename" class="input-text" oninput="capitalize(this)" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addGuarantorLastname">Guarantor Last Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorLastname" name="guarantor_lastname" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <label for="addGuarantorSuffix">Guarantor Suffix</label>
+                        <input type="text" id="addGuarantorSuffix" name="guarantor_suffix" class="input-text" oninput="capitalize(this)" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addGuarantorContact">Guarantor Contact:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorContact" name="guarantor_contact" class="input-text" oninput="handleInput(this)" placeholder="+63xxxxxxxxxx" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addGuarantorAddress">Guarantor Address:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorAddress" name="guarantor_address" class="input-text" oninput="capitalize(this)" autocomplete="off" required>
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addGuarantorCompanyName">GuarantorCompany Name:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorCompanyName" name="guarantor_company_name" class="input-text" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-49">
+                        <div class="row row-between">
+                            <label for="addCompanyContact">Guarantor Company Contact:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorCompanyContact" name="guarantor_company_contact" class="input-text" autocomplete="off">
+                    </div>
+
+                    <div class="container-input-100">
+                        <div class="row row-between">
+                            <label for="addGuarantorCompanyAddress">Guarantor Company Address:</label>
+                            <div class="container-asterisk">
+                                <img src="../images/asterisk-red.png" class="image">
+                            </div>
+                        </div>
+                        <input type="text" id="addGuarantorCompanyAddress" name="guarantor_company_address" class="input-text" autocomplete="off">
+                    </div>
 
 
 
@@ -227,8 +312,6 @@
         };
         reader.readAsDataURL(event.target.files[0]);
     }
-
-
 </script>
 
 

@@ -72,7 +72,7 @@
                                 <img src="../images/asterisk-red.png" class="image">
                             </div>
                         </div>
-                        <input type="date" id="profile_birthdate" name="profile_birthdate" class="input-text" onchange="calculateAge()" value="<?php echo htmlspecialchars($formattedBirthdate); ?>" required>
+                        <input type="date" id="profile_birthdate" name="profile_birthdate" class="input-text" onchange="calculateAge()" value="<?php echo htmlspecialchars($birthdate); ?>" required>
                     </div>
 
                     <div class="container-input-49">

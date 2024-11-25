@@ -1,3 +1,28 @@
+<?php
+// Include your PDO connection
+include '../connection.php'; // Adjust the path to your connection file
+
+try {
+    // Query to get the latest acc_number
+    $stmt = $pdo->query("SELECT acc_number FROM books ORDER BY CAST(acc_number AS UNSIGNED) DESC LIMIT 1");
+    $latest_acc_number = $stmt->fetchColumn();
+
+    if ($latest_acc_number) {
+        // Extract only the numeric part, ignore any attached string
+        preg_match('/\d+/', $latest_acc_number, $matches);
+        
+        // Check if a numeric part was found and increment it
+        $numeric_part = isset($matches[0]) ? intval($matches[0]) + 1 : 1;
+        
+        // Convert back to a string for the new acc_number
+        $new_acc_number = strval($numeric_part);
+    }
+} catch (PDOException $e) {
+    die("Error fetching acc_number: " . $e->getMessage());
+}
+?>
+
+
 <div id="addModal" class="modal">
     <div class="modal-content-medium">
 
@@ -21,7 +46,7 @@
 
                         <div class="container-input-100">
                             <label for="acc_num">Acc Number</label>
-                            <input type="text" id="acc_num" name="acc_num" class="input-text" autocomplete="off" required>
+                            <input type="text" id="acc_num" name="acc_num" class="input-text" value="<?php echo $new_acc_number; ?>" autocomplete="off" required>
                         </div>
 
                         <div class="container-input-100">
@@ -60,7 +85,7 @@
                         <label for="book_image">Book Image</label>
                         <div class="container-form-book">
                             <div class="form-book">
-                                <img src="../book_images/no-image.png" class="image" id="imageBookPreview">
+                                <img src="../book_images/no_image.png" class="image" id="imageBookPreview">
                             </div>
                         </div>
                         <div class="row-center">

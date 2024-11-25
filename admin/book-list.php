@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -18,9 +18,6 @@
 session_start();
 
 include '../connection.php';
-
-include 'functions/fetch_book.php';
-$bookList = getBookList($pdo);
 
 
 include 'functions/fetch_author.php';
@@ -95,100 +92,7 @@ $categoryList = getCategoryList($pdo);
 
                     </div>
 
-                    <div class="row">
-
-                        <table id="table">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable(0)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Acc Number</div>
-                                            <img id="sort-icon-0" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(1)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Class Number</div>
-                                            <img id="sort-icon-1" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(2)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Book Title</div>
-                                            <img id="sort-icon-2" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(3)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Author</div>
-                                            <img id="sort-icon-3" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(4)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Category</div>
-                                            <img id="sort-icon-4" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(5)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Copyright</div>
-                                            <img id="sort-icon-5" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th style="width:100px">
-                                        <div class="column-title">Tools</div>
-                                    </th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                <?php if (empty($bookList)) { ?>
-                                    <tr>
-                                        <td colspan="7">
-                                            <div class="no-result">
-                                                <div class="no-result-image">
-                                                    <img src="../images/no-result.jpg" alt="No Results Found" class="image" />
-                                                </div>
-                                                <p>No results found.</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php } else { ?>
-                                    <?php foreach ($bookList as $book) { ?>
-                                        <tr>
-                                            <td><?php echo $book['acc_number']; ?></td>
-                                            <td><?php echo $book['class_number']; ?></td>
-                                            <td><?php echo $book['title']; ?></td>
-                                            <td><?php echo $book['author_name']; ?></td>
-                                            <td><?php echo $book['category_name']; ?></td>
-                                            <td><?php echo $book['copyright']; ?></td>
-                                            <td>
-                                                <center>
-                                                    <div class="button-edit" onclick="openEditModal(
-                                                                '<?php echo $book['book_id']; ?>', 
-                                                                '<?php echo $book['acc_number']; ?>', 
-                                                                '<?php echo $book['class_number']; ?>', 
-                                                                '<?php echo $book['title']; ?>', 
-                                                                '<?php echo $book['author_name']; ?>', 
-                                                                '<?php echo $book['author_id']; ?>', 
-                                                                '<?php echo $book['category_name']; ?>', 
-                                                                '<?php echo $book['category_id']; ?>', 
-                                                                '<?php echo $book['copyright']; ?>',
-                                                                '<?php echo $book['image']; ?>'
-                                                            )">
-                                                        <img src="../images/edit-white.png" class="image">
-                                                    </div>
-                                                </center>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php } ?>
-                            </tbody>
-
-
-                        </table>
-
+                    <div class="row" id="book-table-container">
 
                     </div>
 
@@ -208,10 +112,11 @@ $categoryList = getCategoryList($pdo);
 
         <?php include 'modal/edit_book_modal.php'; ?>
 
+        <?php include 'modal/delete_book_modal.php'; ?>
 
 
 
-        <div id="deleteModal" class="modal">
+        <!-- <div id="deleteModal" class="modal">
             <div class="modal-content">
 
                 <div class="row row-between">
@@ -236,7 +141,7 @@ $categoryList = getCategoryList($pdo);
                     </div>
                 </form>
             </div>
-        </div>
+        </div> -->
 
     </div>
 </body>
@@ -244,11 +149,9 @@ $categoryList = getCategoryList($pdo);
 </html>
 
 
-<script>
-    let sortDirections = [0, 0, 0, 0, 0, 0];
-    const NO_RESULT_COLSPAN = 7;
-</script>
-<script src="js/table.js"></script>
+
+
+<script src="js/table-book.js"></script>
 
 <script src="js/close-status.js"></script>
 

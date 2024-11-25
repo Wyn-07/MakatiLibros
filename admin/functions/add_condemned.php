@@ -5,29 +5,21 @@ include '../../connection.php';
 
 if (isset($_POST['submit'])) {
     // Sanitize and validate input fields
-    $accNumber = filter_var($_POST['acc_num'], FILTER_SANITIZE_STRING);
-    $classNumber = filter_var($_POST['class_num'], FILTER_SANITIZE_STRING);
-    $title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
-    $authorId = filter_var($_POST['author_id'], FILTER_VALIDATE_INT);
-    $categoryId = filter_var($_POST['category_id'], FILTER_VALIDATE_INT);
-    $copyright = filter_var($_POST['copyright'], FILTER_VALIDATE_INT);
-    $image = filter_var($_POST['image'], FILTER_SANITIZE_STRING); 
+    $bookId = filter_var($_POST['delete_book_id'], FILTER_VALIDATE_INT); // Get the book ID
 
-    // Validate required fields
-    if (!empty($accNumber) && !empty($classNumber) && !empty($title) && !empty($authorId) && !empty($categoryId) && !empty($copyright)) {
+    // Validate the book_id
+    if (!empty($bookId)) {
         try {
+            // Set timezone to Asia/Manila
+            date_default_timezone_set('Asia/Manila');
+            $currentDate = date('Y-m-d'); // Get today's date
+
             // Prepare the SQL statement to insert the condemned book
-            $stmt = $pdo->prepare("INSERT INTO condemned (acc_number, class_number, title, author_id, category_id, copyright, image) 
-                                   VALUES (:acc_number, :class_number, :title, :author_id, :category_id, :copyright, :image)");
+            $stmt = $pdo->prepare("INSERT INTO condemned (book_id, date) VALUES (:book_id, :date)");
 
             // Bind parameters to the SQL query
-            $stmt->bindParam(':acc_number', $accNumber);
-            $stmt->bindParam(':class_number', $classNumber);
-            $stmt->bindParam(':title', $title);
-            $stmt->bindParam(':author_id', $authorId);
-            $stmt->bindParam(':category_id', $categoryId);
-            $stmt->bindParam(':copyright', $copyright);
-            $stmt->bindParam(':image', $image); 
+            $stmt->bindParam(':book_id', $bookId);
+            $stmt->bindParam(':date', $currentDate);
 
             // Execute the statement and check if successful
             if ($stmt->execute()) {
@@ -43,12 +35,12 @@ if (isset($_POST['submit'])) {
         }
 
         // Redirect back to the form or a success page
-        header('Location: ../condemned.php'); 
+        header('Location: ../book-list.php'); 
         exit();
     } else {
-        // Set an error message if any field is empty or invalid
-        $_SESSION['error_message'] = 'All fields are required.';
-        header('Location: ../condemned.php'); 
+        // Set an error message if the book_id is empty or invalid
+        $_SESSION['error_message'] = 'Please provide a valid book ID.';
+        header('Location: ../book-list.php'); 
         exit();
     }
 }

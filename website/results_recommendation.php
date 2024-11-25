@@ -10,7 +10,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 </head>
@@ -71,11 +71,18 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 
             <div class="container-content">
 
-                <div class="row row-between">
+                <div class="row row-between title-search">
                     <div class="contents-title">
                         Results for "<?php echo htmlspecialchars($title); ?>"
                     </div>
                 </div>
+
+
+                <!-- loading animation -->
+                <div id="loading-overlay">
+                    <div class="spinner"></div>
+                </div>
+                
 
                 <div class="row-center">
                     <div class="container-books-2">
@@ -87,6 +94,7 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
                         </div>
                     </div>
                 </div>
+                
 
                 <div class="row-books-contents">
                     <div class="container-books-contents">
@@ -274,7 +282,7 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
                         $pythonScript = 'search_cbf_tfidf.py';
 
                         // Execute the Python script with the book_id argument and capture the output
-                        $book_cbf_id_json = shell_exec("py $pythonScript " . escapeshellarg($book_id));
+                        $book_cbf_id_json = shell_exec("py ../python_algorithm/$pythonScript " . escapeshellarg($book_id));
 
                         // Decode the JSON output from the Python script
                         $book_cbf_id = json_decode($book_cbf_id_json, true);
@@ -471,4 +479,5 @@ $patrons_id = isset($_SESSION['patrons_id']) ? $_SESSION['patrons_id'] : null;
 </html>
 
 <script src="js/sidebar.js"></script>
+<script src="js/loading-animation.js"></script>
 <!-- <script src="js/book-list-pagination.js"></script> -->

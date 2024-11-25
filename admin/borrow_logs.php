@@ -8,7 +8,7 @@
 
     <link rel="stylesheet" href="style.css">
 
-    <link rel="website icon" href="../images/makati-logo.png" type="png">
+    <link rel="website icon" href="../images/library-logo.png" type="png">
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
 
@@ -18,9 +18,6 @@
 session_start();
 
 include '../connection.php';
-
-include 'functions/fetch_borrow_logs.php';
-$borrowLogs = getBorrowLogs($pdo);
 
 include 'functions/fetch_book.php';
 $bookList = getBookList($pdo);
@@ -82,9 +79,20 @@ $categoryList = getCategoryList($pdo);
 
                     <div class="row row-between">
 
-                        <div>
-                            <label for="search">Search: </label>
-                            <input class="table-search" type="text" id="search" oninput="searchTable()">
+                        <div style="display: flex; flex-direction:row; align-items: center">
+
+                            <div class="container-search">
+                                <input type="text" id="search" placeholder="Search" style="border:none; height:40px; width: 200px; font-size: 14px;" onclick="this.style.outline='none';">
+                                <div class="container-image-clear" id="clear-button">
+                                    <img src="../images/clear-black.png" class="image">
+                                </div>
+                            </div>
+                            <div class="container-search-icon">
+                                <div class="container-image-search" id="search-button">
+                                    <img src="../images/search-white.png" class="image">
+                                </div>
+                            </div>
+
                         </div>
 
                         <div>
@@ -141,54 +149,16 @@ $categoryList = getCategoryList($pdo);
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (empty($borrowLogs)) { ?>
-                                    <tr>
-                                        <td colspan="6">
-                                            <div class="no-result">
-                                                <div class="no-result-image">
-                                                    <img src="../images/no-result.jpg" alt="No Results Found" class="image" />
-                                                </div>
-                                                <p>No results found.</p>
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="no-result">
+                                            <div class="no-result-image">
+                                                <img src="../images/no-result.jpg" alt="No Results Found" class="image" />
                                             </div>
-                                        </td>
-                                    </tr>
-                                <?php } else { ?>
-                                    <?php foreach ($borrowLogs as $log) { ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($log['log_date']); ?></td>
-                                            <td><?php echo htmlspecialchars($log['firstname']); ?> <?php echo htmlspecialchars($log['lastname']); ?></td>
-                                            <td><?php echo htmlspecialchars($log['age']); ?></td>
-                                            <td><?php echo htmlspecialchars($log['category']); ?></td>
-                                            <td><?php echo htmlspecialchars($log['book_title']); ?></td>
-                                            <td>
-                                                <div class="td-center">
-                                                    <div class="button-edit" onclick="openEditModal(
-                                <?php echo $log['log_id']; ?>,
-                                '<?php echo addslashes($log['log_date']); ?>',
-                                '<?php echo addslashes($log['category']); ?>',
-                                 <?php echo $log['category_id']; ?>,  
-                                '<?php echo addslashes($log['book_title']); ?>',
-                                 <?php echo $log['book_id']; ?>, 
-                                '<?php echo addslashes($log['firstname']); ?> ',
-                                '<?php echo addslashes($log['middlename']); ?> ',
-                                '<?php echo addslashes($log['lastname']); ?> ',
-                                '<?php echo addslashes($log['suffix']); ?> ',
-                                <?php echo $log['age']; ?>,
-                                '<?php echo addslashes($log['gender']); ?>',
-                                '<?php echo addslashes($log['barangay']); ?>',
-                                '<?php echo addslashes($log['city']); ?>'
-                            )">
-                                                        <img src="../images/edit-white.png" class="image">
-                                                    </div>
-                                                    
-                                                    <div class="button-delete" onclick="openDeleteModal()">
-                                                        <img src="../images/delete-white.png" class="image">
-                                                    </div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php } ?>
+                                            <p>Use search bar to search for data.</p>
+                                        </div>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
 
@@ -219,12 +189,113 @@ $categoryList = getCategoryList($pdo);
 
 
 
+<!-- table -->
 <script>
     let sortDirections = [0, 0, 0, 0, 0];
-    const NO_RESULT_COLSPAN = 6;
 
+    function fetchData(searchQuery) {
+        fetch('functions/fetch_borrow_logs_table.php?search=' + encodeURIComponent(searchQuery))
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                updateTable(data);
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+                alert('Error fetching data. Please try again later.');
+            });
+    }
+
+
+
+    function updateTable(logs) {
+        const tbody = document.querySelector("#table tbody");
+        tbody.innerHTML = ""; // Clear existing rows
+
+        if (logs.length === 0) {
+            // Check if the search bar or filter was used but no results were found
+            const searchActive = document.getElementById("search").value.trim() !== "";
+
+            // Show the appropriate no result message
+            if (searchActive) {
+                tbody.innerHTML = `<tr>
+                                    <td colspan="6">
+                                        <div class="no-result">
+                                            <div class="no-result-image">
+                                                <img src="../images/no-result.jpg" alt="No Results Found" class="image" />
+                                            </div>
+                                            <p>No results found.</p>
+                                        </div>
+                                    </td>
+                                </tr>`;
+            } else {
+                tbody.innerHTML = `<tr>
+                                    <td colspan="6">
+                                        <div class="no-result">
+                                            <div class="no-result-image">
+                                                <img src="../images/no-result.jpg" alt="No Results Found" class="image" />
+                                            </div>
+                                            <p>Use search bar to search for data.</p>
+                                        </div>
+                                    </td>
+                                </tr>`;
+            }
+
+            filteredRows = [];
+            originalRows = []; // Reset originalRows if no logs found
+        } else {
+            logs.forEach(logs => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${logs.log_date}</td>
+                        <td>${logs.firstname} ${logs.middlename ? logs.middlename + ' ' : ''}${logs.lastname} ${logs.suffix ? logs.suffix : ''}</td>
+                        <td>${logs.age}</td>
+                        <td>${logs.category}</td>
+                        <td>${logs.book_title}</td>
+                        <td>
+                            <center>
+                               <div class="button-edit" 
+                                    data-logs-id="${encodeURIComponent(logs.log_id)}"
+                                    data-logs-date="${encodeURIComponent(logs.log_date)}"
+                                    data-logs-category="${encodeURIComponent(logs.category)}"
+                                    data-logs-categoryid="${encodeURIComponent(logs.category_id)}"
+                                    data-logs-booktitle="${encodeURIComponent(logs.book_title)}"
+                                    data-logs-bookid="${encodeURIComponent(logs.book_id)}"
+                                    data-logs-firstname="${encodeURIComponent(logs.firstname)}"
+                                    data-logs-middlename="${encodeURIComponent(logs.middlename)}"
+                                    data-logs-lastname="${encodeURIComponent(logs.lastname)}"
+                                    data-logs-suffix="${encodeURIComponent(logs.suffix)}"
+                                    data-logs-age="${encodeURIComponent(logs.age)}"
+                                    data-logs-gender="${encodeURIComponent(logs.gender)}"
+                                    data-logs-barangay="${encodeURIComponent(logs.barangay)}"
+                                    data-logs-city="${encodeURIComponent(logs.city)}"
+                                    
+                                    onclick="openEditModal(this)">
+                                    
+                                <img src="../images/edit-white.png" class="image">
+                            </div>
+
+                            </center>
+                        </td>`;
+                tbody.appendChild(row);
+            });
+            filteredRows = Array.from(tbody.getElementsByTagName('tr')); // Update filteredRows with new data
+            originalRows = filteredRows.slice(); // Save original rows for reference
+        }
+
+        currentPage = 1; // Reset to first page after fetching new results
+        displayTable(); // Display the table with pagination
+    }
 </script>
-<script src="js/table.js"></script>
+
+<script src="js/table-hidden.js"></script>
+
+
+
 
 <script src="js/close-status.js"></script>
 

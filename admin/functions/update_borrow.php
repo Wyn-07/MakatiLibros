@@ -2,6 +2,9 @@
 session_start();
 include '../../connection.php'; 
 
+// Set timezone to Asia/Manila
+date_default_timezone_set('Asia/Manila');
+
 if (isset($_POST['submit'])) {
     // Sanitize and validate input fields
     $bookId = filter_var($_POST['book_id'], FILTER_VALIDATE_INT);
@@ -12,8 +15,9 @@ if (isset($_POST['submit'])) {
     $classNum = filter_var($_POST['class_num'], FILTER_SANITIZE_STRING);
     $title = filter_var($_POST['title'], FILTER_SANITIZE_STRING);
     
-    // Get today's date
+    // Get today's date and time
     $returnDate = date('m/d/Y'); // Adjust format if needed
+    $returnTime = date('H:i:s'); // Format: H:i:s
 
     if (!empty($bookId) && !empty($patronId) && !empty($borrowId) && !empty($status)) {
         try {
@@ -35,13 +39,15 @@ if (isset($_POST['submit'])) {
                                     SET book_id = :book_id, 
                                         patrons_id = :patrons_id, 
                                         status = :status, 
-                                        return_date = :return_date 
+                                        return_date = :return_date,
+                                        return_time = :return_time 
                                     WHERE borrow_id = :borrow_id");
 
             $stmt->bindParam(':book_id', $bookId);
             $stmt->bindParam(':patrons_id', $patronId);
             $stmt->bindParam(':status', $status);
             $stmt->bindParam(':return_date', $returnDate);
+            $stmt->bindParam(':return_time', $returnTime); // Bind return time parameter
             $stmt->bindParam(':borrow_id', $borrowId);
 
             if ($stmt->execute()) {

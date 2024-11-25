@@ -1,12 +1,19 @@
 <?php
 session_start(); // Start the session
 
+// Set timezone to Asia/Manila
+date_default_timezone_set('Asia/Manila');
+
 include '../../connection.php'; // Assuming this file sets up the PDO connection as $pdo
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $book_id = $_POST['book_id'];
     $patrons_id = $_POST['patrons_id'];
     $rating = $_POST['rate'];
+
+    // Get current date and time
+    $current_date = date('m/d/Y'); // Format: m/d/Y
+    $current_time = date('H:i:s'); // Format: H:i:s
 
     // Validate inputs
     if (!empty($book_id) && !empty($patrons_id) && !empty($rating)) {
@@ -19,17 +26,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $checkStmt->execute();
 
             if ($checkStmt->rowCount() > 0) {
-                // Update the rating
-                $query = "UPDATE ratings SET ratings = :ratings WHERE book_id = :book_id AND patrons_id = :patrons_id";
+                // Update the rating, date, and time
+                $query = "UPDATE ratings SET ratings = :ratings, date = :date, time = :time WHERE book_id = :book_id AND patrons_id = :patrons_id";
             } else {
-                // Insert a new rating
-                $query = "INSERT INTO ratings (book_id, patrons_id, ratings) VALUES (:book_id, :patrons_id, :ratings)";
+                // Insert a new rating with date and time
+                $query = "INSERT INTO ratings (book_id, patrons_id, ratings, date, time) VALUES (:book_id, :patrons_id, :ratings, :date, :time)";
             }
 
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(':book_id', $book_id, PDO::PARAM_INT);
             $stmt->bindParam(':patrons_id', $patrons_id, PDO::PARAM_INT);
             $stmt->bindParam(':ratings', $rating, PDO::PARAM_INT);
+            $stmt->bindParam(':date', $current_date, PDO::PARAM_STR);
+            $stmt->bindParam(':time', $current_time, PDO::PARAM_STR); // Bind time parameter
 
             // Execute the statement
             if ($stmt->execute()) {

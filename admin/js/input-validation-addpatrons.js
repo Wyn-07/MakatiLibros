@@ -47,7 +47,7 @@ function capitalize(input) {
     var inputValue = input.value;
     var words = inputValue.split(' ');
 
-    var capitalizedWords = words.map(function(word) {
+    var capitalizedWords = words.map(function (word) {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
     });
 
@@ -113,17 +113,13 @@ function validateAddForm(fileInputs, contactInputId) {
     var isValid = true;
 
     // Validate file inputs
-    fileInputs.forEach(function(filename) {
+    fileInputs.forEach(function (filename) {
         var fileInput = document.getElementById(filename);
         var filePath = fileInput.value;
 
         if (!filePath) {
-            // Handle case where no file is selected
-            isValid = false;
-            resultErrorContainer.style.display = "flex";
-            message.innerHTML = "Please select an image file.";
-            message.style.display = "block";
-            fileInput.style.border = '2px solid red'; // Highlight the invalid input
+            // Allow case where no file is selected (skip validation)
+            fileInput.style.border = ''; // Reset the border if no file is selected
             return; // Skip further validation for this input
         }
 
@@ -137,6 +133,7 @@ function validateAddForm(fileInputs, contactInputId) {
             fileInput.style.border = ''; // Reset the border if valid
         }
     });
+
 
     // Validate contact input
     var contactInput = document.getElementById(contactInputId);

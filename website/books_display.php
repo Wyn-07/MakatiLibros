@@ -7,17 +7,40 @@
     <?php if (isset($recommend_books) && count($recommend_books) > 0): ?>
         <?php foreach ($recommend_books as $book): ?>
             <div class="container-books">
+
                 <div class="books-id" style="display: none;"><?php echo htmlspecialchars($book['book_id']); ?></div>
+                <div class="patrons-id" style="display: none;"><?php echo $patrons_id  ?></div>
+
+                <?php
+                // Check conditions for displaying Non-circulating
+                if ($book['book_status'] === 'Available' && $book['category_name'] !== 'Circulation') {
+                    $statusCategoryText = "Non-circulating";
+                    $statusCategoryClass = "unavailable";
+                    $hideStatus = false;
+                } else {
+                    $statusCategoryText = htmlspecialchars($book['book_status']);
+                    $statusCategoryClass = ($book['book_status'] === 'Available') ? 'available' : 'unavailable';
+                    $hideStatus = true;
+                }
+                ?>
+
                 <div class="books-image">
-                    <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image" alt="Book Image" loading="lazy">
+                    <div class="books-status-show <?php echo $statusCategoryClass; ?>" <?php echo $hideStatus ? 'style="display: none;"' : ''; ?>>
+                        <?php echo htmlspecialchars($book['book_status']); ?>
+                    </div>
+
+                    <div class="books-status-category <?php echo $statusCategoryClass; ?>">
+                        <?php echo $statusCategoryText; ?>
+                    </div>
+
+                    <img src="../book_images/<?php echo htmlspecialchars($book['image']); ?>" class="image" loading="lazy">
                 </div>
-                <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category']); ?></div>
-                <div class="books-borrow-status" style="display: none;"><?php echo htmlspecialchars($book['borrow_status']); ?></div>
-                <div class="books-favorite" style="display: none;"><?php echo htmlspecialchars($book['favorite_status']); ?></div>
-                <div class="books-ratings" style="display: none;"><?php echo htmlspecialchars($book['avg_rating']); ?></div>
-                <div class="books-user-ratings" style="display: none;"><?php echo htmlspecialchars($book['patron_rating']); ?></div>
+
                 <div class="books-name"><?php echo htmlspecialchars($book['title']); ?></div>
-                <div class="books-author" style="display: none;"><?php echo htmlspecialchars($book['author']); ?></div>
+                <div class="books-copies" style="display: none;"><?php echo htmlspecialchars($book['copies']); ?></div>
+                <div class="books-status" style="display: none;"><?php echo htmlspecialchars($book['book_status']); ?></div>
+                <div class="books-category" style="display: none;"><?php echo htmlspecialchars($book['category_name']); ?></div>
+
             </div>
         <?php endforeach; ?>
     <?php else: ?>

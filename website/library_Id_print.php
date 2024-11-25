@@ -1,5 +1,10 @@
 <link rel="stylesheet" href="style.css">
 
+<!-- loading animation -->
+<div id="loading-overlay">
+    <div class="spinner"></div>
+</div>
+
 <div class="application-form-contents">
 
     <div class="application-checklist-container visible" id="checklist-form">
@@ -248,7 +253,8 @@
 <style>
     @media print {
 
-        .application-form-50, .application-form {
+        .application-form-50,
+        .application-form {
             width: 100%;
             margin: 20px 0;
 
@@ -267,6 +273,10 @@
     };
 
     window.onafterprint = function() {
-        window.location.href = "library_id.php"; 
+        window.location.href = "library_id.php";
     };
 </script>
+
+
+
+<script src="js/loading-animation.js"></script>

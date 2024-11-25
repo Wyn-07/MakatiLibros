@@ -3,7 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Patrons</title>
 
     <link rel="stylesheet" href="style.css">
@@ -15,12 +17,11 @@
 </head>
 
 <?php
+
 session_start();
 
 include '../connection.php';
-include 'functions/fetch_patrons.php';
 
-$patronsOnline = getPatrons($pdo);
 ?>
 
 <body>
@@ -62,11 +63,11 @@ $patronsOnline = getPatrons($pdo);
                     </div>
 
 
-                    <div class="row row-right">
+                    <!-- <div class="row row-right">
                         <button class="button-borrow" onclick="openAddModal()">
                             &#43; New
                         </button>
-                    </div>
+                    </div> -->
 
 
                     <div class="row row-between">
@@ -89,90 +90,9 @@ $patronsOnline = getPatrons($pdo);
 
                     </div>
 
-                    <div class="row">
+                    <div class="row" id="patron-table-container">
 
-                        <table id="table">
-                            <thead>
-                                <tr>
-                                    <th onclick="sortTable(0)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Patrons Name</div>
-                                            <img id="sort-icon-0" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(1)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Age</div>
-                                            <img id="sort-icon-1" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th onclick="sortTable(2)">
-                                        <div class="row row-between">
-                                            <div class="column-title">Contact</div>
-                                            <img id="sort-icon-2" src="../images/sort.png" class="sort">
-                                        </div>
-                                    </th>
-                                    <th>
-                                        <div class="column-title">Tools</div>
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php if (empty($patronsOnline)) { ?>
-                                    <tr>
-                                        <td colspan="5">
-                                            <div class="no-result">
-                                                <div class="no-result-image">
-                                                    <img src="../images/no-result.jpg" alt="No Results Found" class="image" />
-                                                </div>
-                                                <p>No results found.</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <?php } else { ?>
-                                    <?php foreach ($patronsOnline as $patrons) { ?>
-                                        <tr>
-                                            <td><?php echo htmlspecialchars($patrons['firstname'] . ' ' . $patrons['lastname'] . ' ' . $patrons['suffix']); ?></td>
-                                            <td><?php echo htmlspecialchars($patrons['age']); ?></td>
-                                            <td><?php echo htmlspecialchars($patrons['contact']); ?></td>
-                                            <td>
-                                                <div class="td-center">
-                                                    <div class="button-edit" onclick="openEditModal(
-                            <?php echo $patrons['patrons_id']; ?>, 
-                            '<?php echo addslashes($patrons['firstname']); ?>',
-                            '<?php echo addslashes($patrons['middlename']); ?>',
-                            '<?php echo addslashes($patrons['lastname']); ?>',
-                            '<?php echo addslashes($patrons['suffix']); ?>',
-                            '<?php echo addslashes($patrons['birthdate']); ?>',
-                            <?php echo $patrons['age']; ?>,
-                            '<?php echo addslashes($patrons['gender']); ?>',
-                            '<?php echo addslashes($patrons['contact']); ?>',
-                            '<?php echo addslashes($patrons['address']); ?>',
-                            '<?php echo addslashes($patrons['company_name']); ?>',
-                            '<?php echo addslashes($patrons['company_contact']); ?>',
-                            '<?php echo addslashes($patrons['company_address']); ?>',
-                            '<?php echo addslashes($patrons['email']); ?>',
-                            '<?php echo addslashes($patrons['password']); ?>',
-                             '<?php echo addslashes($patrons['image']); ?>'
-                        )">
-                                                        <img src="../images/edit-white.png" class="image">
-                                                    </div>
-
-
-
-                                                   
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    <?php } ?>
-                                <?php } ?>
-                            </tbody>
-
-
-
-                        </table>
-
-
+                
                     </div>
 
                     <div class="row row-between">
@@ -186,8 +106,10 @@ $patronsOnline = getPatrons($pdo);
 
         </div>
 
-        <?php include 'modal/add_patrons_modal.php'; ?>
-        <?php include 'modal/edit_patrons_modal.php'; ?>
+     
+
+        <?php include 'modal/view_patrons_modal.php'; ?>
+
 
 
     </div>
@@ -196,11 +118,7 @@ $patronsOnline = getPatrons($pdo);
 </html>
 
 
-<script>
-    let sortDirections = [0, 0, 0];
-    const NO_RESULT_COLSPAN = 5;
-</script>
-<script src="js/table.js"></script>
+<script src="js/table-patrons.js"></script>
 
 
 <script src="js/close-status.js"></script>

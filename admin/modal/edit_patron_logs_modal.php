@@ -18,7 +18,7 @@
                 
                     <div class="container-input-49">
                         <label for="editDate">Date:</label>
-                        <input type="text" id="editDate" name="log_date" class="input-text" autocomplete="off" readonly>
+                        <input type="date" id="editDate" name="log_date" class="input-text" autocomplete="off">
                     </div>
 
                     <div class="container-input-49">
@@ -143,7 +143,23 @@
 
 
 <script>
-function openEditModal(logId, logDate, firstname, middlename, lastname, suffix, age, gender, barangay, city, purpose, sector, sectorDetails) {
+function openEditModal(element) {
+    
+    const logId = decodeURIComponent(element.getAttribute("data-logs-id"));
+    const logDate = decodeURIComponent(element.getAttribute("data-logs-date"));
+    const firstname = decodeURIComponent(element.getAttribute("data-logs-firstname"));
+    const middlename = decodeURIComponent(element.getAttribute("data-logs-middlename"));
+    const lastname = decodeURIComponent(element.getAttribute("data-logs-lastname"));
+    const suffix = decodeURIComponent(element.getAttribute("data-logs-suffix"));
+    const age = decodeURIComponent(element.getAttribute("data-logs-age"));
+    const gender = decodeURIComponent(element.getAttribute("data-logs-gender"));
+    const barangay = decodeURIComponent(element.getAttribute("data-logs-barangay"));
+    const city = decodeURIComponent(element.getAttribute("data-logs-city"));
+    const purpose = decodeURIComponent(element.getAttribute("data-logs-purpose"));
+    const sector = decodeURIComponent(element.getAttribute("data-logs-sector"));
+    const sectorDetails = decodeURIComponent(element.getAttribute("data-logs-sector-details"));
+    
+    
     // Get the modal element
     const modal = document.getElementById('editModal');
 
